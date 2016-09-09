@@ -122,6 +122,8 @@ DISTRIBUTION FILES
     The translator is ready to go.
 9. Write some tests (see tests.xml files).  Check tests using sttt.
 
+![](components.png)
+
 FEEDBACK
 ----------------------------------------------------------------------
 
