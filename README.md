@@ -1,28 +1,28 @@
-$Id: README,v 1.2 2001/07/06 11:00:41 pcj Exp $
+Syntacs Translation Toolkit (STT)
 ======================================================================
-Syntacs Translation Toolkit (STT) 
-======================================================================
+
+![](construction.png)
 
 The Syntacs Translation Toolkit (STT) is yet another member of the Yet
 Another family of compiler generator tools.  It does:
 
-  - Generation of regular-expression-based lexers in Java
-  - Generation of shift-reduce parsers (SLR1, LALR1, LR1) in Java
+- Generation of regular-expression-based lexers in Java
+- Generation of shift-reduce parsers (SLR1, LALR1, LR1) in Java
 
 The STT has some interesting features:
 
-  - Supports 16-bit (Unicode) lexing
-  - Unique support of lexical states (states are managed with a stack)
-  - SLR1/LALR1/LR1 DPA construction algorithms (not true, SLR1 is broken)
-  - Deremer-Penello LALR1 construction algorithm
-  - Customizable parser error recovery/repair
-  - Grammars can be written in "syntacs format" (.stt) or XML
-  - Postscript/PNG visualization of finite automata using "Graphviz"
-  - Postscript/PNG visualization of pushdown automata using "Graphviz"
-  - Pretty printing of parse trees
-  - Highly modular design 
-  - Nice documentation
-  - GPL License
+- Supports 16-bit (Unicode) lexing
+- Unique support of lexical states (states are managed with a stack)
+- SLR1/LALR1/LR1 DPA construction algorithms (not true, SLR1 is broken)
+- Deremer-Penello LALR1 construction algorithm
+- Customizable parser error recovery/repair
+- Grammars can be written in "syntacs format" (.stt) or XML
+- Postscript/PNG visualization of finite automata using "Graphviz"
+- Postscript/PNG visualization of pushdown automata using "Graphviz"
+- Pretty printing of parse trees
+- Highly modular design
+- Nice documentation
+- GPL License
 
 One unique feature is that an STT grammar file does not contain
 semantic actions (no code).  Rather, a separate component is
@@ -51,17 +51,18 @@ command-line option.
 
 REQUIREMENTS
 ----------------------------------------------------------------------
- 
- JDK1.2+
+
+JDK1.2+
 
 OPTIONAL/RECOMMENDED TOOLS
 ----------------------------------------------------------------------
 
- - Graphviz	      http://www.research.att.com/sw/tools/graphviz/
- - GhostScript	      http://www.ghostscript.com/
- - ImageMagick	      http://www.imagemagick.org/
+- Graphviz	      http://www.research.att.com/sw/tools/graphviz/
+- GhostScript	      http://www.ghostscript.com/
+- ImageMagick	      http://www.imagemagick.org/
 
 
+```
 DISTRIBUTION FILES
 +---------------------------------------------------------------------
 |
@@ -103,30 +104,27 @@ DISTRIBUTION FILES
 |   `-- APACHE_LICENSE..License for Xerces
 |
 `-- src.jar.............Sourcecode
+```
 
 9-STEP START
 ----------------------------------------------------------------------
 
-(1) Skim the User Manual
-(2) Skim the Javadocs, especially the org.* packages.
-(3) Copy one of the sample grammars for skeletal purposes
-(4) Write the grammar, comment out the 
+1. Skim the User Manual
+2. Skim the Javadocs, especially the org.* packages.
+3. Copy one of the sample grammars for skeletal purposes
+4. Write the grammar, comment out the
     "compile-interpreter-classname" property
-(5) Skim the sttc, sttr, sttt scripts.  They are *very* simple.
-(6) Compile the grammar with sttc
-(7) Copy one of the LRTranslatorInterpreter implementations and 
+5. Skim the sttc, sttr, sttt scripts.  They are *very* simple.
+6. Compile the grammar with sttc
+7. Copy one of the LRTranslatorInterpreter implementations and
     recustomize it for your grammar.
-(8) Recompile grammar with the "compile-interpreter-classname" property.  
+8. Recompile grammar with the "compile-interpreter-classname" property.
     The translator is ready to go.
-(9) Write some tests (see tests.xml files).  Check tests using sttt.
+9. Write some tests (see tests.xml files).  Check tests using sttt.
 
 FEEDBACK
 ----------------------------------------------------------------------
 
-Please report bugs and suggestions to pcj@inxar.org.  
+Please report bugs and suggestions to pcj@inxar.org.
 
-======================================================================
-Syntacs Translation Toolkit (STT) 
-
-Copyright 2001 Paul Johnston - pcj@inxar.org
-
+![](lexer.png)
