@@ -1,0 +1,58 @@
+#-------------------------------------------------------------------
+# $Id: etf.stt,v 1.1.1.1 2001/07/06 09:08:05 pcj Exp $
+#-------------------------------------------------------------------
+# Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+#--------------------------------------------------------------------
+this is etf version 0.0.1;
+
+property author = "Paul Cody Johnston";
+property author-email = "pcj@inxar.org";
+property compile-dpa-constructor-method = "LALR1";
+property compile-sourcepath = "./src";
+property compile-namespace = "com.inxar.syntacs.translator.test";
+property compile-pickle = "false";
+
+property viz-sourcepath = "./grammar";
+property viz-namespace = "etf";
+property viz-lexical = "true";
+property viz-syntactic = "true";
+property viz-dpa-size = "12,12";
+#property viz-dpa-rankdir = "TB";
+#property viz-dpa-hide-loopback-edges = "true";
+
+property compile-dpa-debug = "true";
+
+terminal PL, ST, OP, CP, ID;
+
+PL  matches "\+";
+ST  matches "\*";
+OP  matches "\(";
+CP  matches "\)";
+ID matches " [_a-zA-Z] [_a-zA-Z0-9]* ";
+
+nonterminal Goal, E, T, F;
+
+reduce Goal when E;
+reduce E when E PL T;
+reduce E when T;
+reduce T when T ST F;
+reduce T when F;
+reduce F when OP E CP;
+reduce F when ID;
+
+accept when Goal;

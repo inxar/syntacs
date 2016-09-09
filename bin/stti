@@ -1,0 +1,24 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------
+# $Id: stti,v 1.1.1.1 2001/07/06 09:08:05 pcj Exp $
+#-------------------------------------------------------------------
+
+#
+# stti - interpret (parse) some input using a particular Grammar 
+#        and display the parse tree.
+#
+
+JAVA=java
+CP=lib/syntacs.jar:lib/jenesis.jar:lib/xerces.jar
+MAIN=com.inxar.syntacs.Interpret
+TRANSLATOR_GRAMMAR=$1
+INPUT=$2
+
+CMD="$JAVA -classpath $CP $MAIN $TRANSLATOR_GRAMMAR $INPUT"
+
+echo $CMD
+$CMD
+
+
+

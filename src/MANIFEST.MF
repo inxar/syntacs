@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+
+Name: Project-Info
+Project-Vendor: Inxar
+Project-Name: Syntacs
+Project-Version: 0-2-0
+Project-License: GPL
+Project-Copyright: 2001 Paul Cody Johnston 
+Project-Author: Paul Johnston
+Project-Author-Email: pcj@inxar.org
+Project-Homepage-URL: http://www.inxar.org/syntacs
+Project-Download-URL: http://www.inxar.org/download
+Random-Quote-String: When it's dark enough you can see the stars.
+Random-Quote-Attribution: Ralph Waldo Emerson 
+

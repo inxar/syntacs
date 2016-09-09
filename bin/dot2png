@@ -1,0 +1,103 @@
+#!/bin/sh
+
+#
+# dot2png - convert a graphviz dot file to a portable network graphic via postscript.
+#
+
+#---------------------------------
+# FUNCTIONS
+#---------------------------------
+
+CheckX() 
+{
+    if [ ! -x $1 ]
+    then
+	echo "This script requires \"$1\"; install or edit this script to correct path."
+	exit 1
+    fi
+}
+
+Usage() 
+{
+    if [ "$1" ]
+    then 
+    echo '----------------------------------------------------------------'
+    echo "Error: $1"
+    fi
+
+    echo '----------------------------------------------------------------'
+    echo 'dot2png -- convert graphviz dot file to portable network graphic'
+    echo ''
+    echo 'usage: dot2png [-hn] <filename>.dot'
+    echo '  alt: dot2png <filename>'
+    echo
+    echo 'options:'
+    echo ' -h   help'
+    echo ' -n   run neato instead of dot (for undirected graphs)'
+    echo
+    echo 'example 1: dot2png MyGraph.dot'
+    echo 'example 2: dot2png MyGraph'
+    echo '----------------------------------------------------------------'
+
+    exit 1
+}
+
+#---------------------------------
+# EDIT PATHS TO MATCH YOUR SYSTEM
+#---------------------------------
+DOT=/usr/local/bin/dot
+NEATO=/usr/local/bin/neato
+CONVERT=/usr/X11R6/bin/convert
+
+CheckX $DOT
+CheckX $NEATO
+CheckX $CONVERT
+
+OPT=
+NAME=
+EXE=$DOT
+
+#---------------------------------
+# OPTIONS PARSING
+#---------------------------------
+while getopts hn: OPT
+do
+    case $OPT in
+	h)  Usage
+	    ;;
+	n)  EXE=$NEATO
+	    ;;
+	\?) Usage
+	    ;;
+    esac
+done
+
+#---------------------------------
+# MAIN
+#---------------------------------
+NAME=$1
+
+if [ ! "$NAME" ]
+then 
+    Usage "Need filename!"
+fi
+
+#echo "Before: $NAME"
+NAME=`echo $NAME | sed -e "s/.dot\$//"`
+#echo " After: $NAME"
+
+#NAME=`echo $NAME | awk -F. '{print $1;}'`
+
+if [ ! -e "$NAME.dot" ]
+then
+    Usage "Unknown file \"$NAME.dot\""
+fi
+
+echo "Converting $NAME.dot -> $NAME.ps"
+$DOT -Tps $NAME.dot -o $NAME.ps
+
+echo "Converting $NAME.ps -> $NAME.png"
+$CONVERT -quality 0 $NAME.ps $NAME.png
+
+rm $NAME.ps
+

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ $Id: grammar.dtd,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
+
+ Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or (at
+ your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+ USA.  
+
+-->
+
+<!--
+This is the DTD for the Regular and Context-Free grammars.  Using these constructs
+one can specify the grammar for a lexer and parser.
+-->
+
+<!-- =================================================== -->
+<!-- ENTITIES -->
+<!-- =================================================== -->
+<!-- 
+MEMBER ELEMENTS FOR REGULAR EXPRESSIONS:
+
+ char:             a single character  
+ string:           a sequence of characters 
+ union:            a set of alternatives (called alleles) 
+ closure:          an optional cycle (kleene) '*'
+ positive-closure: an non-optional cycle (positive-kleene) '+'
+ option:           an optional element '?'
+ epsilon:          the empty 'string' 
+ interval:         a contiguous interval of characters (only in classes) 
+ list:             a sequence of members 
+ class:            a character class 
+
+-->
+<!ENTITY % member "char|string|union|closure|positive-closure|option|list|class|epsilon">
+
+<!-- =================================================== -->
+<!-- GRAMMAR ELEMENTS -->
+<!-- =================================================== -->
+
+<!-- this is the top-level element -->
+<!ELEMENT grammar (property*, context*, terminal+, nonterminal*, match*, reduce*)>
+<!ATTLIST grammar
+	name CDATA #REQUIRED
+	version CDATA #REQUIRED
+>
+
+<!ELEMENT property EMPTY>
+<!ATTLIST property
+	name CDATA #REQUIRED
+	value CDATA #REQUIRED
+>
+
+<!ELEMENT context (member*)>
+<!ATTLIST context
+	name CDATA #REQUIRED
+	start (true|false) "false"
+>
+
+<!ELEMENT member EMPTY>
+<!ATTLIST member
+	terminal CDATA #REQUIRED
+	action CDATA #IMPLIED
+>
+
+<!ELEMENT terminal EMPTY>
+<!ATTLIST terminal
+	name CDATA #REQUIRED
+>
+
+<!ELEMENT nonterminal EMPTY>
+<!ATTLIST nonterminal
+	name CDATA #REQUIRED
+	start (true|false) "false"
+>
+
+<!ELEMENT match (%member;)>
+<!ATTLIST match
+	terminal CDATA #REQUIRED
+>
+
+<!ELEMENT reduce (symbol)+>
+<!ATTLIST reduce
+	nonterminal CDATA #REQUIRED
+>
+
+<!ELEMENT symbol EMPTY>
+<!ATTLIST symbol
+	name CDATA #REQUIRED
+>
+
+<!-- =================================================== -->
+<!-- REGEXP ELEMENTS -->
+<!-- =================================================== -->
+
+<!ELEMENT epsilon EMPTY>
+
+<!ELEMENT char EMPTY>
+<!ATTLIST char
+	value CDATA #REQUIRED
+>
+
+<!ELEMENT interval EMPTY>
+<!ATTLIST interval
+	lo CDATA #REQUIRED
+	hi CDATA #REQUIRED
+>
+
+<!ELEMENT string EMPTY>
+<!ATTLIST string
+	value CDATA #REQUIRED
+>
+
+<!ELEMENT class (char|interval)+>
+<!ATTLIST class
+	negated (true|false) "false"
+>
+
+<!ELEMENT list (%member;)+>
+
+<!ELEMENT union (%member;)+>
+
+<!ELEMENT option (%member;)>
+
+<!ELEMENT closure (%member;)>
+
+<!ELEMENT positive-closure (%member;)>
+
+
+

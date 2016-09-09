@@ -1,0 +1,19 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------
+# $Id: sttc,v 1.1.1.1 2001/07/06 09:08:05 pcj Exp $
+#-------------------------------------------------------------------
+
+#
+# sttc - compile / generate a Grammar from an .stt or .xml grammar file
+#
+
+JAVA=java
+CP=lib/syntacs.jar:lib/jenesis.jar:lib/xerces.jar
+MAIN=com.inxar.syntacs.Compile
+
+CMD="$JAVA -classpath $CP $MAIN $@"
+
+echo $CMD
+$CMD
+

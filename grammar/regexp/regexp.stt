@@ -1,0 +1,157 @@
+#-------------------------------------------------------------------
+# $Id: regexp.stt,v 1.1.1.1 2001/07/06 09:08:05 pcj Exp $
+#-------------------------------------------------------------------
+# Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+#--------------------------------------------------------------------
+# GRAMMAR DECLARATION
+this is regexp version 0.1.0;
+
+# PROPERTY DEFINITIONS
+property author = "Paul Cody Johnston";
+property author-email = "pcj@inxar.org";
+property compile-dpa-constructor-method = "LALR1";
+property compile-sourcepath = "./src";
+property compile-namespace = "com.inxar.syntacs.translator.regexp";
+property compile-interpreter-classname = 
+ "com.inxar.syntacs.translator.regexp.RegexpInterpreter";
+
+property viz-sourcepath = "./grammar";
+property viz-namespace = "regexp";
+property viz-lexical = "true";
+property viz-syntactic = "true";
+property viz-dfa-size = "12,12";
+property viz-dpa-size = "20,20";
+property viz-dpa-concentrate-edges = "true";
+property viz-dpa-hide-loopback-edges = "true";
+
+# TERMINAL DECLARATIONS
+terminal WHITESPACE;
+terminal CHAR;
+terminal CHAR_CLASS_CHAR;
+terminal PIPE;
+terminal STAR;
+terminal QUESTION;
+terminal PLUS;
+terminal OPEN_PAREN;
+terminal CLOSE_PAREN;
+terminal OPEN_BRACKET;
+terminal OPEN_BRACKET_CARET;
+terminal OPEN_BRACKET_DASH;
+terminal OPEN_BRACKET_CARET_DASH;
+terminal CLOSE_BRACKET;
+terminal CHAR_CLASS_DASH;
+terminal ESC;
+terminal ESC_OCTAL;
+terminal ESC_UNICODE;
+
+# TERMINAL DEFINITIONS
+WHITESPACE matches "(\t|\n|\v|\r|\s)+";
+CHAR matches "[^\\|()[\]*+?]";
+CHAR_CLASS_CHAR matches "[^-\]\\]";
+PIPE matches "\|";
+STAR matches "\*";
+QUESTION matches "\?";
+PLUS matches "\+";
+OPEN_PAREN matches "\(";
+CLOSE_PAREN matches "\)";
+OPEN_BRACKET matches "(\[(\t|\n|\v|\r|\s)*)";
+OPEN_BRACKET_CARET matches "(\[(\t|\n|\v|\r|\s)*^)";
+OPEN_BRACKET_DASH matches "(\[(\t|\n|\v|\r|\s)*-)";
+OPEN_BRACKET_CARET_DASH matches "(\[(\t|\n|\v|\r|\s)*^(\t|\n|\v|\r|\s)*-)";
+CLOSE_BRACKET matches "\]";
+CHAR_CLASS_DASH matches "(-)";
+
+ESC_OCTAL matches "(\\0[0-3][0-7][0-7])";
+ESC_UNICODE matches "(\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])";
+ESC matches " \\ [^\t\n\v\r\s] ";
+
+# NONTERMINAL DECLARATIONS
+nonterminal Goal;
+nonterminal Union;
+nonterminal Concat;
+nonterminal Term;
+nonterminal Quantifier;
+nonterminal Atom;
+nonterminal CharClass;
+nonterminal CharClassBegin;
+nonterminal CharClassTermList;
+nonterminal CharClassTerm;
+nonterminal CharClassAtom;
+
+# NONTERMINAL DEFINITIONS
+reduce Goal when Union;
+reduce Union when Concat;
+reduce Union when Union PIPE Concat;
+reduce Concat when Term;
+reduce Concat when Concat Term;
+reduce Term when Atom;
+reduce Term when Atom Quantifier;
+reduce Quantifier when STAR;
+reduce Quantifier when PLUS;
+reduce Quantifier when QUESTION;
+reduce Atom when CHAR;
+reduce Atom when ESC;
+reduce Atom when ESC_OCTAL;
+reduce Atom when ESC_UNICODE;
+reduce Atom when CharClass;
+reduce Atom when OPEN_PAREN Union CLOSE_PAREN;
+reduce CharClass when CharClassBegin CharClassTermList CLOSE_BRACKET;
+reduce CharClass when OPEN_BRACKET_CARET_DASH CLOSE_BRACKET;
+reduce CharClassBegin when OPEN_BRACKET;
+reduce CharClassBegin when OPEN_BRACKET_CARET;
+reduce CharClassBegin when OPEN_BRACKET_DASH;
+reduce CharClassBegin when OPEN_BRACKET_CARET_DASH;
+reduce CharClassTermList when CharClassTerm;
+reduce CharClassTermList when CharClassTermList CharClassTerm;
+reduce CharClassTerm when CharClassAtom;
+reduce CharClassTerm when CharClassAtom CHAR_CLASS_DASH CharClassAtom;
+reduce CharClassAtom when CHAR_CLASS_CHAR;
+reduce CharClassAtom when ESC;
+reduce CharClassAtom when ESC_OCTAL;
+reduce CharClassAtom when ESC_UNICODE;
+
+accept when Goal;
+
+# CONTEXT DECLARATIONS
+context default;
+context charclass;
+
+# CONTEXT DEFINITIONS
+default includes 
+	WHITESPACE, CHAR, PIPE, STAR, QUESTION, 
+	PLUS, OPEN_PAREN, CLOSE_PAREN, 
+	ESC, ESC_OCTAL, ESC_UNICODE,
+	OPEN_BRACKET shifts charclass, 
+	OPEN_BRACKET_CARET shifts charclass, 
+	OPEN_BRACKET_DASH shifts charclass, 
+	OPEN_BRACKET_CARET_DASH shifts charclass;
+
+charclass includes 
+	WHITESPACE, CHAR_CLASS_CHAR, CHAR_CLASS_DASH, 
+	ESC, ESC_OCTAL, ESC_UNICODE,
+	CLOSE_BRACKET unshifts; 
+
+start in context default;
+
+
+
+
+
+
+
+

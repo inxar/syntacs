@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE grammar SYSTEM "file:./etc/grammar.dtd">
+
+<grammar name="syntacs" version="0.1.0">
+
+ <!-- ================================================== -->
+ <!-- PROPERTY DEFINITIONS                               -->
+ <!-- ================================================== -->
+
+ <property name="author" value="Paul Cody Johnston"/>
+ <property name="author-email" value="pcj@inxar.org"/>
+ <property name="compile-dpa-constructor-method" value="LALR1"/>
+ <property name="compile-sourcepath" value="./src"/>
+ <property name="compile-namespace" value="com.inxar.syntacs.translator.syntacs"/>
+ <property name="compile-interpreter-classname" 
+	value="com.inxar.syntacs.translator.syntacs.SyntacsInterpreter"/>
+
+ <property name="viz-sourcepath" value="./grammar"/>
+ <property name="viz-namespace" value="syntacs"/>
+ <property name="viz-lexical" value="true"/>
+ <property name="viz-syntactic" value="true"/>
+
+ <property name="viz-dpa-size" value="40,40"/>
+ <property name="viz-dpa-concentrate-edges" value="true"/>
+
+ <!-- ================================================== -->
+ <!-- CONTEXT DEFINITIONS                                -->
+ <!-- ================================================== -->
+
+ <!-- this grammar only has the default context -->
+ <context name="default" start="true">
+  <member terminal="COMMENT"/>
+  <member terminal="WHITESPACE"/>
+  <member terminal="IDENT"/>
+  <member terminal="STRING"/>
+  <member terminal="VERSION_STRING"/>
+  <member terminal="COMMA"/>
+  <member terminal="SEMI"/>
+  <member terminal="EQUALS"/>
+ </context>
+
+ <!-- ================================================== -->
+ <!-- TERMINAL DECLARATIONS                              -->
+ <!-- ================================================== -->
+ 
+ <terminal name="COMMENT"/>
+ <terminal name="WHITESPACE"/>
+
+ <terminal name="THIS"/>
+ <terminal name="IS"/>
+ <terminal name="VERSION"/>
+ <terminal name="START"/>
+ <terminal name="IN"/>
+ <terminal name="CONTEXT"/>
+ <terminal name="TERMINAL"/>
+ <terminal name="NONTERMINAL"/>
+ <terminal name="REDUCE"/>
+ <terminal name="INCLUDES"/>
+ <terminal name="WHEN"/>
+ <terminal name="SHIFTS"/>
+ <terminal name="UNSHIFTS"/>
+ <terminal name="ACCEPT"/>
+ <terminal name="PROPERTY"/>
+ <terminal name="MATCHES"/>
+
+ <terminal name="IDENT"/>
+ <terminal name="STRING"/>
+ <terminal name="VERSION_STRING"/>
+ <terminal name="COMMA"/>
+ <terminal name="SEMI"/>
+ <terminal name="EQUALS"/>
+
+ <!-- ================================================== -->
+ <!-- NONTERMINAL DECLARATIONS                           -->
+ <!-- ================================================== -->
+
+ <nonterminal name="Goal" start="true"/>
+
+ <nonterminal name="Statement"/>
+ <nonterminal name="ThisIsStatement"/>
+ <nonterminal name="TerminalStatement"/>
+ <nonterminal name="MatchesStatement"/>
+ <nonterminal name="ContextStatement"/>
+ <nonterminal name="StartInStatement"/>
+ <nonterminal name="IncludesStatement"/>
+ <nonterminal name="NonterminalStatement"/>
+ <nonterminal name="ReduceStatement"/>
+ <nonterminal name="AcceptWhenStatement"/>
+ <nonterminal name="PropertyStatement"/>
+ <nonterminal name="StatementList"/>
+ <nonterminal name="InstructionList"/>
+ <nonterminal name="NonterminalList"/>
+ <nonterminal name="IdentList"/>
+ <nonterminal name="Instruction"/>
+
+ <!-- ================================================== -->
+ <!-- TERMINAL DEFINITIONS                               -->
+ <!-- ================================================== -->
+
+ <match terminal="COMMENT">
+  <list>
+   <char value="#"/>
+   <closure>
+    <class negated="true">
+     <char value="&#x0A;"/>
+     <char value="&#x0D;"/>
+    </class>
+   </closure>
+   <union>
+    <char value="&#x0A;"/>
+    <string value="&#x0D;&#x0A;"/>
+   </union>
+  </list>
+ </match>
+
+ <match terminal="WHITESPACE">
+  <positive-closure>
+   <union>
+    <char value="&#x09;"/>
+    <char value="&#x0A;"/>
+    <!-- <char value="&#x0B;"/> -->
+    <char value="&#x0D;"/>
+    <char value="&#x20;"/>
+   </union>
+  </positive-closure>
+ </match>
+
+ <match terminal="STRING">     
+  <list>
+
+   <string value="&quot;"/>
+
+   <closure>
+    <union>
+
+     <class negated="true">
+      <char value="&quot;"/>
+      <char value="\"/>
+     </class>
+
+     <list>
+      <char value="\"/>
+      <class negated="true">
+       <char value="&#x0A;"/>	
+      </class>
+     </list>
+
+    </union>
+   </closure>
+
+   <string value="&quot;"/>
+
+  </list>
+ </match>
+
+ <match terminal="IDENT">
+  <list>
+   <class>
+    <char value="_"/>
+    <interval lo="a" hi="z"/>
+    <interval lo="A" hi="Z"/>
+   </class>
+   <closure>
+    <class>
+     <char value="-"/>
+     <char value="_"/>
+     <interval lo="a" hi="z"/>
+     <interval lo="A" hi="Z"/>
+     <interval lo="0" hi="9"/>
+    </class>
+   </closure>
+  </list>
+ </match>
+
+ <match terminal="VERSION_STRING">
+  <list>
+   <positive-closure>
+    <class>
+     <interval lo="0" hi="9"/>
+    </class>
+   </positive-closure>
+   <char value="."/>
+   <positive-closure>
+    <class>
+     <interval lo="0" hi="9"/>
+    </class>
+   </positive-closure>
+   <char value="."/>
+   <positive-closure>
+    <class>
+     <interval lo="0" hi="9"/>
+    </class>
+   </positive-closure>
+  </list>
+ </match>
+
+ <match terminal="COMMA">  <char value=","/> </match>
+ <match terminal="SEMI">   <char value=";"/> </match>
+ <match terminal="EQUALS"> <char value="="/> </match>
+
+ <!-- ================================================== -->
+ <!-- NONTERMINAL DEFINITIONS                            -->
+ <!-- ================================================== -->
+
+ <reduce nonterminal="Goal">
+  <symbol name="ThisIsStatement"/>
+  <symbol name="StatementList"/>
+ </reduce>
+
+ <reduce nonterminal="StatementList">
+  <symbol name="Statement"/>
+ </reduce>
+ <reduce nonterminal="StatementList">
+  <symbol name="StatementList"/>
+  <symbol name="Statement"/>
+ </reduce>
+
+ <reduce nonterminal="Statement">
+  <symbol name="TerminalStatement"/>
+ </reduce>
+ <reduce nonterminal="Statement">
+  <symbol name="MatchesStatement"/>
+ </reduce>
+ <reduce nonterminal="Statement">
+  <symbol name="ContextStatement"/>
+ </reduce>
+ <reduce nonterminal="Statement">
+  <symbol name="StartInStatement"/>
+ </reduce>
+ <reduce nonterminal="Statement">
+  <symbol name="IncludesStatement"/>
+ </reduce>
+ <reduce nonterminal="Statement">
+  <symbol name="NonterminalStatement"/>
+ </reduce>
+ <reduce nonterminal="Statement">
+  <symbol name="ReduceStatement"/>
+ </reduce>
+ <reduce nonterminal="Statement">
+  <symbol name="AcceptWhenStatement"/>
+ </reduce>
+ <reduce nonterminal="Statement">
+  <symbol name="PropertyStatement"/>
+ </reduce>
+
+ <reduce nonterminal="ThisIsStatement">
+  <symbol name="THIS"/>
+  <symbol name="IS"/>
+  <symbol name="IDENT"/>
+  <symbol name="VERSION"/>
+  <symbol name="VERSION_STRING"/>
+  <symbol name="SEMI"/>
+ </reduce>
+
+ <reduce nonterminal="TerminalStatement">
+  <symbol name="TERMINAL"/>
+  <symbol name="IdentList"/>
+  <symbol name="SEMI"/>
+ </reduce>
+
+ <reduce nonterminal="MatchesStatement">
+  <symbol name="IDENT"/>
+  <symbol name="MATCHES"/>
+  <symbol name="STRING"/>
+  <symbol name="SEMI"/>
+ </reduce>
+
+ <reduce nonterminal="NonterminalStatement">
+  <symbol name="NONTERMINAL"/>
+  <symbol name="IdentList"/>
+  <symbol name="SEMI"/>
+ </reduce>
+
+ <reduce nonterminal="ContextStatement">
+  <symbol name="CONTEXT"/>
+  <symbol name="IdentList"/>
+  <symbol name="SEMI"/>
+ </reduce>
+
+ <reduce nonterminal="StartInStatement">
+  <symbol name="START"/>
+  <symbol name="IN"/>
+  <symbol name="CONTEXT"/>
+  <symbol name="IDENT"/>
+  <symbol name="SEMI"/>
+ </reduce>
+
+ <reduce nonterminal="IncludesStatement">
+  <symbol name="IDENT"/>
+  <symbol name="INCLUDES"/>
+  <symbol name="InstructionList"/>
+  <symbol name="SEMI"/>
+ </reduce>
+
+ <reduce nonterminal="ReduceStatement">
+  <symbol name="REDUCE"/>
+  <symbol name="IDENT"/>
+  <symbol name="WHEN"/>
+  <symbol name="NonterminalList"/>
+  <symbol name="SEMI"/>
+ </reduce>
+
+ <reduce nonterminal="AcceptWhenStatement">
+  <symbol name="ACCEPT"/>
+  <symbol name="WHEN"/>
+  <symbol name="IDENT"/>
+  <symbol name="SEMI"/>
+ </reduce>
+
+ <reduce nonterminal="PropertyStatement">
+  <symbol name="PROPERTY"/>
+  <symbol name="IDENT"/>
+  <symbol name="EQUALS"/>
+  <symbol name="STRING"/>
+  <symbol name="SEMI"/>
+ </reduce>
+
+ <reduce nonterminal="IdentList">
+  <symbol name="IDENT"/>
+ </reduce>
+ <reduce nonterminal="IdentList">
+  <symbol name="IdentList"/>
+  <symbol name="COMMA"/>
+  <symbol name="IDENT"/>
+ </reduce>
+
+ <reduce nonterminal="NonterminalList">
+  <symbol name="IDENT"/>
+ </reduce>
+ <reduce nonterminal="NonterminalList">
+  <symbol name="NonterminalList"/>
+  <symbol name="IDENT"/>
+ </reduce>
+
+ <reduce nonterminal="InstructionList">
+  <symbol name="Instruction"/>
+ </reduce>
+ <reduce nonterminal="InstructionList">
+  <symbol name="InstructionList"/>
+  <symbol name="COMMA"/>
+  <symbol name="Instruction"/>
+ </reduce>
+
+ <reduce nonterminal="Instruction">
+  <symbol name="IDENT"/>
+ </reduce>
+ <reduce nonterminal="Instruction">
+  <symbol name="IDENT"/>
+  <symbol name="SHIFTS"/>
+  <symbol name="IDENT"/>
+ </reduce>
+ <reduce nonterminal="Instruction">
+  <symbol name="IDENT"/>
+  <symbol name="UNSHIFTS"/>
+ </reduce>
+
+</grammar>
+

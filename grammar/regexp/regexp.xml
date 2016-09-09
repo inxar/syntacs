@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE grammar SYSTEM "file:./etc/grammar.dtd">
+
+<grammar name="regexp" version="0.1.0">
+
+ <!-- ================================================== -->
+ <!-- PROPERTY DEFINITIONS                               -->
+ <!-- ================================================== -->
+
+ <property name="author" value="Paul Cody Johnston"/>
+ <property name="author-email" value="pcj@inxar.org"/>
+ <property name="compile-dpa-constructor-method" value="LALR1"/>
+ <property name="compile-sourcepath" value="./src"/>
+ <property name="compile-namespace" value="com.inxar.syntacs.translator.regexp"/>
+ <property name="compile-interpreter-classname" 
+	value="com.inxar.syntacs.translator.regexp.RegexpInterpreter"/>
+
+ <property name="viz-sourcepath" value="./grammar"/>
+ <property name="viz-namespace" value="regexp"/>
+ <property name="viz-lexical" value="true"/>
+ <property name="viz-syntactic" value="true"/>
+
+ <property name="viz-dfa-size" value="12,12"/>
+ <property name="viz-dpa-size" value="20,20"/>
+ <property name="viz-dpa-concentrate-edges" value="true"/>
+ <property name="viz-dpa-hide-loopback-edges" value="true"/>
+
+ <!-- ================================================== -->
+ <!-- CONTEXT DEFINITIONS                                -->
+ <!-- ================================================== -->
+
+ <context name="all">
+  <member terminal="ESC"/>
+  <member terminal="ESC_OCTAL"/>
+  <member terminal="ESC_UNICODE"/>
+ </context>
+
+ <context name="default">
+  <member terminal="WHITESPACE"/>
+  <member terminal="CHAR"/>
+  <member terminal="PIPE"/>
+  <member terminal="STAR"/>
+  <member terminal="QUESTION"/>
+  <member terminal="PLUS"/>
+  <member terminal="OPEN_PAREN"/>
+  <member terminal="CLOSE_PAREN"/>
+  <member terminal="OPEN_BRACKET"            action="charclass"/>
+  <member terminal="OPEN_BRACKET_CARET"      action="charclass"/>
+  <member terminal="OPEN_BRACKET_DASH"       action="charclass"/>
+  <member terminal="OPEN_BRACKET_CARET_DASH" action="charclass"/>
+ </context>
+
+ <context name="charclass">
+  <member terminal="WHITESPACE"/>
+  <member terminal="CHAR_CLASS_CHAR"/>
+  <member terminal="CHAR_CLASS_DASH"/>
+  <member terminal="CLOSE_BRACKET" action="unshift"/>
+ </context>
+
+ <!-- ================================================== -->
+ <!-- TERMINAL DECLARATIONS                              -->
+ <!-- ================================================== -->
+
+ <terminal name="WHITESPACE" />
+
+ <!-- characters -->
+ <terminal name="CHAR" />
+ <terminal name="CHAR_CLASS_CHAR" />
+
+ <!-- operators -->
+ <terminal name="PIPE" />
+ <terminal name="STAR" />
+ <terminal name="QUESTION" />
+ <terminal name="PLUS" />
+ <terminal name="OPEN_PAREN" />
+ <terminal name="CLOSE_PAREN" />
+ <terminal name="OPEN_BRACKET" />
+ <terminal name="OPEN_BRACKET_CARET" />
+ <terminal name="OPEN_BRACKET_DASH" />
+ <terminal name="OPEN_BRACKET_CARET_DASH" />
+ <terminal name="CLOSE_BRACKET" />
+ <terminal name="CHAR_CLASS_DASH" />
+
+ <!-- escape sequences -->
+ <terminal name="ESC" />
+ <terminal name="ESC_OCTAL" />
+ <terminal name="ESC_UNICODE" />
+ 
+ <!-- ================================================== -->
+ <!-- NONTERMINAL DECLARATIONS                           -->
+ <!-- ================================================== -->
+
+ <nonterminal name="Goal" start="true"/>
+ <nonterminal name="Union"/>
+ <nonterminal name="Concat"/>
+ <nonterminal name="Term"/>
+ <nonterminal name="Quantifier"/> 
+ <nonterminal name="Atom"/>
+ <nonterminal name="CharClass"/>
+ <nonterminal name="CharClassBegin"/>
+ <nonterminal name="CharClassTermList"/>
+ <nonterminal name="CharClassTerm"/>
+ <nonterminal name="CharClassAtom"/>
+
+ <!-- ================================================== -->
+ <!-- TERMINAL DEFINITIONS                               -->
+ <!-- ================================================== -->
+
+ <match terminal="WHITESPACE">
+  <positive-closure>
+   <union>
+    <char value="&#x09;"/>
+    <char value="&#x0A;"/>
+    <!-- <char value="&#x0B;"/> -->
+    <char value="&#x0D;"/>
+    <char value="&#x20;"/>
+   </union>
+  </positive-closure>
+ </match>
+
+ <match terminal="CHAR">
+  <class negated="true">
+   <char value="\"/>
+   <char value="|"/>
+   <char value="("/>
+   <char value=")"/>
+   <char value="["/>
+   <char value="]"/>
+   <char value="*"/>
+   <char value="+"/>
+   <char value="?"/>
+  </class>
+ </match>
+ <match terminal="CHAR_CLASS_CHAR">
+  <class negated="true">
+   <char value="]"/>
+   <char value="-"/>
+   <char value="\"/>
+  </class>
+ </match>
+ <match terminal="CHAR_CLASS_DASH"> <string value="-"/> </match>
+
+ <match terminal="PIPE">          <char value="|"/> </match>
+ <match terminal="STAR">          <char value="*"/> </match>
+ <match terminal="QUESTION">      <char value="?"/> </match>
+ <match terminal="PLUS">          <char value="+"/> </match>
+ <match terminal="OPEN_PAREN">    <char value="("/> </match>
+ <match terminal="CLOSE_PAREN">   <char value=")"/> </match>
+ <match terminal="CLOSE_BRACKET"> <char value="]"/> </match>
+ 
+ <match terminal="ESC">          
+  <list>
+   <char value="\"/> 
+   <class negated="true">
+    <char value="&#x09;"/>
+    <char value="&#x0A;"/>
+    <!-- <char value="&#x0B;"/> -->
+    <char value="&#x0D;"/>
+    <char value="&#x20;"/>
+   </class>
+  </list>
+ </match>
+
+<!--
+ <match terminal="ESC">          
+  <list>
+   <char value="\"/> 
+   <class>
+    <char value="]"/>
+    <char value="["/>
+    <char value="("/>
+    <char value=")"/>
+    <char value="|"/>
+    <char value="+"/>
+    <char value="*"/>
+    <char value="?"/>
+    <char value="n"/>
+    <char value="r"/>
+    <char value="t"/>
+    <char value="v"/> 
+    <char value="b"/>
+    <char value="s"/>
+    <char value="\"/>
+    <char value="&quot;"/>
+   </class>
+  </list>
+ </match>
+-->
+
+ <match terminal="ESC_OCTAL">
+  <list>
+   <char value="\"/>
+   <char value="0"/>
+   <class>
+    <interval lo="0" hi="3"/>
+   </class>
+   <class>
+    <interval lo="0" hi="7"/>
+   </class>
+   <class>
+    <interval lo="0" hi="7"/>
+   </class>
+  </list>
+ </match>
+ <match terminal="ESC_UNICODE">
+  <list>
+   <char value="\"/>
+   <char value="u"/>
+   <class>
+    <interval lo="0" hi="9"/>
+    <interval lo="a" hi="f"/>
+    <interval lo="A" hi="F"/>
+   </class>
+   <class>
+    <interval lo="0" hi="9"/>
+    <interval lo="a" hi="f"/>
+    <interval lo="A" hi="F"/>
+   </class>
+   <class>
+    <interval lo="0" hi="9"/>
+    <interval lo="a" hi="f"/>
+    <interval lo="A" hi="F"/>
+   </class>
+   <class>
+    <interval lo="0" hi="9"/>
+    <interval lo="a" hi="f"/>
+    <interval lo="A" hi="F"/>
+   </class>
+  </list>
+ </match>
+ 
+ <match terminal="OPEN_BRACKET">
+  <list>
+   <char value="["/>
+   <closure>
+    <union>
+     <char value="&#x09;"/>
+     <char value="&#x0A;"/>
+     <!-- <char value="&#x0B;"/> -->
+     <char value="&#x0D;"/>
+     <char value="&#x20;"/>
+    </union>
+   </closure>
+  </list>
+ </match>
+
+ <match terminal="OPEN_BRACKET_CARET">
+  <list>
+   <char value="["/>
+   <closure>
+    <union>
+     <char value="&#x09;"/>
+     <char value="&#x0A;"/>
+     <!-- <char value="&#x0B;"/> -->
+     <char value="&#x0D;"/>
+     <char value="&#x20;"/>
+    </union>
+   </closure>
+   <char value="^"/>
+  </list>
+ </match>
+
+ <match terminal="OPEN_BRACKET_DASH">
+  <list>
+   <char value="["/>
+   <closure>
+    <union>
+     <char value="&#x09;"/>
+     <char value="&#x0A;"/>
+     <!-- <char value="&#x0B;"/> -->
+     <char value="&#x0D;"/>
+     <char value="&#x20;"/>
+    </union>
+   </closure>
+   <char value="-"/>
+  </list>
+ </match>
+
+ <match terminal="OPEN_BRACKET_CARET_DASH">
+  <list>
+   <char value="["/>
+   <closure>
+    <union>
+     <char value="&#x09;"/>
+     <char value="&#x0A;"/>
+     <!-- <char value="&#x0B;"/> -->
+     <char value="&#x0D;"/>
+     <char value="&#x20;"/>
+    </union>
+   </closure>
+   <char value="^"/>
+   <closure>
+    <union>
+     <char value="&#x09;"/>
+     <char value="&#x0A;"/>
+     <!-- <char value="&#x0B;"/> -->
+     <char value="&#x0D;"/>
+     <char value="&#x20;"/>
+    </union>
+   </closure>
+   <char value="-"/>
+  </list>
+ </match>
+ 
+ <!-- ================================================== -->
+ <!-- NONTERMINAL DEFINITIONS                            -->
+ <!-- ================================================== -->
+
+ <reduce nonterminal="Goal">
+  <symbol name="Union"/>
+ </reduce>
+
+ <reduce nonterminal="Union">
+  <symbol name="Concat"/>
+ </reduce>
+ <reduce nonterminal="Union">
+  <symbol name="Union"/>
+  <symbol name="PIPE"/>
+  <symbol name="Concat"/>
+ </reduce>
+
+ <reduce nonterminal="Concat">
+  <symbol name="Term"/>
+ </reduce>
+ <reduce nonterminal="Concat">
+  <symbol name="Concat"/>
+  <symbol name="Term"/>
+ </reduce>
+
+ <reduce nonterminal="Term">
+  <symbol name="Atom"/>
+ </reduce>
+ <reduce nonterminal="Term">
+  <symbol name="Atom"/>
+  <symbol name="Quantifier"/>
+ </reduce>
+
+ <reduce nonterminal="Quantifier">
+  <symbol name="STAR"/>
+ </reduce>
+ <reduce nonterminal="Quantifier">
+  <symbol name="PLUS"/>
+ </reduce>
+ <reduce nonterminal="Quantifier">
+  <symbol name="QUESTION"/>
+ </reduce>
+
+ <reduce nonterminal="Atom">
+  <symbol name="CHAR"/>
+ </reduce>
+ <reduce nonterminal="Atom">
+  <symbol name="ESC"/>
+ </reduce>
+ <reduce nonterminal="Atom">
+  <symbol name="ESC_OCTAL"/>
+ </reduce>
+ <reduce nonterminal="Atom">
+  <symbol name="ESC_UNICODE"/>
+ </reduce>
+ <reduce nonterminal="Atom">
+  <symbol name="CharClass"/>
+ </reduce>
+ <reduce nonterminal="Atom">
+  <symbol name="OPEN_PAREN"/>
+  <symbol name="Union"/>
+  <symbol name="CLOSE_PAREN"/>
+ </reduce>
+
+ <reduce nonterminal="CharClass">
+  <symbol name="CharClassBegin"/>
+  <symbol name="CharClassTermList"/>
+  <symbol name="CLOSE_BRACKET"/>
+ </reduce>
+ <reduce nonterminal="CharClass">
+  <symbol name="OPEN_BRACKET_CARET_DASH"/>
+  <symbol name="CLOSE_BRACKET"/>
+ </reduce>
+
+ <reduce nonterminal="CharClassBegin">
+  <symbol name="OPEN_BRACKET"/>
+ </reduce>
+ <reduce nonterminal="CharClassBegin">
+  <symbol name="OPEN_BRACKET_CARET"/>
+ </reduce>
+ <reduce nonterminal="CharClassBegin">
+  <symbol name="OPEN_BRACKET_DASH"/>
+ </reduce>
+ <reduce nonterminal="CharClassBegin">
+  <symbol name="OPEN_BRACKET_CARET_DASH"/>
+ </reduce>
+
+ <reduce nonterminal="CharClassTermList">
+  <symbol name="CharClassTerm"/>
+ </reduce>
+ <reduce nonterminal="CharClassTermList">
+  <symbol name="CharClassTermList"/>
+  <symbol name="CharClassTerm"/>
+ </reduce>
+
+ <reduce nonterminal="CharClassTerm">
+  <symbol name="CharClassAtom"/>
+ </reduce>
+ <reduce nonterminal="CharClassTerm">
+  <symbol name="CharClassAtom"/>
+  <symbol name="CHAR_CLASS_DASH"/>
+  <symbol name="CharClassAtom"/>
+ </reduce>
+
+ <reduce nonterminal="CharClassAtom">
+  <symbol name="CHAR_CLASS_CHAR"/>
+ </reduce>
+ <reduce nonterminal="CharClassAtom">
+  <symbol name="ESC"/>
+ </reduce>
+ <reduce nonterminal="CharClassAtom">
+  <symbol name="ESC_OCTAL"/>
+ </reduce>
+ <reduce nonterminal="CharClassAtom">
+  <symbol name="ESC_UNICODE"/>
+ </reduce>
+
+</grammar>
+

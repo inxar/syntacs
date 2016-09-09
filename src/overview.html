@@ -1,0 +1,107 @@
+<html>
+<head>
+<title>STT: Syntacs Translation Toolkit</title>
+</head>
+<body bgcolor="white">
+
+
+<img src="../../images/stt-1.png">
+
+<P>
+
+This is the Syntacs Translation Toolkit (STT), yet another member of
+the Yet Another family of compiler generator tools.  The STT was borne
+out of a general desire to understand lexical and syntactic analysis;
+perhaps it may even be of utility to others...  It does:
+
+<UL>
+
+  <LI> Generation of regular-expression-based lexers in Java
+
+  <LI> Generation of shift-reduce parsers (SLR1, LALR1, LR1) in Java
+
+</UL>
+
+The STT has some sporty features:
+
+<UL>
+
+  <LI> Supports 16-bit (Unicode) lexing
+  <LI> Unique support of lexical states (states are managed with a stack)
+  <LI> <strike>SLR1</strike>/LALR1/LR1 DPA construction algorithms
+  <LI> Deremer-Penello LALR1 construction algorithm
+  <LI> Customizable parser error recovery/repair
+  <LI> Grammars can be written in "syntacs format" (.stt) or XML
+  <LI> Postscript/PNG visualization of finite automata using "Graphviz"
+  <LI> Postscript/PNG visualization of pushdown automata using "Graphviz"
+  <LI> Pretty printing of parse trees
+  <LI> Relatively modular design 
+  <LI> Decent documentation
+  <LI> GPL License
+
+</UL>
+
+One feature is that an STT grammar file does not contain semantic
+actions (no code).  Rather, a separate component is implemented by the
+grammar author which is responsible for responding to lexical and
+syntactic events to do the actual abstract syntax tree construction.
+Therefore, the STT has a minimalist philosophy of only trying to
+automate that which is easily automatable.
+
+<P>
+
+
+The STT is too early to recommend for production work but it's quite
+cool, has a nice modular design, and has good support visualization of
+internal structures; it's immediately useful for educational use and
+for algorithm experimentation.
+
+<h2>Homepage</h2>
+
+<a href="http://www.inxar.org/syntacs">http://www.inxar.org/syntacs</a>
+
+<h2>License</h2>
+
+GPL
+
+<h2>Download</h2>
+
+The highest-numbered release whose final digit is an even-number is
+the current recommended distribution.
+
+<P>
+
+<a href="http://www.inxar.org/download">http://www.inxar.org/download</a>
+
+<h2>Installation</h2>
+
+Unpack the archive; make sure the <code>syntacs.jar</code>,
+<code>jenesis.jar</code>, and <code>xerces.jar</code> are included in
+the classpath.  You can substitute Sun's XML-TR2, Crimson, or JAXP
+parser in lieu of Xerces if you like.
+
+<h2>Documentation</h2>
+
+<UL>
+
+  <LI> <a href="README">README</a>
+  <LI> <a href="CHANGES">CHANGES</a>
+  <LI> <a href="docs/userman/userman_toc.html">User Manual</a>
+  <LI> <a href="docs/lexerman/lexerman.html">Lexer Design (esoteric)</a>
+  <LI> <a href="docs/api/overview-summary.html">API</a>
+
+</UL>
+
+<h2>Contact</h2>
+
+It's nice to have feedback on your work: if you have an idea,
+suggestion, criticism, bug report, or bigfix, please send me an email:
+<a href="mailto:pcj@inxar.org">pcj@inxar.org</a>.
+
+<P>
+
+Enjoy,<br>
+&nbsp;&nbsp;- Paul 
+
+</body>
+</html>

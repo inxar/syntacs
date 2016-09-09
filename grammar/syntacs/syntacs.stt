@@ -1,0 +1,133 @@
+#-------------------------------------------------------------------
+# $Id: syntacs.stt,v 1.1.1.1 2001/07/06 09:08:05 pcj Exp $
+#-------------------------------------------------------------------
+# Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+#--------------------------------------------------------------------
+this is syntacs version 0.1.0;
+
+property author = "Paul Cody Johnston";
+property author-email = "pcj@inxar.org";
+property compile-dpa-constructor-method = "LALR1";
+property compile-sourcepath = "./src";
+property compile-namespace = "com.inxar.syntacs.translator.syntacs";
+property compile-interpreter-classname = 
+ "com.inxar.syntacs.translator.syntacs.SyntacsInterpreter";
+
+property viz-sourcepath = "./grammar";
+property viz-namespace = "syntacs";
+property viz-lexical = "true";
+property viz-syntactic = "true";
+property viz-dfa-rankdir = "TB";
+property viz-dfa-size = "12,12";
+property viz-dpa-size = "20,20";
+property viz-dpa-concentrate-edges = "true";
+property viz-dpa-hide-loopback-edges = "false";
+
+terminal COMMENT;
+terminal WHITESPACE;
+terminal THIS;
+terminal IS;
+terminal VERSION;
+terminal START;
+terminal IN;
+terminal CONTEXT;
+terminal TERMINAL;
+terminal NONTERMINAL;
+terminal REDUCE;
+terminal INCLUDES;
+terminal WHEN;
+terminal SHIFTS;
+terminal UNSHIFTS;
+terminal ACCEPT;
+terminal PROPERTY;
+terminal MATCHES;
+terminal IDENT;
+terminal STRING;
+terminal VERSION_STRING;
+terminal COMMA;
+terminal SEMI;
+terminal EQUALS;
+
+COMMENT matches "(#[^\n\r]*(\n|(\r\n)))";
+WHITESPACE matches "(\t|\n|\v|\r|\s)+";
+IDENT matches "([_a-zA-Z][-_a-zA-Z0-9]*)";
+STRING matches "((\")([^\"\\]|(\\[^\n]))*(\"))";
+VERSION_STRING matches "([0-9]+.[0-9]+.[0-9]+)";
+COMMA matches ",";
+SEMI matches "\;";
+EQUALS matches "=";
+
+nonterminal Goal;
+nonterminal Statement;
+nonterminal ThisIsStatement;
+nonterminal TerminalStatement;
+nonterminal MatchesStatement;
+nonterminal ContextStatement;
+nonterminal StartInStatement;
+nonterminal IncludesStatement;
+nonterminal NonterminalStatement;
+nonterminal ReduceStatement;
+nonterminal AcceptWhenStatement;
+nonterminal PropertyStatement;
+nonterminal StatementList;
+nonterminal InstructionList;
+nonterminal NonterminalList;
+nonterminal IdentList;
+nonterminal Instruction;
+
+reduce Goal when ThisIsStatement StatementList;
+reduce StatementList when Statement;
+reduce StatementList when StatementList Statement;
+reduce Statement when TerminalStatement;
+reduce Statement when MatchesStatement;
+reduce Statement when ContextStatement;
+reduce Statement when StartInStatement;
+reduce Statement when IncludesStatement;
+reduce Statement when NonterminalStatement;
+reduce Statement when ReduceStatement;
+reduce Statement when AcceptWhenStatement;
+reduce Statement when PropertyStatement;
+reduce ThisIsStatement when THIS IS IDENT VERSION VERSION_STRING SEMI;
+reduce TerminalStatement when TERMINAL IdentList SEMI;
+reduce MatchesStatement when IDENT MATCHES STRING SEMI;
+reduce NonterminalStatement when NONTERMINAL IdentList SEMI;
+reduce ContextStatement when CONTEXT IdentList SEMI;
+reduce StartInStatement when START IN CONTEXT IDENT SEMI;
+reduce IncludesStatement when IDENT INCLUDES InstructionList SEMI;
+reduce ReduceStatement when REDUCE IDENT WHEN NonterminalList SEMI;
+reduce AcceptWhenStatement when ACCEPT WHEN IDENT SEMI;
+reduce PropertyStatement when PROPERTY IDENT EQUALS STRING SEMI;
+reduce IdentList when IDENT;
+reduce IdentList when IdentList COMMA IDENT;
+reduce NonterminalList when IDENT;
+reduce NonterminalList when NonterminalList IDENT;
+reduce InstructionList when Instruction;
+reduce InstructionList when InstructionList COMMA Instruction;
+reduce Instruction when IDENT;
+reduce Instruction when IDENT SHIFTS IDENT;
+reduce Instruction when IDENT UNSHIFTS;
+
+accept when Goal;
+
+context default;
+
+default includes COMMENT, WHITESPACE, IDENT, STRING, 
+		 VERSION_STRING, COMMA, SEMI, EQUALS;
+
+start in context default;
+

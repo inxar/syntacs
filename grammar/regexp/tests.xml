@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tests SYSTEM "file:./etc/tests.dtd">
+
+<tests grammar="com.inxar.syntacs.translator.regexp.RegexpGrammar">
+
+ <accept>a</accept>
+ <accept> a </accept>
+ <accept> a? </accept>
+ <accept> a* </accept>
+ <accept> a+ </accept>
+ <accept> (a) </accept>
+ <accept> (a)? </accept>
+ <accept> (a)* </accept>
+ <accept> (a)+ </accept>
+ <accept> a|b|c </accept>
+ <accept> abc </accept>
+ <accept> a?|b*|c+ </accept>
+ <accept> ( a? | b* )+ | c+ </accept>
+
+ <accept> \\ </accept>
+ <accept> \n </accept>
+ <accept> \r </accept>
+ <accept> \t </accept>
+ <accept> \v </accept>
+ <accept> \s </accept>
+ <accept> \b </accept>
+ <accept> \? </accept>
+ <accept> \* </accept>
+ <accept> \+ </accept>
+ <accept> \| </accept>
+ <accept> \[ </accept>
+ <accept> \] </accept>
+ <accept> \( </accept>
+ <accept> \) </accept>
+
+ <accept> \0000 </accept>
+ <accept> \0377 </accept>
+ <accept> \u0000 </accept>
+ <accept> \uaaAA </accept>
+ <accept> \uffff </accept>
+ <accept> \uFFFF </accept>
+
+ <accept> [a] </accept>
+ <accept> [^a] </accept>
+ <accept> [a-z] </accept>
+ <accept> [^a-z] </accept>
+ <accept> [-_a-z] </accept>
+ <accept> [^-_a-z] </accept>
+ <accept> [ ^ a - z 0 - 9 ] </accept>
+ <accept> [ \\ \? \* \+ \| \] \[ \( \) \n \r \t \b \v \s ] </accept>
+ <accept> [-_?*+|[()] </accept>
+ <accept> [aaaaaaa] </accept> <!-- probably should implement redundancy checks -->
+ <accept> [ \0012 ] </accept>
+ <accept> [ \u0020 ] </accept>
+ <accept> \ucafe\ubabe </accept>
+
+ <reject> ? </reject>
+ <reject> * </reject>
+ <reject> + </reject>
+ <reject> | </reject>
+ <reject> [ </reject>
+ <reject> ] </reject>
+ <reject> ( </reject>
+ <reject> ) </reject>
+ <reject> \ </reject>
+ <reject> a(c)) </reject>
+ <reject> a?? </reject>
+ <reject> [] </reject>
+ <reject> [ ] </reject>
+ <reject> [^ ] </reject>
+ <reject> [-] </reject> <!-- I think this should be considered a bug -->
+
+ <reject> \0 </reject>
+ <reject> \00 </reject>
+ <reject> \000 </reject>
+ <reject> \0378 </reject>
+ <reject> \0477 </reject>
+
+ <reject> \u </reject>
+ <reject> \u0 </reject>
+ <reject> \u00 </reject>
+ <reject> \u000 </reject>
+ <reject> \uf </reject>
+ <reject> \uff </reject>
+ <reject> \ufff </reject>
+ <reject> \u </reject>
+ <reject> \udefg </reject>
+ <reject> \uuuuu </reject>
+
+</tests>

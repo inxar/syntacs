@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE grammar SYSTEM "file:./etc/grammar.dtd">
+
+<grammar name="scc" version="0.0.1">
+
+ <property name="author" value="Paul Cody Johnston"/>
+ <property name="author-email" value="pcj@inxar.org"/>
+ <property name="compile-dpa-constructor-method" value="LALR1"/>
+ <property name="compile-sourcepath" value="./src"/>
+ <property name="compile-namespace" value="com.inxar.syntacs.translator.test"/>
+ <property name="viz-sourcepath" value="./grammar"/>
+ <property name="viz-namespace" value="scc"/>
+ <property name="viz-lexical" value="true"/>
+ <property name="viz-syntactic" value="true"/>
+
+ <terminal name="c"/>
+ <terminal name="d"/>
+
+ <nonterminal name="Goal" start="true"/>
+ <nonterminal name="S"/>
+ <nonterminal name="C"/>
+
+ <match terminal="c"><char value="c"/></match>
+ <match terminal="d"><char value="d"/></match>
+ 
+ <reduce nonterminal="Goal">
+  <symbol name="S"/>
+ </reduce>
+
+ <reduce nonterminal="S">
+  <symbol name="C"/>
+  <symbol name="C"/>
+ </reduce>
+
+ <reduce nonterminal="C">
+  <symbol name="c"/>
+  <symbol name="C"/>
+ </reduce>
+
+ <reduce nonterminal="C">
+  <symbol name="d"/>
+ </reduce>
+
+</grammar>

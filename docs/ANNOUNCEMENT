@@ -1,0 +1,42 @@
+
+SYNTACS TRANSLATION TOOLKIT
+================================================================
+
+This message is to announce the Syntacs Translation Toolkit (STT), yet
+another member of the Yet Another family of compiler generator tools.
+The STT was borne out of a general desire to understand lexical and
+syntactic analysis; perhaps it may even be of utility to others...  It
+does:
+
+  - Generation of regular-expression-based lexers in Java
+  - Generation of shift-reduce parsers (SLR1, LALR1, LR1) in Java
+
+The STT has some sporty features:
+
+  - Supports 16-bit (Unicode) lexing
+  - Unique support of lexical states (states are managed with a stack)
+  - SLR1/LALR1/LR1 DPA construction algorithms
+  - Deremer-Penello LALR1 construction algorithm
+  - Customizable parser error recovery/repair
+  - Grammars can be written in "syntacs format" (.stt) or XML
+  - Postscript/PNG visualization of finite automata using "Graphviz"
+  - Postscript/PNG visualization of pushdown automata using "Graphviz"
+  - Pretty printing of parse trees
+  - Relatively modular design 
+  - Decent documentation
+  - GPL License
+
+The STT is too early to recommend for production work but it's quite
+cool, has a nice modular design, and has good support visualization of
+internal structures; it's immediately useful for educational use and
+for algorithm experimentation.
+
+You are respectfully encouraged to download it and give it a go.  Even
+better, get involved to help make it a better tool!
+
+homepage: http://www.inxar.org/syntacs
+download: http://www.inxar.org/download
+
+Sincerely,
+Paul Johnston
+

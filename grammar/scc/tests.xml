@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tests SYSTEM "file:./etc/tests.dtd">
+
+<tests grammar="com.inxar.syntacs.translator.test.SccGrammar">
+
+ <reject>cc</reject>
+ <reject>ccd</reject>
+ <reject>cdcdc</reject>
+
+ <accept>dd</accept>
+ <accept>ccdd</accept>
+ <accept>ccdccccd</accept>
+ <accept>dcd</accept>
+
+</tests>

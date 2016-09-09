@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tests SYSTEM "file:./etc/tests.dtd">
+
+<tests grammar="com.inxar.syntacs.translator.test.AbbGrammar">
+
+ <reject>x</reject>
+ <accept>abb</accept>
+ <accept>abbabb</accept>
+ <accept>ababb</accept>
+ <accept>baabb</accept>
+ <accept>bababb</accept>
+ <accept>abaabb</accept>
+ <reject>abbab</reject>
+
+</tests>

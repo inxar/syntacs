@@ -1,0 +1,100 @@
+% -*-texinfo-*-
+\input texinfo
+
+@c %**start of header
+@setfilename faq.info
+@settitle Frequently Asked Questions
+@setchapternewpage odd
+@c %**end of header
+
+@c
+@c $Id: faq.texinfo,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
+@c
+@c Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
+@c
+@c This program is free software; you can redistribute it and/or modify
+@c it under the terms of the GNU General Public License as published by
+@c the Free Software Foundation; either version 2 of the License, or (at
+@c your option) any later version.
+@c
+@c This program is distributed in the hope that it will be useful, but
+@c WITHOUT ANY WARRANTY; without even the implied warranty of
+@c MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+@c General Public License for more details.
+@c
+@c You should have received a copy of the GNU General Public License
+@c along with this program; if not, write to the Free Software
+@c Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+@c USA.  
+@c
+
+@ifinfo
+This is the STT FAQ.
+
+Copyright @copyright{} 2001 Paul Cody Johnston, inxar.org.
+@end ifinfo
+
+
+@titlepage
+@title Syntacs Translation Toolkit FAQ
+
+@author Paul Cody Johnston
+
+@page
+@vskip 0pt plus 1fill
+@end titlepage
+
+@node Top, HowCompile, (dir), (dir)
+
+This is the STT FAQ.
+
+@menu
+* HowCompile::                  
+* WhatProperties::              
+* HowWriteSTT::                 
+@end menu
+
+@c =====================================================================
+ 
+
+@node HowCompile, WhatProperties, Top, Top
+@chapter How do I compile a grammar?
+
+!!This FAQ is far too early to be of much use!!
+
+The simplest way is to use the @file{sttc} script in the @file{bin/}
+directory.  Pass the filename of the grammar to the script.
+
+@example
+[syntacs-x_x_x]$ bin/sttc ../grammar/scc/scc.stt
+[syntacs-x_x_x]$ bin/sttc ../grammar/abb/abb.xml
+@end example
+
+The @file{sttc} script calls the @code{main} method of the
+@code{com.inxar.syntacs.Compile} class, so you can just call it directly:
+
+@example
+[home]$ java -classpath lib/jenesis.jar:lib/syntacs.jar:lib/xml.jar:xerces.jar \
+         com.inxar.syntacs.Compile \
+         grammar/scc/scc.stt
+@end example
+
+@node WhatProperties, HowWriteSTT, HowCompile, Top
+@chapter What are properties?
+
+Properties are @dfn{key = value} pairs that are used to customize and/or
+affect the behavior of various classes.  For example,
+@code{verbose=true} triggers verbose output, and
+@code{compile-viz-dpa-hide-loopback-edges=true} prevents the drawing of
+@dfn{loopback} edges when rendering an LALR1 pushdown automaton.  There
+is a list of properties in the Users Guide.
+
+@node HowWriteSTT, LexicalContext, WhatProperties, Top
+@chapter How do I write an STT grammar?
+
+You can write it in either the @dfn{native syntacs grammar format} (a
+file with suffix @file{.stt}) or XML.  The best way to learn how to
+write a grammar is by looking at examples.  The @file{grammar/}
+directory in the distribution has some sample grammars.
+
+

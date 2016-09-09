@@ -1,0 +1,85 @@
+/*
+ * $Id: construction.dot,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
+ *
+ * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ */
+digraph construction {
+  rankdir = TB;
+
+  node [shape=plaintext, fontname=Helvetica, fontsize=12];
+  edge [fontname="Helvetica"];
+
+  sp [label="SyntacsTranslator"];
+  xp [label="XML2SyntacsTransformer"];
+  lrg [label="LRTranslatorGrammar"];
+  rg [label="RegularGrammar[]"];
+  dfa [label="DFA[]"];
+  lexer [label="Lexer"];
+  cfg [label="ContextFreeGrammar"];
+  dpda [label="DPA"];
+  parser [label="Parser"];
+  //li [label="LexerInterpreter"];
+  //pi [label="ParserInterpreter"];
+  ti [label="LRTranslatorInterpreter"];
+  tr [label="Translator"];
+  in [label="Input"];
+
+  lrg -> rg;
+  subgraph cluster_lex {
+    fontname = Helvetica;
+    fontsize = 10;
+    fontcolor = gray60;
+    label = "Lexical Analyzer";
+    style = filled;
+    color = whitesmoke;
+    rg -> dfa;
+    dfa -> dfa;
+    dfa -> lexer;
+  }
+
+  lrg -> cfg;
+  subgraph cluster_parse {
+    fontname = Helvetica;
+    fontsize = 10;
+    fontcolor = gray60;
+    label = "Syntactic Analyzer";
+    style = filled;
+    color = whitesmoke;
+    cfg -> dpda;
+    dpda -> dpda;
+    dpda -> parser;
+  }
+
+  //lrg -> li;
+  lrg -> ti;
+  lrg -> in;
+
+  //li -> ti;
+  //pi -> ti;
+
+  edge [color="orangered"];
+  lexer -> tr;
+  parser -> tr;
+  ti -> tr;
+  in -> tr;
+
+  edge [color="gray"];
+  sp -> lrg;
+  xp -> lrg;
+
+}

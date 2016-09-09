@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE grammar SYSTEM "file:./etc/grammar.dtd">
+
+<grammar name="etf" version="0.0.1">
+
+ <property name="author" value="Paul Cody Johnston"/>
+ <property name="author-email" value="pcj@inxar.org"/>
+ <property name="compile-dpa-constructor-method" value="LALR1"/>
+ <property name="compile-sourcepath" value="./src"/>
+ <property name="compile-namespace" value="com.inxar.syntacs.translator.test"/>
+ <property name="viz-sourcepath" value="./grammar"/>
+ <property name="viz-namespace" value="etf"/>
+ <property name="viz-lexical" value="true"/>
+ <property name="viz-syntactic" value="true"/>
+ <property name="viz-dpa-hide-loopback-edges" value="true"/>
+
+ <terminal name="PLUS"/>
+ <terminal name="STAR"/>
+ <terminal name="OPRN"/>
+ <terminal name="CPRN"/>
+ <terminal name="IDENT"/>
+
+ <nonterminal name="Goal" start="true"/>
+ <nonterminal name="E"/>
+ <nonterminal name="T"/>
+ <nonterminal name="F"/>
+
+ <match terminal="PLUS"><char value="+"/></match>
+ <match terminal="STAR"><char value="*"/></match>
+ <match terminal="OPRN"><char value="("/></match>
+ <match terminal="CPRN"><char value=")"/></match>
+ <match terminal="IDENT">
+  <list>
+   <class>
+    <char value="_"/>
+    <interval lo="a" hi="z"/>
+    <interval lo="A" hi="Z"/>
+   </class>
+   <closure>
+    <class>
+     <char value="_"/>
+     <interval lo="a" hi="z"/>
+     <interval lo="A" hi="Z"/>
+     <interval lo="0" hi="9"/>
+    </class>
+   </closure>
+  </list>
+ </match>
+ 
+ <reduce nonterminal="Goal">
+  <symbol name="E"/>
+ </reduce>
+
+ <reduce nonterminal="E">
+  <symbol name="E"/>
+  <symbol name="PLUS"/>
+  <symbol name="T"/>
+ </reduce>
+
+ <reduce nonterminal="E">
+  <symbol name="T"/>
+ </reduce>
+
+ <reduce nonterminal="T">
+  <symbol name="T"/>
+  <symbol name="STAR"/>
+  <symbol name="F"/>
+ </reduce>
+
+ <reduce nonterminal="T">
+  <symbol name="F"/>
+ </reduce>
+
+ <reduce nonterminal="F">
+  <symbol name="OPRN"/>
+  <symbol name="E"/>
+  <symbol name="CPRN"/>
+ </reduce>
+
+ <reduce nonterminal="F">
+  <symbol name="IDENT"/>
+ </reduce>
+
+</grammar>

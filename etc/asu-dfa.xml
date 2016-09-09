@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dfa SYSTEM "file:./etc/dfa.dtd">
+
+<!--
+
+ $Id: asu-dfa.xml,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
+
+ Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or (at
+ your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+ USA.  
+
+-->
+
+
+<!-- this is the non-minimized DFA from Dragon Book -->
+<dfa>
+	<state name="a">
+		<edge val="97" next="b"/>
+		<edge val="98" next="c"/>
+	</state>
+	<state name="b">
+		<edge val="97" next="b"/>
+		<edge val="98" next="d"/>
+	</state>
+	<state name="c">
+		<edge val="97" next="b"/>
+		<edge val="98" next="c"/>
+	</state>
+	<state name="d">
+		<edge val="97" next="b"/>
+		<edge val="98" next="e"/>
+	</state>
+	<state name="e" output="2">
+		<edge val="97" next="b"/>
+		<edge val="98" next="c"/>
+	</state>
+</dfa>
+

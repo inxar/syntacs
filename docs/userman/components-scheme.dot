@@ -1,0 +1,62 @@
+/*
+ * $Id: components-scheme.dot,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
+ *
+ * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ */
+digraph components {
+  rankdir = LR;
+  //ranksep = 1.0;
+  //nodesep = .3;
+  //concentrate = true;
+
+  node [shape=plaintext, fontname="Helvetica", fontsize=12];
+  edge [fontname=Courier, fontsize=12];
+
+  us [fontname="Helvetica-Italic", label="User"];
+  tr [label="Translator"];
+  lexer [label="Lexer"];
+  parser [label="Parser"];
+  ip [label="Interpreter"];
+  
+  edge [color=midnightblue];
+  tr -> lexer [label="2", weight="200", dir=both];
+  ip -> tr [label="3", weight="0", dir=both];
+  
+  subgraph cluster2 {
+    color="white";
+    edge [color=midnightblue];
+    us -> tr [label="1", weight="0"];
+    tr -> us [label="4", weight="0"];
+  }
+
+  subgraph cluster3 {
+    fontcolor=gray60;
+    fontname=Helvetica;
+    label="parse loop";
+    style=filled;
+    color="whitesmoke";
+    //color="palegreen1";
+
+    edge [color=darkgreen, dir=both];
+    lexer -> ip;
+    ip -> parser;
+  }
+
+
+
+}

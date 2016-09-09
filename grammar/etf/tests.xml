@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tests SYSTEM "file:./etc/tests.dtd">
+
+<tests grammar="com.inxar.syntacs.translator.test.EtfGrammar">
+
+ <accept>(id)</accept>
+ <accept>id+id</accept>
+ <accept>id*id</accept>
+ <accept>id*(id)</accept>
+ <accept>(id)*(id)</accept>
+ <accept>(id)+(id+id)</accept>
+
+ <reject>(id</reject>
+ <reject>id)</reject>
+ <reject>+</reject>
+ <reject>*</reject>
+ <reject>T-F</reject>
+ <reject>()</reject>
+
+</tests>

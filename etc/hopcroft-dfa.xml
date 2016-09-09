@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dfa SYSTEM "file:./etc/dfa.dtd">
+
+<!--
+
+ $Id: hopcroft-dfa.xml,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
+
+ Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or (at
+ your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+ USA.  
+
+-->
+
+<!-- this is the non-minimized DFA from Hopcroft-Ullman79 -->
+<dfa>
+	<state name="a">
+		<edge val="0" next="b"/>
+		<edge val="1" next="f"/>
+	</state>
+	<state name="b">
+		<edge val="0" next="g"/>
+		<edge val="1" next="c"/>
+	</state>
+	<state name="c" output="1">
+		<edge val="0" next="a"/>
+		<edge val="1" next="c"/>
+	</state>
+	<state name="d">
+		<edge val="0" next="c"/>
+		<edge val="1" next="g"/>
+	</state>
+	<state name="e">
+		<edge val="0" next="h"/>
+		<edge val="1" next="f"/>
+	</state>
+	<state name="f">
+		<edge val="0" next="c"/>
+		<edge val="1" next="g"/>
+	</state>
+	<state name="g">
+		<edge val="0" next="g"/>
+		<edge val="1" next="e"/>
+	</state>
+	<state name="h">
+		<edge val="0" next="g"/>
+		<edge val="1" next="c"/>
+	</state>
+</dfa>

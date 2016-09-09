@@ -1,0 +1,87 @@
+/*
+ * $Id: lexer.dot,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
+ *
+ * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ */
+digraph LexerTG {
+	
+  rankdir = LR;
+  node [shape=circle];
+  edge [fontname=Times,fontsize=14];
+
+
+  start [style=invis];
+  start -> tr [label="start"];
+
+  edge [color="gray50",label="*"];
+  tr -> pl [weight=1];
+  ce -> ot;
+  ct -> tr [weight=0];
+  
+  edge [color="orangered",label="dead"];
+  pl -> oe;
+  subgraph cluster_error {
+    fontname = Helvetica;
+    fontsize = 12;
+    fontcolor = grey30;
+    label = "matching an error";
+    style = filled;
+    color = whitesmoke;
+    oe -> oe;
+    pe -> oe;
+    pe -> ce [color="royalblue1", label="accept"];
+  }
+
+  subgraph cluster_token {
+    fontname = Helvetica;
+    fontsize = 12;
+    fontcolor = grey30;
+    label = "matching a token";
+    style = filled;
+    color = whitesmoke;
+    ot -> ct;
+    pt -> ct;
+  }
+
+  edge [color="royalblue1",label="accept"];
+  pl -> ot [weight=2];
+  oe -> ce;
+  //ot -> ot;
+  pt -> ot;
+  ot -> ot;
+
+  edge [color="midnightblue",label="live"];
+  oe -> pe;
+  pe -> pe;
+  ot -> pt;
+  pt -> pt;
+
+  subgraph cluster_pluri {
+    fontname = Helvetica;
+    fontsize = 12;
+    fontcolor = grey30;
+    label = "undecided";
+    style = filled;
+    color = whitesmoke;
+    pl -> pl;
+  }
+
+  ce [shape=doublecircle];
+  ct [shape=doublecircle];
+}
+

@@ -1,0 +1,20 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------
+# $Id: sttt,v 1.1.1.1 2001/07/06 09:08:05 pcj Exp $
+#-------------------------------------------------------------------
+
+#
+# sttt - run a series of tests for a particular grammar
+#
+
+JAVA=java
+CP=lib/syntacs.jar:lib/jenesis.jar:lib/xerces.jar
+MAIN=com.inxar.syntacs.Test
+
+CMD="$JAVA -classpath $CP $MAIN $@"
+
+echo $CMD
+$CMD
+
+

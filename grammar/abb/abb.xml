@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE grammar SYSTEM "file:./etc/grammar.dtd">
+
+<grammar name="abb" version="0.0.1">
+
+ <property name="author" value="Paul Cody Johnston"/>
+ <property name="author-email" value="pcj@inxar.org"/>
+ <property name="compile-sourcepath" value="./src"/>
+ <property name="compile-dpa-constructor-method" value="LALR1"/>
+ <property name="compile-namespace" value="com.inxar.syntacs.translator.test"/>
+ <property name="viz-sourcepath" value="./grammar"/>
+ <property name="viz-namespace" value="abb"/>
+ <property name="viz-lexical" value="true"/>
+ <property name="viz-syntactic" value="true"/>
+
+ <terminal name="abb"/>
+
+ <nonterminal name="Goal" start="true"/>
+
+ <match terminal="abb">
+  <list>
+   <closure>
+    <union>
+     <char value="a"/>
+     <char value="b"/>
+    </union>
+   </closure>
+   <char value="a"/>
+   <char value="b"/>
+   <char value="b"/>
+  </list>
+ </match>
+
+ <reduce nonterminal="Goal">
+  <symbol name="abb"/>
+ </reduce>
+
+</grammar>
