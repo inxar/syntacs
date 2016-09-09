@@ -2,7 +2,7 @@
  * $Id: LRTranslatorGrammar.java,v 1.1.1.1 2001/07/06 09:08:05 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,9 +20,8 @@
  */
 package org.inxar.syntacs.translator.lr;
 
-import java.util.*;
-import org.inxar.syntacs.util.*;
-import org.inxar.syntacs.translator.*;
+import org.inxar.syntacs.util.IntArray;
+import org.inxar.syntacs.translator.TranslatorGrammar;
 
 /**
  * The <code>LRTranslatorGrammar</code> interface describes the
@@ -37,14 +36,14 @@ public interface LRTranslatorGrammar
      * Constant returned by <code>getContextAction(int, int)</code> to
      * signal a context stack peek, meaning "change to the context
      * given at the top of stack".  This effectively means "no change"
-     * and is the most common context stack action.  
+     * and is the most common context stack action.
      */
     int ACTION_PEEK = 1;
 
     /**
      * Constant returned by <code>getContextAction(int, int)</code> to
      * signal a context stack pop, meaning "change back to the
-     * previous stack context".  
+     * previous stack context".
      */
     int ACTION_POP = 2;
 
@@ -52,7 +51,7 @@ public interface LRTranslatorGrammar
      * Constant returned by <code>getContextAction(int, int)</code> to
      * signal a context stack push, meaning "shift to the context
      * having the ID given by the return value of
-     * <code>getContextRegister(int, int)</code>". 
+     * <code>getContextRegister(int, int)</code>".
      */
     int ACTION_PUSH = 3;
 
@@ -66,7 +65,7 @@ public interface LRTranslatorGrammar
      * blue, or if all plates are gone, put a single blue plate on the
      * table.  This action is useful during error recovery
      * synchronization routines where the stack should be put in a
-     * known and minimal state.  
+     * known and minimal state.
      */
     int ACTION_PEEL = 4;
 
@@ -81,7 +80,7 @@ public interface LRTranslatorGrammar
      * without having to POP it later.  Exclusive use of ACTION_POUNCE
      * makes the context stack appear like a single scalar value as
      * demonstrated by other lexers having start states (such as
-     * flex).  
+     * flex).
      */
     int ACTION_POUNCE = 5;
 
@@ -127,25 +126,25 @@ public interface LRTranslatorGrammar
 
     /**
      * Returns the list of context ID numbers as an
-     * <code>IntArray</code>.  
+     * <code>IntArray</code>.
      */
     IntArray getContexts();
 
     /**
      * Returns the list of terminal ID numbers as an
-     * <code>IntArray</code>.  
+     * <code>IntArray</code>.
      */
     IntArray getTerminals();
 
     /**
      * Returns the list of nonterminal ID numbers as an
-     * <code>IntArray</code>.  
+     * <code>IntArray</code>.
      */
     IntArray getNonTerminals();
 
     /**
      * Returns the list of production ID numbers as an
-     * <code>IntArray</code>.  
+     * <code>IntArray</code>.
      */
     IntArray getProductions();
 
@@ -155,19 +154,19 @@ public interface LRTranslatorGrammar
 
     /**
      * Returns the name of the context having the given ID or
-     * <code>null</code> if no such ID is known.  
+     * <code>null</code> if no such ID is known.
      */
     String getContext(int ID);
 
     /**
      * Returns the name of the terminal having the given ID or
-     * <code>null</code> if no such ID is known.  
+     * <code>null</code> if no such ID is known.
      */
     String getTerminal(int ID);
 
     /**
      * Returns the name of the nonterminal having the given ID or
-     * <code>null</code> if no such ID is known.  
+     * <code>null</code> if no such ID is known.
      */
     String getNonTerminal(int ID);
 
@@ -177,7 +176,7 @@ public interface LRTranslatorGrammar
      * <code>String</code> has the format "<code>nonterminal: sym1
      * sym2 sym3</code>" such that the nonterminal name is the first
      * part of the string, followed by a colon, followed by a space
-     * delimited list of symbols.  
+     * delimited list of symbols.
      */
     String getProduction(int ID);
 
@@ -187,7 +186,7 @@ public interface LRTranslatorGrammar
 
     /**
      * Returns a list of terminals defined within the context having
-     * the given ID or <code>null</code> if no such ID is known.  
+     * the given ID or <code>null</code> if no such ID is known.
      */
     IntArray getContextTerminals(int contextID);
 
@@ -209,7 +208,7 @@ public interface LRTranslatorGrammar
      * such that the second member in the tuple (action, register) is
      * returned. If the contextID or symbolID is not known,
      * <code>UNDEFINED_CONTEXT</code> or <code>UNDEFINED_SYMBOL</code>
-     * will be returned.  
+     * will be returned.
      */
     int getContextRegister(int contextID, int symbolID);
 
@@ -244,7 +243,7 @@ public interface LRTranslatorGrammar
      * terminal having the given ID or <code>null</code> if no such ID
      * is known.  If the terminal ID is valid but no definition has
      * been provided for that terminal, the empty string
-     * <code>""</code> will be returned. 
+     * <code>""</code> will be returned.
      */
     Object getTerminalRegexp(int terminalID);
 
@@ -258,18 +257,18 @@ public interface LRTranslatorGrammar
      * <code>UNDEFINED_PRODUCTION</code> if no such production is known.
      */
     int getProductionNonTerminal(int productionID);
-    
+
     /**
      * Returns the list of grammar symbols of the right-hand-side of
      * the production having the given ID as an <code>IntArray</code>
-     * or <code>null</code> if no such ID is known.  
+     * or <code>null</code> if no such ID is known.
      */
     IntArray getProductionSymbols(int productionID);
 
     /**
      * Returns the length of the list of grammar symbols of the
      * right-hand-side of the production having the given ID or
-     * <code>UNDEFINED_PRODUCTION</code> if no such ID is known.  
+     * <code>UNDEFINED_PRODUCTION</code> if no such ID is known.
      */
     int getProductionLength(int productionID);
 
@@ -280,7 +279,3 @@ public interface LRTranslatorGrammar
      */
     int getGoalNonTerminal();
 }
-
-
-
-

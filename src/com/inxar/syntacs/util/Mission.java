@@ -2,7 +2,7 @@
  * $Id: Mission.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,18 +20,16 @@
  */
 package com.inxar.syntacs.util;
 
-import java.io.*;
-import java.util.*;
-import org.inxar.syntacs.util.*;
+import org.inxar.syntacs.util.Session;
 
 /**
  * "Mission Control" holds the global <code>Session</code> instance
- * which is consulted throughout the API.  
+ * which is consulted throughout the API.
  */
-public class Mission  
+public class Mission
 {
     /**
-     * Sets the global <code>Session</code> to the given instance.  
+     * Sets the global <code>Session</code> to the given instance.
      */
     public static void control(Session session)
     {
@@ -51,7 +49,7 @@ public class Mission
 
     /**
      * Returns <code>true</code> if the <code>Session</code> instance
-     * has been set (is not <code>null</code>).  
+     * has been set (is not <code>null</code>).
      */
     public static boolean isActivated()
     {
@@ -59,7 +57,7 @@ public class Mission
     }
 
     /**
-     * Closes and nullifies the current <code>Session</code> instance.  
+     * Closes and nullifies the current <code>Session</code> instance.
      */
     public static void deactivate()
     {
@@ -71,4 +69,3 @@ public class Mission
 
     private static Session session = null;
 }
-

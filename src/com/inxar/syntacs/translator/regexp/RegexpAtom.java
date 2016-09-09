@@ -2,7 +2,7 @@
  * $Id: RegexpAtom.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,20 +20,12 @@
  */
 package com.inxar.syntacs.translator.regexp;
 
-import java.util.*;
-import org.inxar.syntacs.grammar.*;
-import org.inxar.syntacs.grammar.regular.*;
-import org.inxar.syntacs.analyzer.*;
-import com.inxar.syntacs.analyzer.*;
-import org.inxar.syntacs.analyzer.lexical.*;
-import com.inxar.syntacs.analyzer.lexical.*;
-import org.inxar.syntacs.analyzer.syntactic.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.grammar.regular.RegularExpression;
+import org.inxar.syntacs.grammar.regular.RegularGrammar;
 
 /**
  * <code>Regexp</code> subclass which holds a single
- * <code>char</code>.  
+ * <code>char</code>.
  */
 class RegexpAtom extends Regexp
 {

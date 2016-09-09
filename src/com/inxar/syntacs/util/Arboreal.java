@@ -2,7 +2,7 @@
  * $Id: Arboreal.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -22,7 +22,7 @@ package com.inxar.syntacs.util;
 
 /**
  * The <code>Arboreal</code> interface is implemented by those objects
- * which can render themselves in <code>Tree</code> form.  
+ * which can render themselves in <code>Tree</code> form.
  */
 public interface Arboreal
 {

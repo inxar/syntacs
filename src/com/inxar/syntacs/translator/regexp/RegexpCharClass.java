@@ -2,7 +2,7 @@
  * $Id: RegexpCharClass.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,19 +20,12 @@
  */
 package com.inxar.syntacs.translator.regexp;
 
-import java.util.*;
-import org.inxar.syntacs.grammar.*;
-import org.inxar.syntacs.grammar.regular.*;
-import org.inxar.syntacs.analyzer.*;
-import com.inxar.syntacs.analyzer.*;
-import org.inxar.syntacs.analyzer.lexical.*;
-import com.inxar.syntacs.analyzer.lexical.*;
-import org.inxar.syntacs.analyzer.syntactic.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import java.util.List;
+import org.inxar.syntacs.grammar.regular.RegularExpression;
+import org.inxar.syntacs.grammar.regular.RegularGrammar;
 
 /**
- * Regexp subclass for character classes <code>[a-zA-Z]</code>.  
+ * Regexp subclass for character classes <code>[a-zA-Z]</code>.
  */
 class RegexpCharClass extends RegexpList
 {
@@ -97,7 +90,7 @@ class RegexpCharClass extends RegexpList
 	    Regexp r = (Regexp)list.get(i);
 	    switch (r.getRegexpType()) {
 	    case ATOM:
-		cc.add( ((RegexpAtom)r).getValue() ); 
+		cc.add( ((RegexpAtom)r).getValue() );
 		break;
 	    case RANGE:
 		RegexpRange range = (RegexpRange)r;
@@ -105,15 +98,12 @@ class RegexpCharClass extends RegexpList
 		break;
 	    default:
 		throw new InternalError("Unknown regexpType for RegexpTerm: "+r.getRegexpType());
-	    } 
+	    }
 	}
-	
+
 	return cc;
     }
 
     private boolean hasDash;
     private boolean isNegated;
 }
-
-
-

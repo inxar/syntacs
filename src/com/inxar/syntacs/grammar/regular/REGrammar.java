@@ -2,7 +2,7 @@
  * $Id: REGrammar.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -22,12 +22,19 @@ package com.inxar.syntacs.grammar.regular;
 
 import java.io.StringReader;
 import java.util.Vector;
+import org.inxar.syntacs.util.Mission;
+import com.inxar.syntacs.util.StringTools;
+import com.inxar.syntacs.util.BitSetIntSet;
 import org.inxar.syntacs.grammar.Token;
-import org.inxar.syntacs.grammar.regular.*;
-import org.inxar.syntacs.translator.*;
-import com.inxar.syntacs.translator.regexp.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.grammar.regular.RegularToken;
+import org.inxar.syntacs.grammar.regular.RegularSet;
+import org.inxar.syntacs.grammar.regular.RegularGrammar;
+import org.inxar.syntacs.grammar.regular.RegularExpression;
+import org.inxar.syntacs.grammar.regular.Regexp;
+import org.inxar.syntacs.grammar.regular.Epsilon;
+import org.inxar.syntacs.grammar.regular.Interval;
+import org.inxar.syntacs.translator.TranslationException;
+import org.inxar.syntacs.translator.RuntimeTranslationException;
 
 /**
  * Standard <code>RegularGrammar</code> implementation.
@@ -41,7 +48,7 @@ public class REGrammar
 
     /**
      * This little number accounts helps ensure the reservation of EOF
-     * as token 0 
+     * as token 0
      */
     private static final int TOKEN_ID_OFFSET = 1;
 
@@ -59,7 +66,7 @@ public class REGrammar
     }
 
     /**
-     * Constructs the <code>REGrammar</code> having the given ID.  
+     * Constructs the <code>REGrammar</code> having the given ID.
      */
     public REGrammar(int id)
     {
@@ -145,12 +152,12 @@ public class REGrammar
 
     /*
      * Synchronized since the id of the nascent token depends on the
-     * size and thus position in the vector.  
+     * size and thus position in the vector.
      */
 
     public synchronized RegularToken newToken(int tokenID, String tokenName, RegularExpression re)
     {
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write("newToken(): adding token ").write(tokenID)
 		.write(": ")
@@ -174,7 +181,7 @@ public class REGrammar
     public synchronized RegularToken newToken(int tokenID, String tokenName, String re)
     {
 	RegularExpression regex = null;
-	
+
 	try {
 
 	    regex = ((Regexp)rtrans.translate(new StringReader(re)))
@@ -182,10 +189,10 @@ public class REGrammar
 
 	} catch (TranslationException tex) {
 	    throw new RuntimeTranslationException
-		(tex.getAuditor(), 
+		(tex.getAuditor(),
 		 "Could not parse regular expression.");
 	}
-	
+
 	return newToken(tokenID, tokenName, regex);
     }
 
@@ -207,7 +214,7 @@ public class REGrammar
 		first.union(( (REToken)tokens.elementAt(i) ).regex.getFirstSet());
 	    }
 
-	    if (DEBUG) 
+	    if (DEBUG)
 		log().debug()
 		    .write("getStart(): first set is ")
 		    .write(first)
@@ -222,7 +229,7 @@ public class REGrammar
 	// trigger the depth first follow traversal
 	int sz = tokens.size();
 
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write("follow(): initiated followset calculations for ")
 		.write(sz).write(" tokens")
@@ -281,7 +288,7 @@ public class REGrammar
 
     public String toString()
     {
-	StringBuffer b = 
+	StringBuffer b =
 	    new StringBuffer("INTERVALS (interval followset)") .append(StringTools.NEWLINE)
 	    .append("-------------------").append(StringTools.NEWLINE);
 
@@ -392,7 +399,3 @@ public class REGrammar
 	REGrammar grammar;
     }
 }
-
-
-
-

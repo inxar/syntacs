@@ -2,7 +2,7 @@
  * $Id: Regexp.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,16 +20,7 @@
  */
 package com.inxar.syntacs.translator.regexp;
 
-import java.util.*;
-import org.inxar.syntacs.grammar.*;
-import org.inxar.syntacs.grammar.regular.*;
-import org.inxar.syntacs.analyzer.*;
-import com.inxar.syntacs.analyzer.*;
-import org.inxar.syntacs.analyzer.lexical.*;
-import com.inxar.syntacs.analyzer.lexical.*;
-import org.inxar.syntacs.analyzer.syntactic.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import com.inxar.syntacs.analyzer.Symbol;
 
 /**
  * Base class for all regular expressions in the
@@ -38,7 +29,7 @@ import com.inxar.syntacs.util.*;
  * to be transformed into a
  * <code>org.inxar.syntacs.grammar.regular.RegularExpression</code>,
  * which is the representation used by <code>DFA</code> construction
- * algorithms.  
+ * algorithms.
  */
 public abstract class Regexp implements Symbol
 {
@@ -83,11 +74,11 @@ public abstract class Regexp implements Symbol
     protected int regexpType;
     private int symbolType;
 
-    public static Regexp toConcat(String s) 
+    public static Regexp toConcat(String s)
     {
 	RegexpList concat = new RegexpList(CONCAT);
 
-	for (int i = 0; i < s.length(); i++) 
+	for (int i = 0; i < s.length(); i++)
 	    concat.addRegexp( new RegexpAtom(s.charAt(i)) );
 
 	return concat;

@@ -2,7 +2,7 @@
  * $Id: RECharClass.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,7 +20,9 @@
  */
 package com.inxar.syntacs.grammar.regular;
 
-import org.inxar.syntacs.grammar.regular.*;
+import org.inxar.syntacs.grammar.regular.CharClass;
+import org.inxar.syntacs.grammar.regular.RegularExpression;
+import org.inxar.syntacs.grammar.regular.Union;
 import org.inxar.syntacs.util.IntSet;
 
 /**
@@ -218,7 +220,7 @@ public class RECharClass
      * reason we use this is so that we do not end up allocating
      * actual intervals needlessly.  By using up intervals and thus
      * interval ids, the bitvectors involved in their union must get
-     * bigger.  
+     * bigger.
      */
     private static final class Node
     {
@@ -240,4 +242,3 @@ public class RECharClass
 	int hi;
     }
 }
-

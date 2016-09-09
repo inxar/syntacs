@@ -2,7 +2,7 @@
  * $Id: REEpsilon.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,7 +20,7 @@
  */
 package com.inxar.syntacs.grammar.regular;
 
-import org.inxar.syntacs.grammar.regular.*;
+import org.inxar.syntacs.grammar.regular.Epsilon;
 import org.inxar.syntacs.util.IntSet;
 import com.inxar.syntacs.util.EmptyIntSet;
 
@@ -61,5 +61,3 @@ public class REEpsilon
     }
 
 }
-
-
