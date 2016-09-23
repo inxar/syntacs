@@ -2,7 +2,7 @@
  * $Id: StandardLRTranslatorInterpreter.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,17 +20,21 @@
  */
 package com.inxar.syntacs.translator.lr;
 
-import java.io.*;
-import org.inxar.syntacs.grammar.*;
-import org.inxar.syntacs.analyzer.*;
-import com.inxar.syntacs.analyzer.*;
-import org.inxar.syntacs.analyzer.lexical.*;
-import org.inxar.syntacs.analyzer.syntactic.*;
-import org.inxar.syntacs.translator.*;
-import org.inxar.syntacs.translator.lr.*;
-import com.inxar.syntacs.translator.lr.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.grammar.Token;
+import org.inxar.syntacs.analyzer.Symbol;
+import org.inxar.syntacs.analyzer.lexical.Lexer;
+import org.inxar.syntacs.analyzer.syntactic.Parser;
+import org.inxar.syntacs.analyzer.syntactic.Recovery;
+import org.inxar.syntacs.analyzer.syntactic.Sentence;
+import org.inxar.syntacs.translator.TranslationException;
+import org.inxar.syntacs.translator.Complaint;
+import org.inxar.syntacs.translator.lr.LRTranslatorInterpreter;
+import org.inxar.syntacs.util.Log;
+
+import com.inxar.syntacs.analyzer.ArraySymbol;
+import com.inxar.syntacs.analyzer.ConstantSymbol;
+import com.inxar.syntacs.analyzer.ObjectSymbol;
+import com.inxar.syntacs.util.Mission;
 
 /**
  * Concrete implementation of <code>LRInterpreter</code>.
@@ -40,7 +44,7 @@ public class StandardLRTranslatorInterpreter extends AbstractLRTranslationCompon
 {
     private static final boolean DEBUG = true;
 
-    private static boolean debug = 
+    private static boolean debug =
 	Mission.control().getBoolean("run-interpreter-debug", false);
 
     /**
@@ -56,7 +60,7 @@ public class StandardLRTranslatorInterpreter extends AbstractLRTranslationCompon
 
     public void match(int type, int off, int len) throws TranslationException
     {
-	if (DEBUG && debug) 
+	if (DEBUG && debug)
 	    log().debug()
 		.write("Matched ")
 		.write(grammar.getTerminal(type))
@@ -74,14 +78,14 @@ public class StandardLRTranslatorInterpreter extends AbstractLRTranslationCompon
 	    msg = "Unexpected character was ignored by the lexer.";
 	else
 	    throw new InternalError("An error of length "+len+"?");
-	
-	if (DEBUG && debug) 
+
+	if (DEBUG && debug)
 	    log().debug()
 		.write("Lexical Error from ").write(off)
 		.write(" to ").write((off+len))
 		.out();
 
-	auditor.notify(Complaint.LEXICAL_ERROR, 
+	auditor.notify(Complaint.LEXICAL_ERROR,
 		       msg, in, off, len);
 	return -1;
     }
@@ -95,7 +99,7 @@ public class StandardLRTranslatorInterpreter extends AbstractLRTranslationCompon
     {
 	this.parser = parser;
     }
-    
+
     public Parser getParser()
     {
 	return parser;
@@ -107,7 +111,7 @@ public class StandardLRTranslatorInterpreter extends AbstractLRTranslationCompon
 
     public Symbol reduce(int type, Sentence sentence) throws TranslationException
     {
-	if (DEBUG && debug) 
+	if (DEBUG && debug)
 	    log().debug()
 		.write("REDUCE ").write(grammar.getProduction(type))
 		.out();
@@ -118,24 +122,24 @@ public class StandardLRTranslatorInterpreter extends AbstractLRTranslationCompon
         // add em all
         for (int i=0; i<sentence.length(); i++)
 	    symbol.add(sentence.at(i));
-	
+
 	last = symbol;
-	
+
         // return the phrase
         return symbol;
     }
 
     public Recovery recover(int type, Sentence left_context) throws TranslationException
     {
-	if (DEBUG && debug) 
+	if (DEBUG && debug)
 	    log().debug()
 		.write("ERROR!")
 		.out();
 
 	if (false)
 	    auditor.notify
-		(Complaint.SYNTACTIC_ERROR, 
-		 "The parser reported a structural error at or near line " + 
+		(Complaint.SYNTACTIC_ERROR,
+		 "The parser reported a structural error at or near line " +
 		 in.atln());
 
 	return null;
@@ -144,7 +148,7 @@ public class StandardLRTranslatorInterpreter extends AbstractLRTranslationCompon
     public void accept() throws TranslationException
     {
 	result = last;
-	if (DEBUG && debug) 
+	if (DEBUG && debug)
 	    log().debug()
 		.write("ACCEPT!")
 		.out();
@@ -164,7 +168,7 @@ public class StandardLRTranslatorInterpreter extends AbstractLRTranslationCompon
     {
 	return this.lexer;
     }
-    
+
     // ================================================================
     // General methods
     // ================================================================
@@ -182,7 +186,3 @@ public class StandardLRTranslatorInterpreter extends AbstractLRTranslationCompon
     protected Parser parser;
     private Log log;
 }
-
-
-
-

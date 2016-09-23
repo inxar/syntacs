@@ -2,7 +2,7 @@
  * $Id: StandardAuditor.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,27 +20,33 @@
  */
 package com.inxar.syntacs.translator;
 
-import java.io.*;
-import java.util.*;
-import org.inxar.syntacs.analyzer.*;
-import org.inxar.syntacs.translator.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import java.io.Serializable;
+import java.io.PrintStream;
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Properties;
+import org.inxar.syntacs.analyzer.Input;
+import org.inxar.syntacs.translator.Complaint;
+import org.inxar.syntacs.translator.Auditor;
+import org.inxar.syntacs.util.Log;
+import com.inxar.syntacs.util.StringTools;
+import com.inxar.syntacs.util.Mission;
 
 /**
  * Standard implementation of <code>Auditor</code>.
  */
-public class StandardAuditor 
+public class StandardAuditor
     implements Auditor, Serializable
 {
     private static final boolean DEBUG = false;
-    
+
     public StandardAuditor()
     {
 	this.errors = new ArrayList();
 	this.warnings = new ArrayList();
     }
-    
+
     public void setSource(String src)
     {
 	this.src = src;
@@ -113,20 +119,20 @@ public class StandardAuditor
 
     public Complaint notify(int type, String msg, Input in, int off, int len)
     {
-	return notify(this.new StandardComplaint(type, in.atln(), msg, 
+	return notify(this.new StandardComplaint(type, in.atln(), msg,
 					   trace(in, off, len)));
     }
 
     public Complaint notify(Complaint d)
     {
 	switch (d.getType()) {
-	case Complaint.SEMANTIC_WARNING:  
+	case Complaint.SEMANTIC_WARNING:
 	    warnings.add(d);
 	    break;
-	case Complaint.LEXICAL_ERROR:   
-	case Complaint.SYNTACTIC_ERROR:   
-	case Complaint.SEMANTIC_ERROR:    
-	case Complaint.UNSPECIFIED_ERROR:    
+	case Complaint.LEXICAL_ERROR:
+	case Complaint.SYNTACTIC_ERROR:
+	case Complaint.SEMANTIC_ERROR:
+	case Complaint.UNSPECIFIED_ERROR:
 	    errors.add(d);
 	    break;
 	default:
@@ -138,12 +144,12 @@ public class StandardAuditor
 
     protected String trace(Input in, int off, int len)
     {
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write("Trace request at off ").write(off)
 		.write(" and len ").write(len)
 		.out();
-	
+
 	StringBuffer b = new StringBuffer();
 
 	int beg = off;
@@ -159,7 +165,7 @@ public class StandardAuditor
 		    break out;
 		}
 	    }
-	    
+
 	} catch (ArrayIndexOutOfBoundsException aiiobex) {
 	    aiiobex.printStackTrace();
 	    beg = off - 1;
@@ -172,7 +178,7 @@ public class StandardAuditor
 	    .append("  \\   Line ")
 	    .append(in.atln())
 	    .append(": ");
-	
+
 	// Find the end of the line.
 	try {
 	    while (in.retch(end++) != '\n');
@@ -181,7 +187,7 @@ public class StandardAuditor
 	    --end;
 	}
 
-	if (DEBUG) 
+	if (DEBUG)
 	    try {
 		char c1 = in.retch(beg);
 		char c2 = in.retch(end);
@@ -194,19 +200,19 @@ public class StandardAuditor
 	    } catch (Exception ex) {
 	    }
 
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write("line is ")
 		.quote(in.stretch(beg, end - beg))
 		.out();
-	
+
 	b.append(head);
 	b.append(in.stretch(beg, end - beg));
 	b.append(StringTools.NEWLINE);
 
 	int headlen = head.length();
 
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write("headlen = ").write(headlen)
 		.write(", off + headlen = ").write(off + headlen)
@@ -215,12 +221,12 @@ public class StandardAuditor
 	int i = 0;
 	while ( i++ < (off - beg) + headlen ) {
 	    switch (i) {
-	    case 4: 
+	    case 4:
 		b.append('\\'); break;
 	    case 5: case 6: case 7:
 		b.append('_'); break;
 	    default:
-		b.append(' '); 
+		b.append(' ');
 	    }
 	}
 
@@ -232,10 +238,10 @@ public class StandardAuditor
 
 	else {
 	    b.append('<');
-	    
+
 	    while ( len-- > 2 )
 		b.append('-');
-	    
+
 	    b.append('>');
 	}
 
@@ -249,7 +255,7 @@ public class StandardAuditor
 	if (errors.size() > 0) {
 	    b.append(errors.size())
 		.append(errors.size() == 1 ? " Error" : " Errors");
-	    
+
 	    if (src != null)
 		b.append(" in ").append(src).append(':');
 	    else
@@ -264,7 +270,7 @@ public class StandardAuditor
 	if (warnings.size() > 0) {
 	    b.append(warnings.size())
 		.append(warnings.size() == 1 ? " Warning" : " Warnings");
-	    
+
 	    if (src != null)
 		b.append(" in ").append(src).append(':');
 	    else
@@ -295,17 +301,17 @@ public class StandardAuditor
 
     public class StandardComplaint implements Complaint, Serializable
     {
-	StandardComplaint(int type, String msg) 
+	StandardComplaint(int type, String msg)
 	{
 	    this(type, -1, msg, null);
 	}
 
-	StandardComplaint(int type, int line, String msg) 
+	StandardComplaint(int type, int line, String msg)
 	{
 	    this(type, line, msg, null);
 	}
 
-	StandardComplaint(int type, int line, String msg, String trace) 
+	StandardComplaint(int type, int line, String msg, String trace)
 	{
 	    this.type = type;
 	    this.line = line;
@@ -317,7 +323,7 @@ public class StandardAuditor
 	private void init()
 	{
 	    StringBuffer b = new StringBuffer();
-	    
+
 	    b.append(StringTools.NEWLINE);
 
 	    switch (type) {
@@ -332,16 +338,16 @@ public class StandardAuditor
 
 //  	    if (line > 0)
 //  		b.append(" at line ").append(line).append(": ");
-//  	    else 
+//  	    else
 	    b.append(": ");
-	    
+
 	    b.append(msg);
 
 	    if (trace != null)
 		b.append(StringTools.NEWLINE)
 		    .append(" \\").append(StringTools.NEWLINE)
 		    .append(trace);
-	    else 
+	    else
 		b.append(StringTools.NEWLINE).append(" \\___ ");
 
 	    this.trace = b.toString();
@@ -376,7 +382,7 @@ public class StandardAuditor
 	{
 	    out.println(trace);
 	}
-	
+
 	public String toString()
 	{
 	    return trace;
@@ -399,13 +405,13 @@ public class StandardAuditor
 
 +-- Syntax Error: Unexpected string ignored
  \  Line 2: abababababababababababababaaaaaaaaa
-  \         <--------------------------------->  
+  \         <--------------------------------->
    \
     \_______
 
 +-- Syntax Error: Unexpected string ignored
  \  Line 2: abababababababababababababaaaaaaaaa
-  \         <--------------------------------->  
+  \         <--------------------------------->
    \
     \_______
 
@@ -414,16 +420,16 @@ public class StandardAuditor
   /
  /
 | abababababababababababababaaaaaaaaa
-| <--------------------------------->  
+| <--------------------------------->
  \
   \ The String was Ignored.
-      
+
 
 +----------------------------------------------------
  \ Syntax Error
   \
  2 | abababababababababababababaaaaaaaaa
- 2 | <--------------------------------->  
+ 2 | <--------------------------------->
   /
  / String was ignored
 +-----------------------------------------------------
@@ -431,7 +437,7 @@ public class StandardAuditor
 +-- Syntax Error: Unexpected string ignored
  \
   \  Line 2: abababababababababababababaaaaaaaaa
-   \___      <--------------------------------->  
+   \___      <--------------------------------->
 
 
 +-- Syntax Error: Unexpected string ignored
@@ -467,7 +473,7 @@ public class StandardAuditor
   \  Line 6: abababababab
    \___      |---------->
 
- 
+
 / Syntax Error: Unexpected string ignored           \
 \                                                   /
  \  Line 2: abababababababababababababaaaaaaaaa    /
@@ -478,4 +484,3 @@ public class StandardAuditor
 
 
 */
-

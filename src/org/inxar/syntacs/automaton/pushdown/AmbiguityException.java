@@ -2,7 +2,7 @@
  * $Id: AmbiguityException.java,v 1.1.1.1 2001/07/06 09:08:05 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,13 +20,13 @@
  */
 package org.inxar.syntacs.automaton.pushdown;
 
-import org.inxar.syntacs.util.*;
+import org.inxar.syntacs.util.AlgorithmException;
 
 /**
  * AmbiguityException objects are thrown to indicate mismatches
  * between the definition of a language grammar and the strength of
  * the algorithm used to compute the state machine to recognize that
- * grammars.  
+ * grammars.
  */
 public class AmbiguityException
     extends AlgorithmException
@@ -65,7 +65,3 @@ public class AmbiguityException
 
     private int type;
 }
-
-
-
-

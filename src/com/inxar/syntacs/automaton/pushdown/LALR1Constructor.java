@@ -2,7 +2,7 @@
  * $Id: LALR1Constructor.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,13 +20,36 @@
  */
 package com.inxar.syntacs.automaton.pushdown;
 
-import java.util.*;
+import java.util.Vector;
+import java.util.Hashtable;
 import org.inxar.syntacs.grammar.Token;
-import org.inxar.syntacs.grammar.context_free.*;
-import org.inxar.syntacs.automaton.pushdown.*;
-import org.inxar.syntacs.translator.lr.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.grammar.context_free.Terminal;
+import org.inxar.syntacs.grammar.context_free.NonTerminal;
+import org.inxar.syntacs.grammar.context_free.GrammarSymbol;
+import org.inxar.syntacs.grammar.context_free.Production;
+import org.inxar.syntacs.grammar.context_free.Item;
+import org.inxar.syntacs.grammar.context_free.ContextFreeSet;
+import org.inxar.syntacs.automaton.pushdown.DPA;
+import org.inxar.syntacs.automaton.pushdown.DPAConstructor;
+import org.inxar.syntacs.automaton.pushdown.AmbiguityException;
+import org.inxar.syntacs.translator.lr.LRTranslatorGrammar;
+import org.inxar.syntacs.util.IntIterator;
+import org.inxar.syntacs.util.IntRelation;
+import org.inxar.syntacs.util.IntSet;
+import org.inxar.syntacs.util.IntArray;
+import org.inxar.syntacs.util.IntFunction;
+import org.inxar.syntacs.util.Reiterator;
+import org.inxar.syntacs.util.Vizualizable;
+import org.inxar.syntacs.util.GraphViz;
+import org.inxar.syntacs.util.Algorithm;
+import org.inxar.syntacs.util.AlgorithmException;
+import org.inxar.syntacs.util.Log;
+import com.inxar.syntacs.util.StringTools;
+import com.inxar.syntacs.util.Mission;
+import com.inxar.syntacs.util.BitSetIntSet;
+import com.inxar.syntacs.util.HashBitSetIntRelation;
+import com.inxar.syntacs.util.HashIntFunction;
+import com.inxar.syntacs.util.TreeListIntRelation;
 
 /**
  * Concrete implementation of <code>LRConstructor</code> that builds
@@ -43,18 +66,18 @@ public class LALR1Constructor
 {
     private static final boolean DEBUG = false;
 
-    private static boolean verbose = 
+    private static boolean verbose =
 	Mission.control().isTrue("verbose");
 
     /**
      * Constructs the <code>LALR1Constructor</code>.  The
      * <code>setGrammar(ContextFreeSet)</code> method needs to be
-     * called before the <code>construct()</code> method.  
+     * called before the <code>construct()</code> method.
      */
     public LALR1Constructor()
     {
     }
-    
+
     public DPA construct(ContextFreeSet grammar) throws AlgorithmException
     {
 	this.grammar = grammar;
@@ -71,7 +94,7 @@ public class LALR1Constructor
 
 	// the dpa constructor
 	this.dpa = new ArrayDPAConstructor(grammar);
-	
+
 	if (verbose)
 	    log().info()
 		.write("Constructing LR(0) Machine (shifts)")
@@ -85,7 +108,7 @@ public class LALR1Constructor
 	    log().info()
 		.write("Constructing lookahead sets (reductions)")
 		.time();
-	
+
 	// make the lookahead sets
 	this.lookahead = this.new Lookahead();
 	this.lookahead.init();
@@ -95,7 +118,7 @@ public class LALR1Constructor
 	    log().info()
 		.write("Finalizing DPA construction")
 		.time();
-	
+
 	// return from the dpa
 	DPA _dpa = dpa.construct(grammar);
 
@@ -105,7 +128,7 @@ public class LALR1Constructor
 
 	return _dpa;
     }
-    
+
     private NTTransition newNTTransition(State state, NonTerminal label)
     {
 	// make a new ntt
@@ -118,7 +141,7 @@ public class LALR1Constructor
 	// done
 	return nt_transition;
     }
-    
+
     private TTransition newTTransition(State state, Terminal label)
     {
 	// make a new ntt
@@ -129,17 +152,17 @@ public class LALR1Constructor
 	// done
 	return t_transition;
     }
-    
+
     private NTTransition getNonTerminalTransition(int ID)
     {
 	return (NTTransition)nt_transitions.elementAt(ID);
     }
-    
+
     private TTransition getTerminalTransition(int ID)
     {
 	return (TTransition)t_transitions.elementAt(ID);
     }
-    
+
     public String toString()
     {
 	StringBuffer b = new StringBuffer();
@@ -160,14 +183,14 @@ public class LALR1Constructor
 	line(b);
 	return b.toString();
     }
-    
+
     public void vizualize(GraphViz dot)
     {
 	dpa.vizualize(dot);
-	
+
 	if (Mission.control().isTrue("viz-dpa-hide-loopback-edges"))
 	    return;
-	
+
 	lookahead.vizualize(dot);
     }
 
@@ -177,7 +200,7 @@ public class LALR1Constructor
 	    log = Mission.control().log("lpc", this); // Lalr Pushdown Constructor
 	return log;
     }
-    
+
     private ContextFreeSet grammar;
     private LR0Automaton automaton;
     private Lookahead lookahead;
@@ -187,7 +210,7 @@ public class LALR1Constructor
     private IntSet nt_set;
     private Log log;
 
-    final class LR0Automaton 
+    final class LR0Automaton
     {
 	LR0Automaton() throws AlgorithmException, AmbiguityException
 	{
@@ -201,7 +224,7 @@ public class LALR1Constructor
 	{
 	    return ((State)states.elementAt(ID)).kernel;
 	}
-	
+
 	void init() throws AmbiguityException
 	{
 	    // start by taking the closure of the initial item of the
@@ -214,21 +237,21 @@ public class LALR1Constructor
 	    // delegate construction to state
 	    state.resolve();
 	}
-	
+
 	/**
 	 * This method returns the state of the given set.  If the set
 	 * is not already in the canonical collection, a new set is
-	 * allocated.  
+	 * allocated.
          */
 	State lookup(IntSet kernel)
 	{
 	    Object o = map.get(kernel);
 	    return o == null ? newState(kernel) : (State)o;
 	}
-	
+
 	State newState(IntSet kernel)
 	{
-	    if (DEBUG) 
+	    if (DEBUG)
 		log().debug()
 		    .write("Adding state ")
 		    .write(states.size())
@@ -245,7 +268,7 @@ public class LALR1Constructor
 	    map.put(kernel, state);
 	    return state;
 	}
-	
+
 	/**
 	 * Gets a set by ID (position)
 	 */
@@ -258,7 +281,7 @@ public class LALR1Constructor
 	{
 	    return states.size();
 	}
-	
+
 	public String toString()
 	{
 	    StringBuffer b = new StringBuffer();
@@ -272,7 +295,7 @@ public class LALR1Constructor
 	private Vector states;
 	private Hashtable map;
     }
-    
+
     final class State
     {
 	State(int ID, IntSet kernel)
@@ -295,12 +318,12 @@ public class LALR1Constructor
 	    // no need for marked set anymore
 	    this.marked = null;
 	}
-	
+
 	// classify the items in the set such that subsequent
 	// processing may be more effecient
 	private void classify(Item item)
 	{
-	    if (DEBUG) 
+	    if (DEBUG)
 		log().debug()
 		    .write("starting classification of item #")
 		    .write(item.getID())
@@ -310,7 +333,7 @@ public class LALR1Constructor
 
 	    // is it an initial item?
 	    if (!item.hasPrevious()) {
-		if (DEBUG) 
+		if (DEBUG)
 		    log().debug()
 			.write("--> item is initial: ")
 			.write(item)
@@ -318,10 +341,10 @@ public class LALR1Constructor
 
 		// push as root of list of initial items
 		initials = new ItemLink(item, initials);
-		
+
 		// is this a final item?
 	    } if (!item.hasNext()) {
-		if (DEBUG) 
+		if (DEBUG)
 		    log().debug()
 			.write("--> item is final: ")
 			.write(item)
@@ -329,7 +352,7 @@ public class LALR1Constructor
 
 		// push as root of list of final items
 		finals = new ItemLink(item, finals);
-		
+
 	    } else {
 
 		// evaluate on the grammar symbol the dot in the item
@@ -350,7 +373,7 @@ public class LALR1Constructor
 		// classify according to the transition type
 		if (symbol.isTerminal()) {
 
-		    if (DEBUG) 
+		    if (DEBUG)
 			log().debug()
 			    .write("--> item transitions over a terminal: ")
 			    .write(item)
@@ -362,7 +385,7 @@ public class LALR1Constructor
 
 		} else {
 
-		    if (DEBUG) 
+		    if (DEBUG)
 			log().debug()
 			    .write("--> item transitions over a nonterminal: ")
 			    .write(item)
@@ -371,14 +394,14 @@ public class LALR1Constructor
 		    // Make a nonterminal transition.
 		    nt_links = new NTTransitionLink
 			(newNTTransition(this, (NonTerminal)symbol), nt_links);
-		    
+
 		    // append to the list of nullable transitions if
 		    // this is an item of the form [ A -> alpha <> B
 		    // theta ] and theta derives epsilon
 		    if ( isNullable(item.nextItem()) ) {
 			thetas = new ThetaItemLink(nt_links.transition, item, thetas);
 		    }
-		    
+
 		    // the set upon which this state was built is the
 		    // set of kernel items.  However, we still need to
 		    // sort and classify the entire set of kernel and
@@ -389,7 +412,7 @@ public class LALR1Constructor
 		}
 	    }
 
-	    if (DEBUG) 
+	    if (DEBUG)
 		log().debug()
 		    .write("finished classification of item #")
 		    .write(item.getID())
@@ -397,13 +420,13 @@ public class LALR1Constructor
 		    .write(item)
 		    .back();
 	}
-	
+
 	public void resolve() throws AmbiguityException
 	{
 	    // check to make sure we have not been resoved yet. if
 	    // not, then mark
 	    if (isResolved) return; else isResolved = true;
-	    
+
 	    // our goal is to resolve all transitions such that we
 	    // form the automaton graph.  We have made a list of
 	    // transitions.  Iterate each key, values pair in the
@@ -424,7 +447,7 @@ public class LALR1Constructor
 		reiterator.next();
 	    }
 	}
-	
+
 	private void connect(int symbol, State state) throws AmbiguityException
 	{
 	    // fetch the grammar symbol having this ID
@@ -443,14 +466,14 @@ public class LALR1Constructor
 	    } else {
 		dpa.go(this.ID, symbol, state.ID);
 	    }
-	    
+
 	    // what we are doing here is building the state transition
 	    // graph that the graph can be traversed in a forward or
 	    // reverse direction.
 	    this. go.put(symbol, state.ID);
 	    state.og.put(symbol, this. ID);
 	}
-	
+
 	private boolean isNullable(Item item)
 	{
 	    /*
@@ -459,20 +482,20 @@ public class LALR1Constructor
 	      consider a boolean array or bitset across the number of
 	      items, true if the thing is nullable (as suggested by
 	      DeRemer).
-	      
+
 	      Note; need ternary indicator: (yes|no|unknown) since we
-	      will be calculating it on the fly.  
+	      will be calculating it on the fly.
              */
-	    
+
 	    // test if this is the last item [ A -> alpha <> ]
 	    if (!item.hasNext())
 		return true;
-	    
+
 	    /*
 	      do we need another Item here or can we reuse the
-	      reference given by the method itself?  
+	      reference given by the method itself?
              */
-	    
+
 	    // now test each symbol from here until [ A -> alpha <> ]
 	    while (item.hasNext()) {
 		// break if the next symbol is not nullable
@@ -487,7 +510,7 @@ public class LALR1Constructor
 
 	private void closure(NonTerminal nonTerminal)
 	{
-	    if (DEBUG) 
+	    if (DEBUG)
 		log().debug()
 		    .write("--> evaluating closure over " )
 		    .write(nonTerminal)
@@ -500,7 +523,7 @@ public class LALR1Constructor
 	    for (int i = 0; i < alternatives.length(); i++) {
 		// classify each item [ A -> <> alpha ] (indirect
 		// recursion here)
-		if (DEBUG) 
+		if (DEBUG)
 		    log().debug()
 			.write(nonTerminal)
 			.write( ": processing reduction ")
@@ -520,11 +543,11 @@ public class LALR1Constructor
 		return false;
 	    }
 	}
-	
+
 	public String toString()
 	{
 	    StringBuffer b = new StringBuffer();
-	    
+
 	    b.append("state ").append(ID).append(" kernel: ").append(StringTools.NEWLINE);
 	    //b.append("\tkernel: ").append(StringTools.NEWLINE);
 	    IntIterator i = kernel.iterator();
@@ -558,37 +581,37 @@ public class LALR1Constructor
 	// flag to say if this state has already been resolved
 	boolean isResolved;
 	// the set of kernel items
-	IntSet kernel; 
+	IntSet kernel;
 	// a set used by closure to track which nonTerminals we've
 	// processed
-	IntSet marked; 
+	IntSet marked;
 	// a data structure which maps grammar-symbol keys to state
 	// ID's on the forward or posterior direction
-	IntFunction go; 
+	IntFunction go;
 	// a data structure which maps grammar-symbol keys to sets of
 	// state ID's in the reverse or anterior direction
-	IntRelation og; 
+	IntRelation og;
 	// a data structure which groups item ID's into sets by
 	// grammarsymbol ID
-	IntRelation items;	
+	IntRelation items;
 	// root to a list of initial items
-	ItemLink initials;	
+	ItemLink initials;
 	// root to a list of final items
-	ItemLink finals;	
+	ItemLink finals;
 	// root to a list of items like [ B -> lambda <> A theta ]
 	// theta => epsilon
-	ThetaItemLink thetas;	
+	ThetaItemLink thetas;
 	// root to a list of transitions with a terminal path
-	TTransitionLink t_links;	
+	TTransitionLink t_links;
 	// root to a list of transitions with a nonTerminal path
-	NTTransitionLink nt_links;	
+	NTTransitionLink nt_links;
     }
-    
+
     /**
      * This code is partitioned to explicitly separate the Lookahead
      * set code with the LR(0) machine code and other stuff.  Makes it
      * easier to change and perhaps do different implementations to
-     * compare them.  
+     * compare them.
      */
     final class Lookahead implements Vizualizable
     {
@@ -600,14 +623,14 @@ public class LALR1Constructor
 	    this.includes = new HashBitSetIntRelation();
 	    this.loopback = new HashBitSetIntRelation();
 	}
-	
+
 	void init() throws AlgorithmException
 	{
 	    read();
 	    follow();
 	    lookahead();
 	}
-	
+
 	void read() throws LRkViolationException
 	{
 	    // an arbitrary transition link whoise path is a terminal
@@ -619,18 +642,18 @@ public class LALR1Constructor
 	    NTTransitionLink nt_link = null;
 	    // a state
 	    State next = null;
-	    
+
 	    // iterate the list of nonTerminal transitions in the
 	    // parent class
 	    for (int i=0; i<nt_transitions.size(); i++) {
-		
+
 		// fetch each one
 		nt_transition = (NTTransition)nt_transitions.elementAt(i);
 		// fetch the state obtained by following this
 		// nonterminal path to the next state
 		next = automaton.lookup
 		    (nt_transition.state.go.get(nt_transition.label.getID()));
-		
+
 		/* PART 1:	DIRECTLY_READS relation */
 		// foreach terminal transition in the list on the
 		// state obtained by following this nonTerminal
@@ -647,7 +670,7 @@ public class LALR1Constructor
 		    // advance
 		    t_link = t_link.next;
 		}
-		
+
 		/* PART 2:	INDIRECTLY_READS relation */
 		// foreach nonTerminal transition in the next state,
 		// see if it is nullable.  If so then add an
@@ -672,11 +695,11 @@ public class LALR1Constructor
 		    // advance
 		    nt_link = nt_link.next;
 		}
-		
+
 		// union the direct read and read sets
 		nt_transition.read.union(nt_transition.dread);
 	    }
-	    
+
 	    // and evaluate the READS relation if not empty
 	    if (!reads.isEmpty())
 		reads(reads);
@@ -692,9 +715,9 @@ public class LALR1Constructor
 	    IntRelation output = new ReadSetFunction(nt_transitions);
 
 	    // make a new graph algorithm object on these arguments
-	    SCCTransitiveClosure graph = 
+	    SCCTransitiveClosure graph =
 		new SCCTransitiveClosure(nt_set, reads, input, output);
-	    
+
 	    try {
 		// ready, go.
 		graph.evaluate();
@@ -703,13 +726,13 @@ public class LALR1Constructor
 		    ("The Grammar prescribed is not LR(k) for any k.");
 	    }
 	}
-	
+
 	void follow() throws LRkViolationException
 	{
 	    // first compute the INCLUDES relation and the LOOPBACK
 	    // relation.  We do this in parallel in a loop over the
 	    // states since both relations need to test each state.
-	    
+
 	    // Two arbitrary states.  Since we will be searching
 	    // ('casting') through the finite automaton for (p, A) ->
 	    // (q, B) we analogize this to a fishing line and anchor
@@ -725,14 +748,14 @@ public class LALR1Constructor
 	    Item item = null;
 	    // an arbitrary nonterminal transition link
 	    NTTransitionLink nt_link = null;
-	    
+
 	    int len = automaton.states.size();
 	    // iterate each state
 	    for (int i=0; i<len; i++) {
-		
+
 		// fetch state from vector
 		anchor = automaton.lookup(i);
-		
+
 		//System.out.println("processing state "+anchor);
 
 		// PART 1: INCLUDES -- iterate the list of items like
@@ -755,7 +778,7 @@ public class LALR1Constructor
 		    // advance to the next theta item
 		    theta = theta.next;
 		}
-		
+
 		// PART 2: LOOPBACK -- iterate the list of initial items
 		link = anchor.initials;
 		// iterate all initial items [ A -> <> alpha ]
@@ -806,17 +829,17 @@ public class LALR1Constructor
 			// advance
 			nt_link = nt_link.next;
 		    }
-		    
+
 		    // advance
 		    link = link.next;
 		}
 	    }
 	}
-	
+
 	/**
 	 * Unwind through the state graph (the automaton) until the
 	 * initial item is hit.  When this happens, add an entry in
-	 * the includes relation (is there a better way to do this?)  
+	 * the includes relation (is there a better way to do this?)
          */
 	private void rewind(Item item, State state, int qB)
 	{
@@ -825,16 +848,16 @@ public class LALR1Constructor
 		// take an iterator over the set of states the can
 		// precede this one by following the previous symbol
 		// in lambda
-		IntIterator previous = 
+		IntIterator previous =
 		    state.og.get(item.previousSymbol().getID()).iterator();
-		
+
 		// iterate all possible previous states
-		while (previous.hasNext()) 
+		while (previous.hasNext())
 		    // wind back line to the previous state
 		    rewind(item.previousItem(),
 			   automaton.lookup(previous.next()),
 			   qB);
-		
+
 	    } else {
 
 		// ok, we've arrived at the first item [ B -> <>
@@ -845,7 +868,7 @@ public class LALR1Constructor
 		int pA = -1;
 		// this is the nonterminal ID we want to match
 		int nt = item.getProduction().getNonTerminal().getID();
-		
+
 		// start at the beginning of the list
 		NTTransitionLink link = state.nt_links;
 		// linear search -- ok.
@@ -856,7 +879,7 @@ public class LALR1Constructor
 		    // advance
 		    link = link.next;
 		}
-		
+
 		// check to make sure we got one.  Not sure what this
 		// implies...  either subset construction bad
 		if (pA == -1)
@@ -875,7 +898,7 @@ public class LALR1Constructor
 	    // There are two tasks here: first is to calculate the
 	    // follow sets from the read sets over the INCLUDES
 	    // relation, second is to make LA sets over LOOPBACK.
-	    
+
 	    /*
 	      PART 1: Generation of FOLLOW sets.
 	    */
@@ -883,32 +906,32 @@ public class LALR1Constructor
 	    IntRelation output = new FollowSetFunction(nt_transitions);
 
 	    // make a new graph algorithm object on these arguments
-	    SCCTransitiveClosure graph = 
+	    SCCTransitiveClosure graph =
 		new SCCTransitiveClosure(nt_set, includes, input, output);
-	    
+
 	    try {
 		// ready, go.
 		graph.evaluate();
 	    } catch (SCCTransitiveClosure.NonTrivialSCCException sccex) {
 		throw new LRkViolationException("The Grammar prescribed is not LR(k) for any k.");
 	    }
-	    
+
 	    /*
 	      PART 2: Generation of LOOKAHEAD sets.
 	    */
 	    // the lookahead sets are the union of follow sets over
 	    // the loopback relation.  Thus, we need to iterate each
 	    // Reduction in the loopback.
-	    
+
 	    // handles
 	    Reduction reduction = null;
 	    IntSet transitions = null;
 	    IntIterator trans = null;
 	    NTTransition ntt = null;
-	    
+
 	    // get a list of all reduction ID's
 	    IntIterator keys = loopback.keys().iterator();
-	    
+
 	    // process each one
 	    while (keys.hasNext()) {
 		// get the reduction
@@ -928,7 +951,7 @@ public class LALR1Constructor
 		}
 	    }
 	}
-	
+
 	/**
 	 * Transfers the lookahead set information to the dpa.
 	 */
@@ -936,7 +959,7 @@ public class LALR1Constructor
 	{
             Reduction reduction = null;
             IntIterator iterator = null;
-	    
+
             // iterate each reduction object
             for (int i=0; i<reductions.size(); i++) {
                 // fetch each one
@@ -949,20 +972,20 @@ public class LALR1Constructor
                 }
             }
 	}
-	
+
 	private Reduction newReduction(State state, Production production)
 	{
 	    /*
 	      need to make a new reduction, but ONLY IF it has not yet
 	      been created!  Thus, reduction object should probably
 	      live on the state and be created whence an item implies
-	      it.  
+	      it.
              */
 	    Reduction reduction = null; /* try to assign this reference */
-	    
+
 	    /* before optimizing, we'll just run through the list in
                linear search */
-	    
+
 	    // a temporary
 	    Reduction r = null;
 	    // iterate all existing
@@ -985,16 +1008,16 @@ public class LALR1Constructor
 		// add to the vector
 		reductions.addElement(reduction);
 	    }
-	    
+
 	    // done
 	    return reduction;
 	}
-	
+
 	private Reduction getReduction(int ID)
 	{
 	    return (Reduction)reductions.elementAt(ID);
 	}
-	
+
 	public void vizualize(GraphViz dot)
 	{
 	    LRTranslatorGrammar g = (LRTranslatorGrammar)
@@ -1014,14 +1037,14 @@ public class LALR1Constructor
 
 	    es = Mission.control().getString
 		("viz-dpa-loopback-edge-style", "dotted");
-	    
+
 	    node = dot.node("edge");
 	    node.attr("color", ec);
 	    node.attr("style", es);
-	    
+
 	    // get a list of all reduction ID's
 	    IntIterator keys = loopback.keys().iterator();
-	    
+
 	    // process each one
 	    while (keys.hasNext()) {
 		// get the reduction
@@ -1036,7 +1059,7 @@ public class LALR1Constructor
 		    // fetch each nonterminal trnasition which has the
 		    // follow set
 		    ntt = getNonTerminalTransition(trans.next());
-		    
+
 		    // At this point we have the reduction (q, A ->
 		    // alpha) and the nonterminal transition (p, A).
 		    // Want to make a dashed edge from q to p having
@@ -1049,13 +1072,13 @@ public class LALR1Constructor
 		}
 	    }
 	}
-	
+
 	Vector reductions;
 	IntRelation reads;
 	IntRelation includes;
 	IntRelation loopback;
     }
-    
+
     private static class LRkViolationException
 	extends AlgorithmException
     {
@@ -1064,7 +1087,7 @@ public class LALR1Constructor
 	    super(msg);
 	}
     }
-    
+
     private static class ItemLink
     {
 	ItemLink(Item item, ItemLink next)
@@ -1075,7 +1098,7 @@ public class LALR1Constructor
 	Item item;
 	ItemLink next;
     }
-    
+
     private static class ThetaItemLink
     {
 	ThetaItemLink(NTTransition transition, Item item, ThetaItemLink next)
@@ -1088,7 +1111,7 @@ public class LALR1Constructor
 	ThetaItemLink next;
 	NTTransition transition;
     }
-    
+
     private static class Transition
     {
 	Transition(int ID, State state, GrammarSymbol path)
@@ -1097,12 +1120,12 @@ public class LALR1Constructor
 	    this.state = state;
 	    this.path = path;
 	}
-	
+
 	int ID;
 	State state;
 	GrammarSymbol path;
     }
-    
+
     private static class TTransition
 	extends Transition
     {
@@ -1111,17 +1134,17 @@ public class LALR1Constructor
 	    super(ID, state, label);
 	    this.label = label;
 	}
-	
+
 	public String toString()
 	{
 	    StringBuffer b = new StringBuffer();
 	    doublet(new Integer(state.ID), label, b);
 	    return b.toString();
 	}
-	
+
 	Terminal label;
     }
-    
+
     private static class NTTransition
 	extends Transition
     {
@@ -1133,20 +1156,20 @@ public class LALR1Constructor
 	    this.read = new BitSetIntSet(5);
 	    this.follow = new BitSetIntSet(5);
 	}
-	
+
 	public String toString()
 	{
 	    StringBuffer b = new StringBuffer();
 	    doublet(new Integer(state.ID), label, b);
 	    return b.toString();
 	}
-	
+
 	NonTerminal label;
 	IntSet dread; // direct read set
 	IntSet read; // full read set
 	IntSet follow; // the follow set
     }
-    
+
     private static class TTransitionLink
     {
 	TTransitionLink(TTransition transition, TTransitionLink next)
@@ -1157,7 +1180,7 @@ public class LALR1Constructor
 	TTransition transition;
 	TTransitionLink next;
     }
-    
+
     private static class NTTransitionLink
     {
 	NTTransitionLink(NTTransition transition, NTTransitionLink next)
@@ -1168,7 +1191,7 @@ public class LALR1Constructor
 	NTTransition transition;
 	NTTransitionLink next;
     }
-    
+
     private static abstract class VectorSetFunction
 	implements IntRelation
     {
@@ -1176,22 +1199,22 @@ public class LALR1Constructor
 	{
 	    this.vect = vect;
 	}
-	
+
 	public void put(int key, int value)
 	{
 	    throw new UnsupportedOperationException();
 	}
-	
+
 	public void set(int key, IntSet set)
 	{
 	    throw new UnsupportedOperationException();
 	}
-	
+
 	public IntSet get(int key)
 	{
 	    throw new UnsupportedOperationException();
 	}
-	
+
 	public Reiterator reiterator()
 	{
 	    throw new UnsupportedOperationException();
@@ -1203,14 +1226,14 @@ public class LALR1Constructor
 	}
 
 
-	public IntSet keys() 
+	public IntSet keys()
 	{
 	    throw new UnsupportedOperationException();
 	}
-	
+
 	Vector vect;
     }
-    
+
     private static class DirectReadSetFunction
 	extends VectorSetFunction
     {
@@ -1218,13 +1241,13 @@ public class LALR1Constructor
 	{
 	    super(nt_transitions);
 	}
-	
+
 	public IntSet get(int key)
 	{
 	    return ((NTTransition)vect.elementAt(key)).dread;
 	}
     }
-    
+
     private static class ReadSetFunction
 	extends VectorSetFunction
     {
@@ -1232,18 +1255,18 @@ public class LALR1Constructor
 	{
 	    super(nt_transitions);
 	}
-	
+
 	public void set(int key, IntSet set)
 	{
 	    ((NTTransition)vect.elementAt(key)).dread = set;
 	}
-	
+
 	public IntSet get(int key)
 	{
 	    return ((NTTransition)vect.elementAt(key)).dread;
 	}
     }
-    
+
     private static class FollowSetFunction
 	extends VectorSetFunction
     {
@@ -1251,21 +1274,21 @@ public class LALR1Constructor
 	{
 	    super(nt_transitions);
 	}
-	
+
 	public void set(int key, IntSet set)
 	{
 	    ((NTTransition)vect.elementAt(key)).follow = set;
 	}
-	
+
 	public IntSet get(int key)
 	{
 	    return ((NTTransition)vect.elementAt(key)).follow;
 	}
     }
-    
+
     /**
      * A Reduction models the ordered pair (q, A -> alpha).  This
-     * object can also carry the lookahead sets when the time comes.  
+     * object can also carry the lookahead sets when the time comes.
      */
     private static class Reduction
     {
@@ -1276,14 +1299,14 @@ public class LALR1Constructor
 	    this.production = production;
 	    this.lookahead = new BitSetIntSet(8);
 	}
-	
+
 	public String toString()
 	{
 	    StringBuffer b = new StringBuffer();
 	    doublet(new Integer(state.ID), production, b);
 	    return b.toString();
 	}
-	
+
 	// needs ID since these are used in relations and are
 	// identifiable only by ID.
 	int ID;
@@ -1298,18 +1321,18 @@ public class LALR1Constructor
     /*-************************************************************
      * STATIC FORMATTING METHODS
      *-************************************************************/
-    
+
     private void heading(String heading, StringBuffer b)
     {
 	b.append(heading).append(':').append(StringTools.NEWLINE);
 	line(b);
     }
-    
+
     private void line(StringBuffer b)
     {
 	b.append("-----------------------------------").append(StringTools.NEWLINE);
     }
-    
+
     private void printNonTerminalTransitions(StringBuffer b)
     {
 	NTTransition nt = null;
@@ -1325,7 +1348,7 @@ public class LALR1Constructor
 	    b.append(StringTools.NEWLINE);
 	}
     }
-    
+
     private void printReductions(StringBuffer b)
     {
 	Reduction red = null;
@@ -1337,12 +1360,12 @@ public class LALR1Constructor
 	    b.append(StringTools.NEWLINE);
 	}
     }
-    
+
     private static void doublet(Object x, Object y, StringBuffer b)
     {
 	b.append('(').append(x).append(',').append(y).append(')');
     }
-    
+
     private void printSet(IntSet set, StringBuffer b)
     {
 	b.append('{');
@@ -1354,9 +1377,9 @@ public class LALR1Constructor
 	}
 	b.append('}');
     }
-    
-    private void printNonTerminalRelation(String heading, 
-					  IntRelation relation, 
+
+    private void printNonTerminalRelation(String heading,
+					  IntRelation relation,
 					  StringBuffer b)
     {
 	heading(heading, b);
@@ -1373,9 +1396,9 @@ public class LALR1Constructor
 	    }
 	}
     }
-    
-    private void printReductionRelation(String heading, 
-					IntRelation relation, 
+
+    private void printReductionRelation(String heading,
+					IntRelation relation,
 					StringBuffer b)
     {
 	heading(heading, b);
@@ -1392,14 +1415,5 @@ public class LALR1Constructor
 	    }
 	}
     }
-    
+
 }
-
-
-
-
-
-
-
-
-

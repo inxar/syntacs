@@ -2,7 +2,7 @@
  * $Id: SCCTransitiveClosure.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,8 +20,17 @@
  */
 package com.inxar.syntacs.automaton.pushdown;
 
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.util.IntStack;
+import org.inxar.syntacs.util.IntRelation;
+import org.inxar.syntacs.util.IntIterator;
+import org.inxar.syntacs.util.IntSet;
+import org.inxar.syntacs.util.IntStack;
+import org.inxar.syntacs.util.IntFunction;
+import org.inxar.syntacs.util.Algorithm;
+import org.inxar.syntacs.util.AlgorithmException;
+
+import com.inxar.syntacs.util.ArrayIntStack;
+import com.inxar.syntacs.util.HashIntFunction;
 
 /**
  * This is originally from Eve J, Kurki-Suonio R <code>On Computing
@@ -45,7 +54,7 @@ public class SCCTransitiveClosure
      * those vertices, the <code>IntRelation</code> which holds the
      * <code>IntSet</code> of values at each vertex, and the
      * <code>IntRelation</code> where the output <code>IntSet</code>
-     * of values should be put.  
+     * of values should be put.
      */
     public SCCTransitiveClosure(IntSet vertices,
 				IntRelation relation,
@@ -56,7 +65,7 @@ public class SCCTransitiveClosure
         this.relation = relation;
         this.input = input;
         this.output = output;
-	
+
         // make a new stack with said capacity
         this.stack = new ArrayIntStack(vertices.size());
 
@@ -73,7 +82,7 @@ public class SCCTransitiveClosure
     {
         // need iterator over vertices
         IntIterator vertex = vertices.iterator();
-	
+
         // an arbitrary vertex x
         int x;
         // push all vertices
@@ -233,5 +242,3 @@ public class SCCTransitiveClosure
         }
     }
 }
-
-

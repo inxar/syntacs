@@ -2,7 +2,7 @@
  * $Id: StandardRecovery.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,16 +20,11 @@
  */
 package com.inxar.syntacs.analyzer.syntactic;
 
-import java.util.*;
-import org.inxar.syntacs.grammar.*;
-import org.inxar.syntacs.analyzer.*;
-import org.inxar.syntacs.analyzer.syntactic.*;
-import org.inxar.syntacs.automaton.pushdown.*;
-import org.inxar.syntacs.translator.*;
-import org.inxar.syntacs.translator.lr.*;
-import com.inxar.syntacs.translator.lr.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import java.util.List;
+import java.util.LinkedList;
+
+import org.inxar.syntacs.analyzer.syntactic.Correction;
+import org.inxar.syntacs.analyzer.syntactic.Recovery;
 
 /**
  * Concrete implementation of <code>Recovery</code>.
@@ -37,7 +32,7 @@ import com.inxar.syntacs.util.*;
 public class StandardRecovery implements Recovery
 {
     private static final boolean DEBUG = true;
-    
+
     /*
      * Constructs a new parser.
      */
@@ -46,7 +41,7 @@ public class StandardRecovery implements Recovery
 	this.list = new LinkedList();
 	this.index = 0;
     }
-    
+
     public boolean hasNext()
     {
 	return index < list.size();
@@ -69,7 +64,7 @@ public class StandardRecovery implements Recovery
 
     private List list;
     private int index;
-    
+
     private static class StandardCorrection implements Correction
     {
 	StandardCorrection(int type)
@@ -108,7 +103,3 @@ public class StandardRecovery implements Recovery
 	private Object val;
     }
 }
-
-
-
-

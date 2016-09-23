@@ -2,7 +2,7 @@
  * $Id: CFProduction.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -21,9 +21,11 @@
 package com.inxar.syntacs.grammar.context_free;
 
 import java.util.ArrayList;
-import org.inxar.syntacs.grammar.context_free.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.grammar.context_free.Production;
+import org.inxar.syntacs.grammar.context_free.GrammarSymbol;
+import org.inxar.syntacs.grammar.context_free.Item;
+import org.inxar.syntacs.grammar.context_free.NonTerminal;
+import org.inxar.syntacs.util.IntArray;
 
 /**
  * Standard <code>Production</code> implementation.
@@ -54,7 +56,7 @@ public class CFProduction
 
     /**
      * Assume that the CFGrammar object will call this method on all
-     * productions when 'compiling'.  
+     * productions when 'compiling'.
      */
     void itemize()
     {
@@ -75,7 +77,7 @@ public class CFProduction
 	    // production.
 	    if (position != symbols.length()) {
 //    		System.out.println(this.toString());
-//    		System.out.println("itemize(): pos = " + position + 
+//    		System.out.println("itemize(): pos = " + position +
 //    				   ", iter.at(pos) = "+symbols.at(position));
 
 		currentSymbol = grammar.getGrammarSymbol( symbols.at(position) );
@@ -174,12 +176,12 @@ public class CFProduction
 	{
 	    if (index < 0 || index >= count)
 		throw new ArrayIndexOutOfBoundsException
-		    ("Request for index " + index + 
+		    ("Request for index " + index +
 		     ", but effective size of array is " + count);
 
 	    if (src[index] == null)
 		throw new NullPointerException
-		    ("Request for index " + index + 
+		    ("Request for index " + index +
 		     " has a null entry.");
 
 	    return src[index].getID();
@@ -197,7 +199,7 @@ public class CFProduction
 		dst[i] = src[i].getID();
 	    return dst;
 	}
-	
+
 	void add(GrammarSymbol s)
 	{
 	    if (count == src.length)
@@ -222,7 +224,7 @@ public class CFProduction
 		    b.append(',');
 		b.append(src[i]);
 	    }
-	    
+
 	    return b.append(']').toString();
 	}
 
@@ -238,8 +240,3 @@ public class CFProduction
     }
 
 }
-
-
-
-
-

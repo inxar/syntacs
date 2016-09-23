@@ -2,7 +2,7 @@
  * $Id: StandardParser.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,15 +20,21 @@
  */
 package com.inxar.syntacs.analyzer.syntactic;
 
-import org.inxar.syntacs.grammar.*;
-import org.inxar.syntacs.analyzer.*;
-import org.inxar.syntacs.analyzer.syntactic.*;
-import org.inxar.syntacs.automaton.pushdown.*;
-import org.inxar.syntacs.translator.*;
-import org.inxar.syntacs.translator.lr.*;
-import com.inxar.syntacs.translator.lr.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.analyzer.Symbol;
+import org.inxar.syntacs.analyzer.syntactic.Correction;
+import org.inxar.syntacs.analyzer.syntactic.Recovery;
+import org.inxar.syntacs.analyzer.syntactic.Sentence;
+import org.inxar.syntacs.analyzer.syntactic.ParserInterpreter;
+import org.inxar.syntacs.analyzer.syntactic.Parser;
+import org.inxar.syntacs.automaton.pushdown.DPA;
+import org.inxar.syntacs.automaton.pushdown.Action;
+import org.inxar.syntacs.translator.TranslationException;
+import org.inxar.syntacs.translator.Complaint;
+import org.inxar.syntacs.util.Log;
+
+import com.inxar.syntacs.translator.lr.AbstractLRTranslationComponent;
+import com.inxar.syntacs.util.ArrayIntStack;
+import com.inxar.syntacs.util.Mission;
 
 /**
  * Concrete implementation of <code>Parser</code>.
@@ -37,7 +43,7 @@ public class StandardParser extends AbstractLRTranslationComponent
     implements Parser
 {
     private static final boolean DEBUG = true;
-    
+
     /*
      * Constructs a new parser.
      */
@@ -50,7 +56,7 @@ public class StandardParser extends AbstractLRTranslationComponent
      */
     public void initialize(Object arg)
     {
-	if (arg instanceof DPA) 
+	if (arg instanceof DPA)
 	    this.dpa = (DPA)arg;
 	else
 	    throw new IllegalArgumentException
@@ -61,7 +67,7 @@ public class StandardParser extends AbstractLRTranslationComponent
     {
 	this.debug = "true".equals(p.getProperty("run-parser-debug"));
 	this.errlim = Mission.control().getInt("run-error-limit", -1);
-	
+
 	// make the state integer stack
 	states = new ArrayIntStack(11);
 	// and the symbol stack
@@ -115,10 +121,10 @@ public class StandardParser extends AbstractLRTranslationComponent
 			    .out();
 
 		    nextRx();
-		} 
+		}
 
 		return;
-		
+
 	    case Correction.TUMBLE:
 		if (DEBUG && debug)
 		    log().debug()
@@ -148,26 +154,26 @@ public class StandardParser extends AbstractLRTranslationComponent
 			throw new TranslationException(auditor, "Tumbled Out of Parse");
 
 		    Symbol sym = stack.pop();
-		    if (DEBUG && debug) 
+		    if (DEBUG && debug)
 			log().debug()
 			    .write("TUMBLING... discarding ")
 			    .write(getSymbolName(symbol.getSymbolType()))
 			    .out();
 		}
-		
+
 		nextRx();
 		notify(symbol);
 		return;
 	    }
 	}
-    	    
+
 	if (DEBUG && debug)
 	    log().debug().over();
 
 	// PART 1: get the action from the pushdown automata
 	Action action = dpa.action(state, symbol.getSymbolType());
 
-	if (DEBUG && debug) 
+	if (DEBUG && debug)
 	    if (action.getType() == Action.REDUCE)
 		log().debug()
 		    .write("in state ").write(state)
@@ -186,11 +192,11 @@ public class StandardParser extends AbstractLRTranslationComponent
 		    .write(", DPA says ")
 		    .write(action)
 		    .out();
-	
+
 	// PART 2: see what to do
 	switch (action.getType()) {
 	case Action.SHIFT:
-	    
+
 	    // grab the next state from the action register and save
 	    // to current
 	    state = action.getValue();
@@ -199,16 +205,16 @@ public class StandardParser extends AbstractLRTranslationComponent
 	    // shift the token
 	    stack.push(symbol);
 
-	    if (DEBUG && debug) 
+	    if (DEBUG && debug)
 		log().debug()
 		    .write("Shifted state ").write(state)
 		    .out();
 
 	    // done
 	    break;
-	    
+
 	case Action.REDUCE:
-	    
+
 	    // get the value of the production from the action
 	    // register
 	    int productionID = action.getValue();
@@ -219,8 +225,8 @@ public class StandardParser extends AbstractLRTranslationComponent
 	    // Get the id of the nonterminal symbol we are about to
 	    // reduce to
 	    int nonTerminalID = grammar.getProductionNonTerminal(productionID);
-	    
-	    if (DEBUG && debug) 
+
+	    if (DEBUG && debug)
 		log().debug()
 		    .write("Reducing ")
 		    .write(grammar.getProduction(productionID))
@@ -247,52 +253,52 @@ public class StandardParser extends AbstractLRTranslationComponent
 	    // thus returns the top state on the stack.  the type of
 	    // nonTerminal that was just pushed on the stacktack
 	    state = dpa.go(states.peel(length), nonTerminalID);
-	    
+
 	    // push the next state to the top of the state stack
 	    states.push(state);
-	
-//  	    if (DEBUG && debug) 
+
+//  	    if (DEBUG && debug)
 //  		log().debug()
 //  		    .write("Reduced ")
 //  		    .write(grammar.getProduction(productionID))
 //  		    .out();
-     
+
 	    // we recurse on reduce as there is more work to do.
 	    notify(symbol);
-	    
+
 	    // done
 	    break;
-	    
+
 	case Action.ACCEPT:
-	    
+
 	    interpreter.accept();
 	    break;
-	    
+
 	case Action.ERROR:
-	    
-	    if (DEBUG && debug) 
+
+	    if (DEBUG && debug)
 		log().debug()
 		    .write("SYNTAX ERROR!")
 		    .out();
 
 	    rx = interpreter.recover(symbol.getSymbolType(), stack);
-	    
+
 	    if (rx != null)
-		if (rx.hasNext()) 
+		if (rx.hasNext())
 		    cx = rx.next();
 		else
 		    rx = null;
-	     
+
 
 	    // Make error message
 	    if (errlim > 0 && auditor.errors() > errlim)
 		throw new TranslationException(auditor);
 	    else
-		auditor.notify(Complaint.SYNTACTIC_ERROR, 
+		auditor.notify(Complaint.SYNTACTIC_ERROR,
 			       "Unexpected parse sequence at or before current input position.",
 			       in, in.atch(), 1);
 	    break;
-	    
+
 	default:
 	    // this should *never* occur
 	    throw new InternalError("Inappropriate LR parse instruction.");
@@ -311,7 +317,7 @@ public class StandardParser extends AbstractLRTranslationComponent
     {
 	return interpreter;
     }
-    
+
     private String getSymbolName(int ID)
     {
 	String name = grammar.getTerminal(ID);
@@ -326,7 +332,7 @@ public class StandardParser extends AbstractLRTranslationComponent
 	    log = Mission.control().log("prs", this);
 	return log;
     }
-    
+
     private int errlim;
     private int state;
     private Recovery rx;
@@ -346,45 +352,45 @@ public class StandardParser extends AbstractLRTranslationComponent
 	    stack = new Symbol[capacity];
 	    index = 0;
 	}
-	
+
 	void push(Symbol symbol)
 	{
 	    check();
 	    stack[index++] = symbol;
 	}
-	
+
 	Symbol pop()
 	{
 	    return stack[--index];
 	}
-	
+
 	Symbol peek()
 	{
 	    return stack[index - 1];
 	}
-	
+
 	boolean isEmpty()
 	{
 	    return index == 0;
 	}
-	
+
 	int size()
 	{
 	    return index;
 	}
-	
+
 	public String toString()
 	{
 	    StringBuffer buf = new StringBuffer("[");
-	    
+
 	    for (int i=0; i < index; i++) {
 		if (i>0) buf.append("; ");
 		buf.append(stack[i]);
 	    }
-	    
+
 	    return buf.append(']').toString();
 	}
-	
+
 	private void check()
 	{
 	    if (index == stack.length) {
@@ -393,35 +399,31 @@ public class StandardParser extends AbstractLRTranslationComponent
 		stack = dst;
 	    }
 	}
-	
+
 	Sentence reduce(int length)
 	{
 	    this.length = length;
 	    this.index -= length;
 	    return this;
 	}
-	
+
 	public int length()
 	{
 	    return length;
 	}
-	
+
 	public Symbol at(int pos)
 	{
 	    return stack[index + pos];
 	}
-	
+
 	public Symbol get(int index)
 	{
 	    return stack[index];
 	}
-	
+
 	private int length;
 	private int index;
 	private Symbol[] stack;
     }
 }
-
-
-
-

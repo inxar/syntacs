@@ -2,7 +2,7 @@
  * $Id: Interpret.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,19 +20,23 @@
  */
 package com.inxar.syntacs;
 
-import java.io.*;
-import java.util.*;
+import java.io.Reader;
+import java.io.FileReader;
+import java.io.StringReader;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import com.inxar.syntacs.analyzer.*;
-import org.inxar.syntacs.translator.*;
-import com.inxar.syntacs.translator.*;
-import org.inxar.syntacs.translator.lr.*;
-import com.inxar.syntacs.translator.lr.*;
-import com.inxar.syntacs.translator.regexp.*;
-import com.inxar.syntacs.translator.syntacs.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.translator.Translator;
+import org.inxar.syntacs.translator.TranslatorGrammar;
+import org.inxar.syntacs.translator.TranslationException;
+import org.inxar.syntacs.util.Log;
+
+import com.inxar.syntacs.util.Mission;
+import com.inxar.syntacs.util.Arboreal;
+import com.inxar.syntacs.util.Tree;
 
 /**
  * <code>Interpret</code> is the command-line interface to execute test
@@ -42,7 +46,7 @@ import com.inxar.syntacs.util.*;
  * name of a file; if that fails, it passes the string directly to be
  * translated.</OL> <code>Properties</code> to be passed to the
  * translator may be expressed using the -D option.  <P> Two Examples:
- * 
+ *
  * <pre>
  * java -classpath $CLASSPATH \
  *   com.inxar.syntacs.Interpret \
@@ -59,15 +63,14 @@ import com.inxar.syntacs.util.*;
 public class Interpret
 {
     private static final boolean DEBUG = true;
-    
-    private Interpret() 
-    {
+
+    private Interpret() {
     }
 
     /**
      * Runs the tool; invoke this method with the classname of the
      * grammar to use and either a string to parse or the name of a
-     * file to parse.  
+     * file to parse.
      */
     public static void main(String[] argv)
     {
@@ -77,10 +80,10 @@ public class Interpret
 	//p.setProperty("run-print-parse-tree", "true");
 
 	int idx = parseopts(argv, p);
-	if (idx != argv.length - 2) 
+	if (idx != argv.length - 2)
 	    usage("The last two arguments must be the name of the "+
 		  "grammar class and an input string.");
-	    
+
 	String className = argv[idx];
 	String input = argv[idx + 1];
 
@@ -88,9 +91,9 @@ public class Interpret
 
 	Translator t = null;
 	try {
-	    
+
 	    // Load the translator grammar.
-	    TranslatorGrammar tg = 
+	    TranslatorGrammar tg =
 		(TranslatorGrammar)Class.forName(className).newInstance();
 
 	    //p.setProperty("run-lexer-debug", "false");
@@ -98,17 +101,17 @@ public class Interpret
 
 	    // Fetch a translator.
 	    t = tg.newTranslator(p);
-	    
+
 	} catch (Exception ex) {
 	    System.err.println
 		("Could not instantiate translator for "+className+".");
 	    ex.printStackTrace();
 	}
-	
+
 
 	Reader in = null;
 	try {
-	    
+
 	    in = new BufferedReader(new FileReader(input));
 
 	    if (verbose)
@@ -124,7 +127,7 @@ public class Interpret
 		log().debug().touch();
 
 	} catch (FileNotFoundException fnfex) {
-	    
+
 	    if (verbose)
 		log().debug()
 		    .write("Translating string \"")
@@ -138,13 +141,9 @@ public class Interpret
 	    if (verbose)
 		log().debug().touch();
 
-	} catch (IOException ioex) {
-	    System.err.println
-		("The file `"+input+"' exists, but could not be opened.");
-	    ioex.printStackTrace();
 	} finally {
 	    if (in != null)
-		try { in.close(); in = null; } 
+		try { in.close(); in = null; }
 		catch (Exception ex) {}
 	}
 
@@ -154,21 +153,21 @@ public class Interpret
     private static void parse(Translator t, Reader in)
     {
 	try {
-	    
+
 	    Object o = t.translate(in);
-	    
+
 	    if ("true".equals
 		(t.getProperties().getProperty
 		 ("run-print-parse-tree"))) {
-		
+
 		if (o instanceof Arboreal) {
-		    
+
 		    Tree tree = true
-			? new Tree("TOP") 
+			? new Tree("TOP")
 			    : new Tree.Box("TOP");
-		    
+
 		    ((Arboreal)o).toTree(tree);
-		    
+
 		    System.out.println();
 		    System.out.println("Parse Tree:");
 		    System.out.println(tree);
@@ -199,7 +198,7 @@ public class Interpret
 	    log = Mission.control().log("run", new Interpret());
 	return log;
     }
-    
+
     private static Log log;
     private static boolean verbose;
 
@@ -222,7 +221,7 @@ public class Interpret
 	    if (opts[i].equals("--"))
 		return i;
 
-	    // All options must start with a dash 
+	    // All options must start with a dash
 	    if (!opts[i].startsWith("-"))
 		return i;
 
@@ -233,7 +232,7 @@ public class Interpret
 			("The -D option must have a valid key=val argument");
 		splitopt(opts[++i], p);
 	    }
-				       
+
 	    // Handle case where value is concatentated to the
 	    // option.
 	    else if (opts[i].startsWith("-D")) {
@@ -245,7 +244,7 @@ public class Interpret
 		usage("Unknown option `"+opts[i]+"'");
 
 	    // If not an option, we should stop.
-	    else 
+	    else
 		return i;
 
 	    // Go to next option
@@ -285,12 +284,8 @@ public class Interpret
 	System.err.println("| Requirements:");
 	System.err.println("|  <grammar-classname>...The name of the translator grammar to instantiate");
 	System.err.println("|  <input-string>........The name of a file or a raw string to parse");
-	System.err.println("|");	
+	System.err.println("|");
 
 	System.exit(-1);
     }
 }
-
-
-
-

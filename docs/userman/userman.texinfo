@@ -25,7 +25,7 @@
 @c You should have received a copy of the GNU General Public License
 @c along with this program; if not, write to the Free Software
 @c Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-@c USA.  
+@c USA.
 @c
 
 @ifinfo
@@ -58,17 +58,17 @@ not strictly essential to be familiar with these concepts, it's much
 easier going if you do.
 
 @menu
-* Overview::                    
-* Definitions::                 
-* Compilation Model::           
-* Lexical Context::             
-* Error Handling::              
-* Grammar Syntax::              
-* Regular Expression Syntax::   
-* Properties::                  
-* Example Grammar::             
-* Graphviz::                    
-* Resources::                   
+* Overview::
+* Definitions::
+* Compilation Model::
+* Lexical Context::
+* Error Handling::
+* Grammar Syntax::
+* Regular Expression Syntax::
+* Properties::
+* Example Grammar::
+* Graphviz::
+* Resources::
 @end menu
 
 @c =====================================================================
@@ -112,7 +112,7 @@ related to the theory of lexical and syntactic analysis.  Note that the
 concepts defined here are reworked to my own interpretation and specific
 to the STT, they are not intended to be generally applicable.
 
-@section Lexical Definitions 
+@section Lexical Definitions
 
 @itemize
 @item
@@ -121,7 +121,7 @@ character sequences ``reduce'' to a token.
 @item
 A @dfn{token} is an input character sequence that is a particular
 instance of a regular expression.
-@item 
+@item
 A @dfn{regular definition} is a regular expression that has a
 @dfn{symbol} (a name).
 @item
@@ -132,7 +132,7 @@ name).
 @item
 A @dfn{context transition function} is a mapping from the tuple @dfn{(context
 symbol, regular definition symbol)} to @dfn{context action}.
-@item 
+@item
 A @dfn{context action} is a tuple @dfn{(instruction, value)} that drives
 the management of the lexer context stack.
 @item
@@ -152,14 +152,14 @@ context), the context transition function, and a context stack.
 
 @end itemize
 
-@section Syntactic Definitions 
+@section Syntactic Definitions
 
 @itemize
 @item
 A @dfn{context-free grammar} is a set of terminals, a set of
 nonterminals, and an @dfn{accepting nonterminal} (a distinguished
 nonterminal).
-@item 
+@item
 A @dfn{grammar symbol} is the union of the set of terminal symbols and
 the set of nonterminal symbols.
 @item
@@ -168,13 +168,13 @@ terminals is typically drawn from the union of set of regular definition
 symbols over all the lexical contexts of the lexical grammar.  Note that
 not all regular definition symbols need be terminal symbols, and not all
 terminal symbols need be defined as a regular definition (see fig 1).
-@item 
+@item
 a @dfn{context-free expression} is a language that defines which
 grammar symbol sequences ``reduce'' to a nonterminal.
 @item
 A @dfn{production} is a single partition of a context-free expression,
 it is one alternative of a nonterminal.
-@item 
+@item
 A @dfn{nonterminal} is context-free expression that has a @dfn{symbol}.
 @item
 A @dfn{deterministic pushdown automaton} (DPA) is an context-free
@@ -191,9 +191,9 @@ DPA, a state stack, and a symbol stack.
 @example
         +---------------+
         |   Terminals   |
-        |               |  
-   +----|----------+    |  
-   |    |          |    |  
+        |               |
+   +----|----------+    |
+   |    |          |    |
    |    +---------------+
    |               |
    | Regular Dfn's |
@@ -205,7 +205,7 @@ symbols are not necessarily equal.
 @section Translative Definitions
 
 @itemize
-@item 
+@item
 @dfn{Translation} refers to the combined process of lexical and
 syntactic analysis.
 @item
@@ -221,7 +221,6 @@ the (abstract) syntax tree.
 @c =====================================================================
 
 @node Processing Model, Compilation Model, Definitions, Top
-
 @chapter Processing Model
 
 
@@ -233,28 +232,28 @@ necessary.
 @example
 
               SUMMARY OF PROCESSING MODEL
-                           
+
                         (1) user invokes `trnsltr.translate(in)'.
-       +-----------+    (2) trnsltr initializes Input with `in' argument.    
+       +-----------+    (2) trnsltr initializes Input with `in' argument.
        |           |    (3) trnsltr initializes Auditor (the error repository).
        | The User  |    (4) trnsltr invokes `lexer.start()', begins parse loop.
-       |           |    (5) lexer returns, parse is complete.    
+       |           |    (5) lexer returns, parse is complete.
        +-----------+    (6) trnsltr requests result Object from ParserInterpreter.
          ||     /\      (7) ParserInterpreter returns result.
          || (1) || (8)  (8) trnsltr returns result to user, translation is complete.
          \/     ||
        +------------------------------------------+
-       | Translator                               |      
+       | Translator                               |
        +------------------------------------------+
          ||     /\     /\             ||       ||
-         || (4) || (5) || (6,7)       || (2)   || 
+         || (4) || (5) || (6,7)       || (2)   ||
   >>     \/     ||     ||             \/       ||
   __   +---------------------+       +---+     ||
- '  `  | Lexer               | <---> |I  |     || (3)	      
+ '  `  | Lexer               | <---> |I  |     || (3)
  |M |  +---------------------+       |N  |     \/
- |A |    ||            ||  |         |P  |    +---+ 
- |I |    || (a)        ||  `---------|U  |--> |A  | 
- |N |    \/            ||            |T  |    |U  | 
+ |A |    ||            ||  |         |P  |    +---+
+ |I |    || (a)        ||  `---------|U  |--> |A  |
+ |N |    \/            ||            |T  |    |U  |
  |  |  +=====================+       |   |    |D t|
  |P |  | LexerInterpreter    | <---> |   |    |I h|
  |A |  +=====================+       |   |    |T e|
@@ -281,7 +280,7 @@ necessary.
        calls `interpreter.match(int terminal_type, int offset, int length)'
 
    (b) LexerInterpreter interprets match event
-       packages terminal as a Symbol 
+       packages terminal as a Symbol
        calls `parser.notify(Symbol terminal)'
 
    (c) Parser uses Symbol & DPA
@@ -291,8 +290,8 @@ necessary.
    (d) ParserInterpreter interprets reduction
        packages nonterminal as a Symbol
        returns nonterminal to Parser for inclusion on parse stack
- 
-   * All components may interact with Input and Auditor as necessary 
+
+   * All components may interact with Input and Auditor as necessary
 
    * LexerInterpreter and ParserInterpreter (double-lined boxes) are
      generally a single object that implements LRTranslatorInterpreter
@@ -421,16 +420,16 @@ In summary, a simplified schematic for the translation is given below.
 (1) User invokes @code{translate()}
 (2) Translator runs the internal parse loop
 (3) Translator fetches the result from the Interpreter
-(4) Result is returned to the User 
+(4) Result is returned to the User
 @end example
 
 Fig 2:  Simplified Processing Model
 
 @node Compilation Model, Lexical Context, Definitions, Top
-@chapter Compilation Model 
+@chapter Compilation Model
 
 When a grammar is compiled, each component in the translator is
-constructed.  
+constructed.
 
 @section Construction of LRTranslatorGrammar
 
@@ -545,7 +544,7 @@ To take advantage of multiple lexical contexts you need to declare the
 names of the contexts to be used in your grammar.  Then, define which
 terminals will be included in what context such that the finite automata
 can be correctly assembled for each context.  The context definition is
-also where PUSH or POP instructions are made.  @xref{Grammar Syntax} for
+also where PUSH or POP instructions are made.  @xref{Grammar Syntax}, for
 more information.
 
 
@@ -680,7 +679,7 @@ they start with a pound sign (@code{#}) and end with a newline.
 The sections are:
 
 @itemize
-@item @strong{Grammar Declaration}: 
+@item @strong{Grammar Declaration}:
 defines the grammar name and version [required].
 @item @strong{Property Definitions}:
 declares the names and values of various of properties [optional].
@@ -717,7 +716,7 @@ this is syntacs version 0.1.0;
 @section Property Declarations
 
 Properties are key:value pairs that are put into a hashtable and used
-throughout grammar processing.  @xref{Properties} for a listing of these
+throughout grammar processing.  @xref{Properties}, for a listing of these
 properties. They are enclosed in double-quotes.
 
 @example
@@ -749,7 +748,7 @@ terminal T1, T2;
 Terminal definitions are regular definitions; they associate a name with
 an expression.  A regular expression is enclosed in double-quotes;
 whitespace within the string is insignificant.  @xref{Regular Expression
-Syntax} about how regular expressions are written in @code{STT}.
+Syntax}, about how regular expressions are written in @code{STT}.
 
 @example
 # format: <TERMINAL> matches "regexp";
@@ -797,7 +796,7 @@ accept when Goal;
 @section Context Declarations
 
 The context declarations and definitions are optional.  @xref{Lexical
-Context} for an explanation of what a ``context'' is.
+Context}, for an explanation of what a ``context'' is.
 
 The context declarations section is similar to the terminal declarations
 section and nonterminal declarations section.
@@ -852,7 +851,7 @@ An @code{unshifts} instruction changes the lexer context to the previous
 context.
 
 @example
-# POP instruction for Z in context "special".  
+# POP instruction for Z in context "special".
 special includes Z unshifts;
 @end example
 
@@ -884,7 +883,7 @@ start with context special;
 @section Context Post-Processing
 
 After the grammar is parsed, some processing is done to initialize each
-context with the terminals that will be included in it.  
+context with the terminals that will be included in it.
 
 @heading Case 1: No explicit contexts
 
@@ -897,7 +896,7 @@ In this circumstance, the processor implicitly adds in a single context
 acts on the corresponding DFA and no context switching is done.
 
 @example
-terminal WHITESPACE, DATA; 
+terminal WHITESPACE, DATA;
 
 nonterminal data;
 reduce data when DATA;
@@ -911,7 +910,7 @@ In this circumstance the user declares more or more contexts.  The
 explicitly with no error.
 
 @example
-terminal WHITESPACE, DATA, 
+terminal WHITESPACE, DATA,
          START_QUOTE, QUOTE_DATA, END_QUOTE;
 
 nonterminal data, quote;
@@ -931,7 +930,7 @@ after the grammar is parsed.  The all context does not have to be
 declared.
 
 @example
-terminal WHITESPACE, DATA, 
+terminal WHITESPACE, DATA,
          START_QUOTE, QUOTE_DATA, END_QUOTE;
 
 nonterminal data, quote;
@@ -978,7 +977,7 @@ Octal and Unicode escapes can be used as well.
 
 @section Quantification Operators
 
-@table @code 
+@table @code
 @item @dfn{Op}
 @dfn{Definition}
 @item *
@@ -988,7 +987,7 @@ Positive-closure: one or more occurrences must exist
 @item ?
 Optional: zero-or-one occurrences must exist
 @end table
-   
+
 
 @section Literal Escapes
 
@@ -1011,13 +1010,13 @@ literal vertical tab
 literal plus sign
 @item \*
 literal asterisk
-@item \? 
+@item \?
 literal question-mark
-@item \( 
+@item \(
 literal open-parenthesis
 @item \)
 literal close-parenthesis
-@item \[ 
+@item \[
 literal open-bracket
 @item \]
 literal close-bracket
@@ -1037,7 +1036,7 @@ respectively:
 
 @example
 OCTAL_ESCAPE   matches " \\ [0-3] [0-7] [0-7] ";
-UNICODE_ESCAPE matches " \\ u [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] "; 
+UNICODE_ESCAPE matches " \\ u [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] ";
 
 @end example
 
@@ -1147,7 +1146,7 @@ A boolean value that, if ``false'', will prevent pickling of generated DPA
 classes.
 @end table
 
-@subsection Compile-time properties that customize the translation components 
+@subsection Compile-time properties that customize the translation components
 
 @table @code
 @item compile-input-classname
@@ -1289,7 +1288,7 @@ this is regexp version 0.1.0;
 # PROPERTY DEFINITIONS
 property compile-sourcepath = "./src";
 property compile-namespace = "com.inxar.syntacs.translator.regexp";
-property compile-interpreter-classname = 
+property compile-interpreter-classname =
     "com.inxar.syntacs.translator.regexp.RegexpInterpreter";
 
 # TERMINAL DECLARATIONS
@@ -1429,17 +1428,17 @@ context default;
 context charclass;
 
 # CONTEXT DEFINITIONS
-default includes WHITESPACE, CHAR, PIPE, STAR, QUESTION, PLUS, OPEN_PAREN, CLOSE_PAREN, 
-                 ESC_PIPE, ESC_QUESTION, ESC_STAR, ESC_PLUS, ESC_OPEN_PAREN, ESC_CLOSE_PAREN, 
-                 ESC_OPEN_BRACKET, ESC_BACKSLASH, ESC_SPACE, ESC_TAB, ESC_VERTICAL_TAB, 
+default includes WHITESPACE, CHAR, PIPE, STAR, QUESTION, PLUS, OPEN_PAREN, CLOSE_PAREN,
+                 ESC_PIPE, ESC_QUESTION, ESC_STAR, ESC_PLUS, ESC_OPEN_PAREN, ESC_CLOSE_PAREN,
+                 ESC_OPEN_BRACKET, ESC_BACKSLASH, ESC_SPACE, ESC_TAB, ESC_VERTICAL_TAB,
                  ESC_CR, ESC_LF, ESC_OCTAL, ESC_UNICODE, ESC_CLOSE_BRACKET,
-                 OPEN_BRACKET shifts charclass, 
-                 OPEN_BRACKET_CARET shifts charclass, 
-                 OPEN_BRACKET_DASH shifts charclass, 
+                 OPEN_BRACKET shifts charclass,
+                 OPEN_BRACKET_CARET shifts charclass,
+                 OPEN_BRACKET_DASH shifts charclass,
                  OPEN_BRACKET_CARET_DASH shifts charclass;
 
-charclass includes WHITESPACE, CHAR_CLASS_CHAR, CHAR_CLASS_DASH, 
-                   ESC_BACKSLASH, ESC_SPACE, ESC_TAB, ESC_VERTICAL_TAB, ESC_CR, ESC_LF, 
+charclass includes WHITESPACE, CHAR_CLASS_CHAR, CHAR_CLASS_DASH,
+                   ESC_BACKSLASH, ESC_SPACE, ESC_TAB, ESC_VERTICAL_TAB, ESC_CR, ESC_LF,
                    ESC_OCTAL, ESC_UNICODE, ESC_CLOSE_BRACKET,
                    CLOSE_BRACKET unshifts;
 
@@ -1452,14 +1451,14 @@ Several things to note in the grammar:
 @item
 There are multiple contexts; character classes have their own set of
 regular definitions that are not shared across all contexts.
-@item 
+@item
 Whitespace and a number of ESC_xxx tokens are members of both contexts.
-@item 
+@item
 @code{CLOSE_BRACKET} returns the lexer the to the previous lexical
 context.
 @end itemize
 
-@section The TranslatorGrammar 
+@section The TranslatorGrammar
 
 Notice that the grammar is @dfn{code-free}; it does not contain any Java
 code.  This means that user-defined code has to go somewhere else.  The
@@ -1512,7 +1511,7 @@ To generate the translator grammar, run the syntacs compiler on the
 grammar:
 
 @example
-[user@host]$ sttc regexp.stt
+[user@@host]$ sttc regexp.stt
 @end example
 
 @section The LexerInterpreter
@@ -1534,11 +1533,11 @@ recognize.
 
 Here is ther salient code:
 
-@example
+@verbatim
     public void match(int type, int off, int len)
     {
 	Symbol symbol = null;
-	
+
         switch (type) {
 
 	case RegexpGrammar.T_WHITESPACE:
@@ -1549,8 +1548,8 @@ Here is ther salient code:
 	case RegexpGrammar.T_CLOSE_PAREN:
 	case RegexpGrammar.T_CHAR_CLASS_DASH:
 	case RegexpGrammar.T_CLOSE_BRACKET:
-	case Token.STOP: 
-	    symbol = new ConstantSymbol(type); 
+	case Token.STOP:
+	    symbol = new ConstantSymbol(type);
 	    break;
 
 	case RegexpGrammar.T_CHAR:
@@ -1601,23 +1600,23 @@ Here is ther salient code:
 	case RegexpGrammar.T_ESC_OPEN_PAREN:    symbol = newAtom(type, '('); break;
 	case RegexpGrammar.T_ESC_CLOSE_PAREN:   symbol = newAtom(type, ')'); break;
 
-	case RegexpGrammar.T_OPEN_BRACKET:            
+	case RegexpGrammar.T_OPEN_BRACKET:
 	    symbol = newClass(type, false, false); break;
-	case RegexpGrammar.T_OPEN_BRACKET_CARET:      
+	case RegexpGrammar.T_OPEN_BRACKET_CARET:
 	    symbol = newClass(type, true, false); break;
-	case RegexpGrammar.T_OPEN_BRACKET_DASH:       
+	case RegexpGrammar.T_OPEN_BRACKET_DASH:
 	    symbol = newClass(type, false, true); break;
-	case RegexpGrammar.T_OPEN_BRACKET_CARET_DASH: 
+	case RegexpGrammar.T_OPEN_BRACKET_CARET_DASH:
 	    symbol = newClass(type, true, true); break;
 
-	case RegexpGrammar.T_STAR:     
+	case RegexpGrammar.T_STAR:
 	    symbol = new QuantifierSymbol(type, Regexp.CLOSURE); break;
-	case RegexpGrammar.T_QUESTION: 
+	case RegexpGrammar.T_QUESTION:
 	    symbol = new QuantifierSymbol(type, Regexp.OPTIONAL); break;
-	case RegexpGrammar.T_PLUS:     
+	case RegexpGrammar.T_PLUS:
 	    symbol = new QuantifierSymbol(type, Regexp.PCLOSURE); break;
 
-	default: 
+	default:
 	    throw new InternalError
 		("Expected terminal type: " + grammar.getTerminal(type));
         }
@@ -1640,7 +1639,7 @@ Here is ther salient code:
 	ccbs.hasDash = hasDash;
 	return ccbs;
     }
-@end example
+@end verbatim
 
 Some points from the code:
 
@@ -1656,7 +1655,7 @@ minimizes unnecessary arraycopying in the tightest part of the parse
 loop.
 @item
 Multiple different cases can be aggregated to the same switch block.
-@item 
+@item
 The last statement passes the symbol along to the parser.
 @end itemize
 
@@ -1678,7 +1677,7 @@ being reduced, @code{sentence.at(0)} accesses the @samp{CharClassBegin}
 symbol, @code{sentence.at(1)} accesses @samp{CharClassTermList}, and
 @code{sentence.at(2)} accesses @samp{CLOSE_BRACKET}.
 
-@example
+@verbatim
     public Symbol reduce(int type, Sentence s)
     {
 	Symbol symbol = null;
@@ -1775,7 +1774,7 @@ symbol, @code{sentence.at(1)} accesses @samp{CharClassTermList}, and
 
 	case RegexpGrammar.P_Term__Atom_Quantifier:
 	    {
-		QuantifierSymbol q = (QuantifierSymbol)s.at(1); 
+		QuantifierSymbol q = (QuantifierSymbol)s.at(1);
 		RegexpTerm term = new RegexpTerm(q.regexpType);
 		term.setInternal( (Regexp)s.at(0) );
 		symbol = term;
@@ -1841,16 +1840,16 @@ symbol, @code{sentence.at(1)} accesses @samp{CharClassTermList}, and
 
 	return symbol;
     }
-@end example
+@end verbatim
 
 @itemize
-@item 
+@item
 Each case picks out the relevant @code{Symbol} objects out of the parse
 stack through the @code{Sentence} interface (the top of the parse
 stack).
 @item
 Multiple cases aggregate to the same code; they are handled the same.
-@item 
+@item
 
 @end itemize
 
@@ -1860,13 +1859,13 @@ typically the same object that implements
 can set the property:
 
 @example
-property compile-interpreter-classname = 
+property compile-interpreter-classname =
  "com.inxar.syntacs.translator.regexp.RegexpInterpreter";
 @end example
 
 And regenerate the translator.  At this point the translator can be used:
 
-@example
+@verbatim
 TranslatorGrammar tg = new com.inxar.syntacs.translator.regexp.RegexpGrammar();
 Translator t = tg.newTranslator();
 
@@ -1876,8 +1875,8 @@ try {
     Regexp regexp = (Regexp)translator.translate(in);
 } catch (TranslationException ex) {
     ex.printStackTrace();
-} 
-@end example
+}
+@end verbatim
 
 @c =====================================================================
 
@@ -1979,4 +1978,3 @@ on Programming Languages and Systems, April 1988).
 
 @contents
 @bye
-

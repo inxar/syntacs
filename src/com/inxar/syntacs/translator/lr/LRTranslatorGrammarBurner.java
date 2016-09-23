@@ -2,7 +2,7 @@
  * $Id: LRTranslatorGrammarBurner.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -29,7 +29,7 @@ import com.inxar.syntacs.util.*;
 
 /**
  * A <code>Burner</code> which creates
- * <code>LRTranslatorGrammar</code> implementations.  
+ * <code>LRTranslatorGrammar</code> implementations.
  */
 public class LRTranslatorGrammarBurner implements Burner
 {
@@ -73,7 +73,6 @@ public class LRTranslatorGrammarBurner implements Burner
 		 ", not " + (src == null ? "null" : src.getClass().toString()));
 
 	this.g = (LRTranslatorGrammar)src;
-	this.p = p;
 	this.cls = cls;
 	cls.setAccess(Access.PUBLIC);
 
@@ -119,9 +118,9 @@ public class LRTranslatorGrammarBurner implements Burner
 	if (c != null) {
 	    s = c.getText() + "<P>" + s;
 	    c.setText(s);
-	} else 
+	} else
 	    cls.setComment(Comment.D, s);
-	    
+
     }
 
     // ================================================================
@@ -248,9 +247,9 @@ public class LRTranslatorGrammarBurner implements Burner
     {
 	IntArray keys = g.getProductions();
 	Expression[] vals = new Expression[ keys.length() ];
-	for (int i = 0; i < keys.length(); i++) 
+	for (int i = 0; i < keys.length(); i++)
 	    vals[i] = vm.newInt(g.getProductionLength( keys.at(i) ));
-	
+
 	newMethod_switch(t_int, "getProductionLength", v_ID, keys, vals, l_UNP);
     }
 
@@ -258,9 +257,9 @@ public class LRTranslatorGrammarBurner implements Burner
     {
 	IntArray keys = g.getProductions();
 	Expression[] vals = new Expression[ keys.length() ];
-	for (int i = 0; i < keys.length(); i++) 
+	for (int i = 0; i < keys.length(); i++)
 	    vals[i] = vm.newInt(g.getProductionNonTerminal( keys.at(i) ));
-	
+
 	newMethod_switch(t_int, "getProductionNonTerminal", v_ID, keys, vals, l_UNP);
     }
 
@@ -272,13 +271,13 @@ public class LRTranslatorGrammarBurner implements Burner
 
 	for (int i = 0; i < keys.length(); i++) {
 	    IntArray syms = g.getProductionSymbols( keys.at(i) );
-	    
+
 	    if (syms != null) {
 		vals[i] = new int[ syms.length() ];
-		for (int j = 0; j < syms.length(); j++) 
+		for (int j = 0; j < syms.length(); j++)
 		    vals[i][j] = syms.at(j);
 
-		e[i] = 
+		e[i] =
 		    newIntArray( vm.newArrayAccess(null, "productionSymbols")
 				 .addDim(vm.newInt(i)) );
 	    } else {
@@ -307,7 +306,7 @@ public class LRTranslatorGrammarBurner implements Burner
 		for (int j = 0; j < syms.length(); j++) {
 		    vals[i][j] = syms.at(j);
 		}
-		e[i] = 
+		e[i] =
 		    newIntArray( vm.newArrayAccess(null, "contextTerminals")
 				 .addDim(vm.newInt(i)) );
 	    } else {
@@ -335,10 +334,10 @@ public class LRTranslatorGrammarBurner implements Burner
 
 		vals[i] = new int[ syms.length() ];
 
-		for (int j = 0; j < syms.length(); j++) 
+		for (int j = 0; j < syms.length(); j++)
 		    vals[i][j] = syms.at(j);
 
-		e[i] = 
+		e[i] =
 		    newIntArray( vm.newArrayAccess(null, "terminalContexts")
 				 .addDim(vm.newInt(i)) );
 	    } else {
@@ -373,7 +372,7 @@ public class LRTranslatorGrammarBurner implements Burner
 	    // Format some method names
 	    String mNameA = "get" + cName + "ContextAction";
 	    String mNameR = "get" + cName + "ContextRegister";
-	    
+
 	    // Now we want to group terminals by action and register
 	    // such that we can build a case statement.  Basically
 	    // function inversion.
@@ -383,7 +382,7 @@ public class LRTranslatorGrammarBurner implements Burner
 	    // ACTION_XXX) to a set T (t is a terminalID) such that
 	    // getContextAction(c, t) == a.
 	    IntRelation actions = new TreeListIntRelation();
-	    
+
 	    // "registers" is a mapping from the set R (r is the value
 	    // of some register) to a set T (t is a terminalID) such
 	    // that getContextAction(c, t) == r.
@@ -396,13 +395,13 @@ public class LRTranslatorGrammarBurner implements Burner
 		actions.put(g.getContextAction(cID, tID), tID);
 		registers.put(g.getContextRegister(cID, tID), tID);
 	    }
-	    
+
 	    // Now generate a switch method for each context in the
 	    // grammar such that the action (or register) is the switch
 	    // constant.
 	    newMethod_switch_inverse(mNameA, "tID", actions, l_UNT);
 	    newMethod_switch_inverse(mNameR, "tID", registers, l_UNT);
-	    
+
 	    // Last thing is to create the expression for the method
 	    // call to the sublayer
 	    eA[i] = vm.newInvoke(null, mNameA).addArg( vm.newVar("tID") );
@@ -442,7 +441,7 @@ public class LRTranslatorGrammarBurner implements Burner
 
 	Type t_dpa = getType("dpa-class");
 	Type t_StandardTranslator = vm.newType("StandardTranslator");
-	
+
 	String[] dfaNames = (String[])Mission.control().get("_dfa-names");
 
 	Expression e_interpreter = null;
@@ -482,18 +481,18 @@ public class LRTranslatorGrammarBurner implements Burner
 	set(m, "Input", "_input", "input", "setInput");
 	set(m, "Lexer", "_lexer", "lexer", "setLexer");
 	set(m, "Parser", "_parser", "parser", "setParser");
-	set(m, "LRTranslatorInterpreter", "_interpreter", "interp", 
+	set(m, "LRTranslatorInterpreter", "_interpreter", "interp",
 	    "setLRTranslatorInterpreter");
 
 	// Initialize the lexer
 	String[] dfaNames = (String[])Mission.control().get("_dfa-names");
 	Expression[] ae = new Expression[dfaNames.length];
-	for (int i = 0; i < ae.length; i++) 
+	for (int i = 0; i < ae.length; i++)
 	    ae[i] = vm.newClass(vm.newType(dfaNames[i]));
 
 	NewArray na = vm.newArray(vm.newType("DFA")).addDim();
 	na.setInitializer(vm.newArrayInit(ae));
-	m.newStmt(vm.newInvoke("lexer", "initialize").addArg(na));	
+	m.newStmt(vm.newInvoke("lexer", "initialize").addArg(na));
 
 	// Initialize the parser
 	String dpaName = Mission.control().getString("_dpa-name");
@@ -504,15 +503,15 @@ public class LRTranslatorGrammarBurner implements Burner
 	m.newReturn().setExpression(vm.newVar("t"));
     }
 
-    private void set(ClassMethod m, 
-		     String className, 
-		     String implKey, 
-		     String varName, 
+    private void set(ClassMethod m,
+		     String className,
+		     String implKey,
+		     String varName,
 		     String methodName)
     {
 	String implName = Mission.control().get(implKey).getClass().getName();
-	Type implType = vm.newType(implName); 
-	Type classType = vm.newType(className); 
+	Type implType = vm.newType(implName);
+	Type classType = vm.newType(className);
 
 	m.newLet(classType).addAssign(varName, vm.newClass(implType));
 	m.newStmt(vm.newInvoke("t", methodName).addArg(vm.newVar(varName)));
@@ -527,7 +526,7 @@ public class LRTranslatorGrammarBurner implements Burner
 	// ---------------------------------------------------------
 
 	Expression[] ae = new Expression[classnames.length];
-	for (int i = 0; i < ae.length; i++) 
+	for (int i = 0; i < ae.length; i++)
 	    ae[i] = vm.newClass(vm.newType(classnames[i]));
 
 	Type tt_dfa = vm.newArray("DFA", 1);
@@ -536,7 +535,7 @@ public class LRTranslatorGrammarBurner implements Burner
 
 	return a;
     }
-	
+
     // ================================================================
     // METHOD FABS
     // ================================================================
@@ -545,18 +544,18 @@ public class LRTranslatorGrammarBurner implements Burner
     {
 	// First add an IntArray field.
 	newField(t_IntArray, fName).setExpression( newIntArray(a.toArray()) );
-	
+
 	// Now add a simple return method.
 	ClassMethod m = newMethod(t_IntArray, mName);
 	m.newReturn().setExpression( vm.newVar(fName) );
 	return m;
     }
 
-    private ClassMethod newMethod_switch(Type type, 
-					 String mName, 
+    private ClassMethod newMethod_switch(Type type,
+					 String mName,
 					 String pName,
-					 IntArray keys, 
-					 Expression[] vals, 
+					 IntArray keys,
+					 Expression[] vals,
 					 Expression def)
     {
 	ClassMethod m = newMethod(type, mName);
@@ -566,14 +565,14 @@ public class LRTranslatorGrammarBurner implements Burner
 	for (int i = 0; i < keys.length(); i++)
 	    s.newCase( vm.newInt( keys.at(i)) )
 		.newReturn()
-		.setExpression( vals[i] ); 
-	
+		.setExpression( vals[i] );
+
 	s.getDefault().newReturn().setExpression( def );
 
 	return m;
     }
 
-    private void newMethod_switch_inverse(String mName, 
+    private void newMethod_switch_inverse(String mName,
 					  String pName,
 					  IntRelation f,
 					  Expression def)
@@ -588,10 +587,10 @@ public class LRTranslatorGrammarBurner implements Burner
 
 	    int key = i.key();
 	    IntArray values = i.values().toIntArray();
-	    
+
 	    if (values.length() > 0) {
 		Case last = null;
-		for (int j = 0; j < values.length(); j++) 
+		for (int j = 0; j < values.length(); j++)
 		    last = s.newCase( vm.newInt(values.at(j)) );
 		last.newReturn().setExpression( vm.newInt(key) );
 	    } else {
@@ -608,7 +607,7 @@ public class LRTranslatorGrammarBurner implements Burner
 	m.setAccess(Access.PUBLIC);
 	return m;
     }
-    
+
     // ================================================================
     // FIELD FABS
     // ================================================================
@@ -663,7 +662,7 @@ public class LRTranslatorGrammarBurner implements Burner
 	    log = Mission.control().log("lrtg-burner", this);
 	return log;
     }
-    
+
     // ================================================================
     // TYPES AND FIELDS
     // ================================================================
@@ -691,4 +690,3 @@ public class LRTranslatorGrammarBurner implements Burner
     private LRTranslatorGrammar g;
     private Log log;
 }
-

@@ -2,7 +2,7 @@
  * $Id: ArrayDPAConstructor.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,12 +20,23 @@
  */
 package com.inxar.syntacs.automaton.pushdown;
 
-import java.util.*;
-import org.inxar.syntacs.grammar.context_free.*;
-import org.inxar.syntacs.translator.lr.*;
-import org.inxar.syntacs.automaton.pushdown.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Vector;
+import org.inxar.syntacs.grammar.context_free.ContextFreeSet;
+import org.inxar.syntacs.translator.lr.LRTranslatorGrammar;
+import org.inxar.syntacs.automaton.pushdown.Action;
+import org.inxar.syntacs.automaton.pushdown.DPA;
+import org.inxar.syntacs.automaton.pushdown.DPAConstructor;
+import org.inxar.syntacs.automaton.pushdown.AmbiguityException;
+import org.inxar.syntacs.util.Log;
+import org.inxar.syntacs.util.IntIterator;
+import org.inxar.syntacs.util.IntSet;
+import org.inxar.syntacs.util.Vizualizable;
+import org.inxar.syntacs.util.GraphViz;
+import org.inxar.syntacs.util.AlgorithmException;
+import com.inxar.syntacs.util.Mission;
+import com.inxar.syntacs.util.StringTools;
 
 
 /**
@@ -33,7 +44,7 @@ import com.inxar.syntacs.util.*;
  * builds an <code>ArrayDFA</code>. This class handles state
  * management and parse table encoding functionality and is typically
  * employed compositionally by other "higher-level" LR construction
- * algorithms.  Thus, this is one of the inner layers of the onion.  
+ * algorithms.  Thus, this is one of the inner layers of the onion.
  */
 public class ArrayDPAConstructor
     implements DPAConstructor, Vizualizable
@@ -96,7 +107,7 @@ public class ArrayDPAConstructor
 
     protected void conflict(int state, int symbol, int type, int register, Action action)
     {
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write("conflict: ")
 		.write(action.getType())
@@ -146,7 +157,7 @@ public class ArrayDPAConstructor
 	    default:
 		throw new InternalError("Unexpected conflict combination.");
 	    }
-	    
+
 	} else {
 
 	    // PART 2: check for SHIFT::REDUCE, REDUCE::SHIFT,
@@ -260,9 +271,9 @@ public class ArrayDPAConstructor
 		throw new InternalError("Unexpected conflict combination.");
 	    }
 	}
-	
+
 	b.append("  Recovered by choosing the first option.");
-	if (WARNING) 
+	if (WARNING)
 	    log.warn()
 		.write( b.toString() )
 		.out();
@@ -302,7 +313,7 @@ public class ArrayDPAConstructor
 
     /*
      * Do we need to check for goto/goto conflicts?  Currently we are
-     * not.  
+     * not.
      */
     public void go(int state, int symbol, int nextState)
 	throws AmbiguityException
@@ -456,41 +467,41 @@ public class ArrayDPAConstructor
 
 	if (Mission.control().isTrue("viz-dpa-concentrate-edges"))
 	    dot.attr("concentrate", "true");
-	
+
 	dot.attr("rankdir", rankdir);
 	node = dot.node("node");
 	node.attr("shape", ns);
 	node.attr("color", nc);
-	
+
 	node = dot.node("k0");
 	node.attr("style", "invis");
-	
+
 	edge = dot.edge("k0", "s"+0);
 	edge.attr("label", "start");
 
 	if (Mission.control().isNotTrue("viz-dpa-hide-terminal-edges")) {
-	    
+
 	    ec = Mission.control().getString
 		("viz-dpa-terminal-edge-color", "steelblue1");
 	    es = Mission.control().getString
 		("viz-dpa-terminal-edge-style", "solid");
-	    
+
 	    node = dot.node("edge");
 	    node.attr("color", ec);
 	    node.attr("style", es);
-	    
+
 	outer:
 	    for (int i = 0; i < action.length; i++) {
 		if (action[i] == null)
 		    continue outer;
-		
+
 	    inner:
 		for (int j = 0; j < action[i].length; j++) {
 		    if (action[i][j] == 0)
 			continue inner;
-		    
+
 		    Action a =  (Action)actions.elementAt(action[i][j]);
-		    
+
 		    switch (a.getType()) {
 		    case Action.SHIFT:
 			edge = dot.edge("s"+i, "s"+a.getValue());
@@ -499,34 +510,34 @@ public class ArrayDPAConstructor
 			    label = g.getNonTerminal(j);
 			edge.attr("label", label);
 			break;
-			
+
 		    case Action.REDUCE:
 			break;
-			
+
 		    case Action.ACCEPT:
 			node = dot.node("s"+i);
 			node.attr("shape", "doublecircle");
 			break;
-			
+
 		    default:
 			throw new InternalError();
 		    }
 		}
 	    }
 	}
-	
+
 	if (Mission.control().isNotTrue("viz-dpa-hide-nonterminal-edges")) {
-	    
+
 	    ec = Mission.control().getString
 		("viz-dpa-nonterminal-edge-color", "royalblue");
 
 	    es = Mission.control().getString
 		("viz-dpa-nonterminal-edge-style", "solid");
-	    
+
 	    node = dot.node("edge");
 	    node.attr("color", ec);
 	    node.attr("style", es);
-	    
+
 	outer:
 	    for (int i = 0; i < go.length; i++) {
 		if (go[i] == null)
@@ -535,7 +546,7 @@ public class ArrayDPAConstructor
 		for (int j = 0; j < go[i].length; j++) {
 		    if (go[i][j] == 0)
 			continue inner;
-		    
+
 		    edge = dot.edge("s"+i, "s"+go[i][j]);
 		    label = g.getNonTerminal(j);
 		    edge.attr("label", label);
@@ -543,14 +554,14 @@ public class ArrayDPAConstructor
 	    }
 	}
     }
-    
+
     private Log log()
     {
 	if (log == null)
 	    log = Mission.control().log("apc", this); // Array Pushdown Constructor
 	return log;
     }
-    
+
     // ================================================================
     // instance fields
     // ================================================================
@@ -596,5 +607,3 @@ public class ArrayDPAConstructor
 	return dst;
     }
 }
-
-

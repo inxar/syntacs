@@ -23,6 +23,7 @@ package com.inxar.syntacs.grammar.regular;
 import org.inxar.syntacs.grammar.regular.RegularExpression;
 import org.inxar.syntacs.grammar.regular.Concatenation;
 import org.inxar.syntacs.grammar.regular.Closure;
+import org.inxar.syntacs.grammar.regular.PositiveClosure;
 import org.inxar.syntacs.util.IntSet;
 
 /**

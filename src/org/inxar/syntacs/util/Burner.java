@@ -2,7 +2,7 @@
  * $Id: Burner.java,v 1.1.1.1 2001/07/06 09:08:05 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -27,14 +27,13 @@ import org.inxar.jenesis.*;
  * class using the <a href="http://www.inxar.org/jenesis">Jenesis
  * API</a>; it "burns" the state of some object into a
  * <code>ClassDeclaration</code> (not unlike "burning" a
- * <code>CD-Recordable</code> disc). 
+ * <code>CD-Recordable</code> disc).
  */
 public interface Burner
 {
-    /**
-     * Modifies the given empty <code>ClassDeclaration</code> such
-     * that the class is "burned".  
-     */
-    void burn(Object src, ClassDeclaration cls);
+  /**
+   * Modifies the given empty <code>ClassDeclaration</code> such
+   * that the class is "burned".
+   */
+  void burn(Object src, ClassDeclaration cls);
 }
-

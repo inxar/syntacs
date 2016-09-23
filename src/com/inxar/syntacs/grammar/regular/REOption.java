@@ -22,6 +22,7 @@ package com.inxar.syntacs.grammar.regular;
 
 import org.inxar.syntacs.grammar.regular.RegularExpression;
 import org.inxar.syntacs.grammar.regular.Union;
+import org.inxar.syntacs.grammar.regular.Option;
 import org.inxar.syntacs.util.IntSet;
 
 /**

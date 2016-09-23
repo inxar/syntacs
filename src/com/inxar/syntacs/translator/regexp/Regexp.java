@@ -20,7 +20,9 @@
  */
 package com.inxar.syntacs.translator.regexp;
 
-import com.inxar.syntacs.analyzer.Symbol;
+import org.inxar.syntacs.analyzer.Symbol;
+import org.inxar.syntacs.grammar.regular.RegularExpression;
+import org.inxar.syntacs.grammar.regular.RegularGrammar;
 
 /**
  * Base class for all regular expressions in the

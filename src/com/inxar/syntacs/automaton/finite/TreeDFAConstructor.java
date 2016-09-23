@@ -2,7 +2,7 @@
  * $Id: TreeDFAConstructor.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,19 +20,27 @@
  */
 package com.inxar.syntacs.automaton.finite;
 
-import java.util.*;
-import org.inxar.syntacs.grammar.*;
-import org.inxar.syntacs.grammar.regular.*;
-import org.inxar.syntacs.automaton.finite.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import java.util.Stack;
+import java.util.Vector;
+import java.util.Hashtable;
+import org.inxar.syntacs.grammar.Token;
+import org.inxar.syntacs.grammar.regular.RegularSet;
+import org.inxar.syntacs.grammar.regular.Interval;
+import org.inxar.syntacs.automaton.finite.DFA;
+import org.inxar.syntacs.automaton.finite.DFAConstructor;
+import org.inxar.syntacs.util.IntSet;
+import org.inxar.syntacs.util.IntIterator;
+import org.inxar.syntacs.util.Log;
+import com.inxar.syntacs.util.BubbleTree;
+import com.inxar.syntacs.util.Mission;
+import com.inxar.syntacs.util.EmptyIntSet;
 
 /**
  * Concrete implementation of <code>DFAConstructor</code> which builds
  * a <code>TreeDFA</code>. The method used to construct the
  * <code>DFA</code> is derived from the Dragon Book but features a
  * <code>BubbleTree</code> object in an interesting way that
- * makes things faster.  
+ * makes things faster.
  */
 public class TreeDFAConstructor
     implements DFAConstructor
@@ -66,7 +74,7 @@ public class TreeDFAConstructor
 
     private State lookup(IntSet interval_set)
     {
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write("lookup(): invoked with set ")
 		.write(interval_set)
@@ -81,7 +89,7 @@ public class TreeDFAConstructor
 
 	// If so, return
 	if (state != null) {
-	    if (DEBUG) 
+	    if (DEBUG)
 		log().debug()
 		    .write("lookup(): found state ")
 		    .write(state.id)
@@ -95,7 +103,7 @@ public class TreeDFAConstructor
 	// no.  this is a brand new set.  We need to make a new state.
 	state = new State(states.size(), interval_set);
 
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write("lookup(): constructed new state ")
 		.write(state.id)
@@ -120,11 +128,11 @@ public class TreeDFAConstructor
 
     /**
      * In this method we want to transform the set of intervals into a
-     * set of edges.  
+     * set of edges.
      */
     private void resolve(State state) throws CloneNotSupportedException
     {
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write("resolve(): -------- "+
 		       "building interval tree for state ")
@@ -146,12 +154,12 @@ public class TreeDFAConstructor
 	// reuseable Interval reference
 	Interval interval = null;
 	// loop over all intervals
-	IntIterator i = state.set.iterator(); 
+	IntIterator i = state.set.iterator();
 	while (i.hasNext()) {
 	    // advance to next interval
 	    interval = regset.getInterval(i.next());
 
-	    if (DEBUG) 
+	    if (DEBUG)
 		log().debug()
 		    .write("resolve(): evaluating interval ")
 		    .write(interval)
@@ -163,7 +171,7 @@ public class TreeDFAConstructor
 	    tree.put(interval.lo(), interval.hi(), interval.getFollowSet());
 	}
 
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write("resolve(): bubble tree looks like ")
 		.write(tree)
@@ -187,7 +195,7 @@ public class TreeDFAConstructor
 	// return when argument is null
 	if (bubble == null)
 	    return null;
-	
+
 	// check for sub-zero bubbles.  Any such bubble represents
 	// an accepting token id rather than an input path.
 	if (bubble.lo < 0) {
@@ -196,7 +204,7 @@ public class TreeDFAConstructor
             if (state.output == Token.UNDEF) {
 		// assign the output
 		state.output = -bubble.lo;
-		if (DEBUG) 
+		if (DEBUG)
 		    log().debug()
 			.write("assigned output " )
 			.write( state.output)
@@ -205,7 +213,7 @@ public class TreeDFAConstructor
 			.write(" using bubble ")
 			.write(bubble)
 			.out();
-		
+
 	    } else {
 
 		// DFA conflict has occurred.
@@ -242,7 +250,7 @@ public class TreeDFAConstructor
 
     public DFA construct(RegularSet regset)
     {
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write("construct():  regset is :")
 		.write(regset)
@@ -282,7 +290,7 @@ public class TreeDFAConstructor
 	    log = Mission.control().log("tfc", this); // Tree Finite Constructor
 	return log;
     }
-    
+
     Stack stack;
     Vector states;
     Hashtable hash;
@@ -307,7 +315,3 @@ public class TreeDFAConstructor
 	TreeDFA.Edge tree;
     }
 }
-
-
-
-

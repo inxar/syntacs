@@ -2,7 +2,7 @@
  * $Id: ObjectSymbol.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -22,7 +22,7 @@ package com.inxar.syntacs.analyzer;
 
 import org.inxar.syntacs.grammar.Token;
 import org.inxar.syntacs.analyzer.Symbol;
-import com.inxar.syntacs.util.*;
+import com.inxar.syntacs.util.Tree;
 
 /**
  * General concrete implementation of <code>Symbol</code>.
@@ -80,11 +80,7 @@ public class ObjectSymbol extends AbstractSymbol
      * The value of the symbol <code>Symbol</code> represented as an
      * <code>Object</code>. This might be a <code>String</code> for
      * identifier tokens or an <code>Integer</code> object for integer
-     * literals.  
+     * literals.
      */
     public Object value;
 }
-
-
-
-

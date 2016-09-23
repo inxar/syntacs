@@ -2,7 +2,7 @@
  * $Id: ArrayDPA.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -22,14 +22,14 @@ package com.inxar.syntacs.automaton.pushdown;
 
 import org.inxar.syntacs.automaton.pushdown.*;
 import org.inxar.syntacs.translator.lr.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.util.Log;
+import com.inxar.syntacs.util.Mission;
 
 /**
  * Concrete implementation of <code>DPA</code> which uses full-length
  * array parse tables.  In this case (versus the <code>DFA</code>
  * case) this is acceptable since the input range is much smaller than
- * the Unicode character set.  
+ * the Unicode character set.
  */
 public class ArrayDPA implements DPA
 {
@@ -37,16 +37,16 @@ public class ArrayDPA implements DPA
 
     /**
      * A standard error <code>Action</code> cached here for
-     * convenience.  
+     * convenience.
      */
     public static final Action ERROR = new StandardAction();
 
     /**
      * Constructs the <code>ArrayDPA</code> on the given action table,
-     * transition table, production length table, and Action registry.  
+     * transition table, production length table, and Action registry.
      */
-    public ArrayDPA(int[][] action, 
-		    int[][] go, 
+    public ArrayDPA(int[][] action,
+		    int[][] go,
 		    Action[] actions)
     {
 	this.action = action;
@@ -58,7 +58,7 @@ public class ArrayDPA implements DPA
     {
 	try {
 
-	    if (DEBUG) 
+	    if (DEBUG)
 		log().debug()
 		    .write("ArrayDPA.action(): action at state ").write(state)
 		    .write(", symbol ").write(symbol)
@@ -66,11 +66,11 @@ public class ArrayDPA implements DPA
 		    .write(", action.length ").write(action.length)
 		    .write(", action[state].length ").write(action[state].length)
 		    .out();
-	    
+
 	    return
 		action[state].length <= symbol || action[state][symbol] == 0
 		? ERROR : actions[action[state][symbol]];
-	    
+
 	} catch (ArrayIndexOutOfBoundsException aioobex) {
 
 	    if (state < 0)
@@ -78,7 +78,7 @@ public class ArrayDPA implements DPA
 		    ("Bad state index (negative?): " + state);
 	    else if (state >= action.length)
 		throw new ArrayIndexOutOfBoundsException
-		    ("State " + state + 
+		    ("State " + state +
 		     " is not valid.  The highest numbered state is " + action.length);
 	    else if (symbol < 0)
 		throw new ArrayIndexOutOfBoundsException
@@ -86,10 +86,10 @@ public class ArrayDPA implements DPA
 
 	    else if (symbol >= action[state].length)
 		throw new ArrayIndexOutOfBoundsException
-		    ("Symbol " + (char)symbol + 
-		     " is not valid for state " + state + 
+		    ("Symbol " + (char)symbol +
+		     " is not valid for state " + state +
 		     ".  The highest numbered traversal is " + action[state].length);
-	    else 
+	    else
 		throw aioobex;
 	}
     }
@@ -111,11 +111,3 @@ public class ArrayDPA implements DPA
     public Action[] actions;
     private Log log;
 }
-
-
-
-
-
-
-
-

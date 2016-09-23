@@ -2,7 +2,7 @@
  * $Id: VizController.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,41 +20,31 @@
  */
 package com.inxar.syntacs.translator.lr;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.util.Date;
 
-import org.inxar.syntacs.analyzer.*;
-import com.inxar.syntacs.analyzer.*;
-import org.inxar.syntacs.analyzer.lexical.*;
-import com.inxar.syntacs.analyzer.lexical.*;
-import org.inxar.syntacs.analyzer.syntactic.*;
-import com.inxar.syntacs.analyzer.syntactic.*;
-import org.inxar.syntacs.grammar.*;
-import org.inxar.syntacs.grammar.regular.*;
-import com.inxar.syntacs.grammar.regular.*;
-import org.inxar.syntacs.grammar.context_free.*;
-import com.inxar.syntacs.grammar.context_free.*;
-import org.inxar.syntacs.automaton.finite.*;
-import com.inxar.syntacs.automaton.finite.*;
-import org.inxar.syntacs.automaton.pushdown.*;
-import com.inxar.syntacs.automaton.pushdown.*;
-import org.inxar.syntacs.translator.*;
-import com.inxar.syntacs.translator.*;
-import org.inxar.syntacs.translator.lr.*;
-import com.inxar.syntacs.translator.regexp.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import com.inxar.syntacs.automaton.finite.TreeDFA;
+import org.inxar.syntacs.automaton.pushdown.DPAConstructor;
+import org.inxar.syntacs.util.Log;
+import org.inxar.syntacs.util.Vizualizable;
+import org.inxar.syntacs.util.GraphViz;
+
+import com.inxar.syntacs.util.Mission;
+import com.inxar.syntacs.util.StringTools;
+import com.inxar.syntacs.util.Dot;
+
 
 /**
  * The <code>VizController</code> is centrally responsible for
  * overseeing and coordinating the generation of GraphViz dot files
- * for various objects.  
+ * for various objects.
  */
 public class VizController
 {
     private static final boolean DEBUG = true;
 
-    private static boolean verbose = 
+    private static boolean verbose =
 	Mission.control().isTrue("verbose");
 
     public VizController()
@@ -77,12 +67,12 @@ public class VizController
 
 	if (srcpath == null)
 	    srcpath = Mission.control().getString("compile-sourcepath", ".");
-	
+
 	String namespace = Mission.control().getString("viz-namespace");
-	
-	if (namespace == null) 
+
+	if (namespace == null)
 	    namespace = Mission.control().getString("compile-namespace");
-	
+
 	srcpath = StringTools.getPath(srcpath, namespace);
 
 	String author    = Mission.control().getString("author");
@@ -99,7 +89,7 @@ public class VizController
 
 	if (copyright == null) {
 	    copyright = "Copyright (C) " + (new Date().getYear() + 1900);
-	    if (author != null) 
+	    if (author != null)
 		copyright += " " + author;
 	    else
 		copyright += " unattributed";
@@ -110,13 +100,13 @@ public class VizController
     {
 	if (Mission.control().isNotTrue("viz-lexical"))
 	    return;
-	
+
 	String[] names = (String[])
 	    Mission.control().get("_dfa-names");
 
 	TreeDFA[] dfas = (TreeDFA[])
 	    Mission.control().get("_tree-dfas");
-	
+
 	GraphViz dot;
 	for (int i = 0; i < dfas.length; i++) {
 	    dot = new Dot(names[i]);
@@ -132,7 +122,7 @@ public class VizController
 
 	String name = Mission.control().getString("_dpa-name");
 	DPAConstructor ctor = (DPAConstructor)Mission.control().get("_dpa-constructor");
-	
+
 	if (ctor instanceof Vizualizable) {
 	    GraphViz dot = new Dot(name);
 	    ((Vizualizable)ctor).vizualize(dot);
@@ -148,7 +138,7 @@ public class VizController
 		       " does not support GraphViz.  Aborting DPA vizualization.")
 		.out();
 	}
-	
+
     }
 
     private void emit(String name, GraphViz dot)
@@ -163,11 +153,11 @@ public class VizController
 	    out = new BufferedWriter
 		(new FileWriter(filename));
 
-	    if (verbose) 
+	    if (verbose)
 		log().debug()
 		    .write("Writing ").write(filename).write("...")
 		    .time();
-	    
+
 	    out.write(dot.toString());
 	    out.close(); out = null;
 
@@ -179,7 +169,7 @@ public class VizController
 		    .touch();
 
 	    if (out != null)
-		try { out.close(); } 
+		try { out.close(); }
 		catch (Exception ex) {}
 	}
     }
@@ -195,5 +185,3 @@ public class VizController
     private String copyright;
     private Log log;
 }
-
-

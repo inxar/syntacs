@@ -2,7 +2,7 @@
  * $Id: SyntacsInterpreter.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,26 +20,34 @@
  */
 package com.inxar.syntacs.translator.syntacs;
 
-import java.util.*;
-import org.inxar.syntacs.grammar.*;
-import org.inxar.syntacs.analyzer.*;
-import com.inxar.syntacs.analyzer.*;
-import org.inxar.syntacs.analyzer.lexical.*;
-import com.inxar.syntacs.analyzer.lexical.*;
-import org.inxar.syntacs.analyzer.syntactic.*;
-import com.inxar.syntacs.analyzer.syntactic.*;
-import org.inxar.syntacs.automaton.finite.*;
-import org.inxar.syntacs.automaton.pushdown.*;
-import org.inxar.syntacs.translator.*;
-import com.inxar.syntacs.translator.*;
-import org.inxar.syntacs.translator.lr.*;
-import com.inxar.syntacs.translator.lr.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import org.inxar.syntacs.analyzer.Symbol;
+import org.inxar.syntacs.analyzer.Input;
+import org.inxar.syntacs.analyzer.syntactic.Correction;
+import org.inxar.syntacs.analyzer.syntactic.Sentence;
+import org.inxar.syntacs.analyzer.syntactic.Recovery;
+import org.inxar.syntacs.translator.TranslationException;
+import org.inxar.syntacs.translator.lr.LRTranslatorGrammar;
+import org.inxar.syntacs.util.Log;
+
+import com.inxar.syntacs.analyzer.StringSymbol;
+import com.inxar.syntacs.analyzer.ObjectSymbol;
+import com.inxar.syntacs.analyzer.ListSymbol;
+import com.inxar.syntacs.analyzer.ConstantSymbol;
+import com.inxar.syntacs.analyzer.syntactic.StandardRecovery;
+import com.inxar.syntacs.translator.StandardAuditor;
+import com.inxar.syntacs.translator.lr.StandardLRTranslatorGrammar;
+import com.inxar.syntacs.translator.lr.StandardLRTranslatorInterpreter;
+import com.inxar.syntacs.util.Mission;
+import com.inxar.syntacs.util.StringTools;
 
 /**
  * <code>Interpreter</code> used in the translation of newtacs grammar
- * files (.stt).  
+ * files (.stt).
  */
 public class SyntacsInterpreter extends StandardLRTranslatorInterpreter
 {
@@ -83,12 +91,12 @@ public class SyntacsInterpreter extends StandardLRTranslatorInterpreter
     {
 	// init our symbol
 	Symbol symbol = null;
-	
+
         switch (type) {
 
 	case SyntacsGrammar.T_COMMENT:
 	case SyntacsGrammar.T_WHITESPACE:
-	    if (DEBUG) 
+	    if (DEBUG)
 		log().debug()
 		    .write("Skipping whitespace")
 		    .out();
@@ -97,7 +105,7 @@ public class SyntacsInterpreter extends StandardLRTranslatorInterpreter
 	case SyntacsGrammar.T_EQUALS:
 	case SyntacsGrammar.T_COMMA:
 	case SyntacsGrammar.T_SEMI:
-	    symbol = new ConstantSymbol(type); 
+	    symbol = new ConstantSymbol(type);
 	    break;
 
 	case SyntacsGrammar.T_IDENT:
@@ -116,17 +124,17 @@ public class SyntacsInterpreter extends StandardLRTranslatorInterpreter
 
 	case SyntacsGrammar.T_STRING:
 	    String s = in.stretch(off + 1, len - 2);
-	    
+
 	    if (s.indexOf("\\\"") != -1)
 		s = StringTools.replace(s, "\\\"", "\"");
-	    
+
 	    if (s.indexOf("\\;") != -1)
 		s = StringTools.replace(s, "\\;", ";");
-	    
+
 	    symbol = new StringSymbol(type, s);
 	    break;
 
-	default: 
+	default:
 	    throw new InternalError
 		("Unknown terminal type: "+grammar.getTerminal(type));
         }
@@ -139,7 +147,7 @@ public class SyntacsInterpreter extends StandardLRTranslatorInterpreter
 
     public Symbol reduce(int type, Sentence s) throws TranslationException
     {
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write("REDUCE ")
 		.write(grammar.getProduction(type))
@@ -169,34 +177,34 @@ public class SyntacsInterpreter extends StandardLRTranslatorInterpreter
 	case SyntacsGrammar.P_Statement__PropertyStatement:
 	    symbol =  s.at(0);
 	    break;
-	    
+
 	case SyntacsGrammar.P_Instruction__IDENT:
  	case SyntacsGrammar.P_Instruction__IDENT_SHIFTS_IDENT:
 	case SyntacsGrammar.P_Instruction__IDENT_UNSHIFTS:
 	    ins = new Instruction();
 	    ins.terminal = ((StringSymbol)s.at(0)).value;
-	    
+
 	    switch (type) {
 	    case SyntacsGrammar.P_Instruction__IDENT:
 		ins.action = LRTranslatorGrammar.ACTION_PEEK; break;
 	    case SyntacsGrammar.P_Instruction__IDENT_UNSHIFTS:
 		ins.action = LRTranslatorGrammar.ACTION_POP; break;
 	    case SyntacsGrammar.P_Instruction__IDENT_SHIFTS_IDENT:
-		ins.action = LRTranslatorGrammar.ACTION_PUSH; 
-		ins.reg = ((StringSymbol)s.at(2)).value; 
+		ins.action = LRTranslatorGrammar.ACTION_PUSH;
+		ins.reg = ((StringSymbol)s.at(2)).value;
 		break;
 	    }
-	    
+
 	    symbol = new ObjectSymbol(ins);
 	    break;
 
 	    // symbol list creation cases.
-	case SyntacsGrammar.P_InstructionList__Instruction: 
+	case SyntacsGrammar.P_InstructionList__Instruction:
 	    symbol = new ListSymbol(s.at(0));
 	    break;
 
 	    // symbol list extension cases at 2.
-	case SyntacsGrammar.P_InstructionList__InstructionList_COMMA_Instruction: 
+	case SyntacsGrammar.P_InstructionList__InstructionList_COMMA_Instruction:
 	    sym = (ListSymbol)s.at(0);
 	    sym.list.add(s.at(2));
 	    symbol = sym;
@@ -207,14 +215,14 @@ public class SyntacsInterpreter extends StandardLRTranslatorInterpreter
 	case SyntacsGrammar.P_NonterminalList__IDENT:
 	    symbol = new ListSymbol( ((StringSymbol)s.at(0)).value );
 	    break;
-	    
+
 	    // string list extension at 1
 	case SyntacsGrammar.P_NonterminalList__NonterminalList_IDENT:
 	    sym = (ListSymbol)s.at(0);
 	    sym.list.add( ((StringSymbol)s.at(1)).value );
 	    symbol = sym;
 	    break;
-	    
+
 	    // string list extension at 2
 	case SyntacsGrammar.P_IdentList__IdentList_COMMA_IDENT:
 	    sym = (ListSymbol)s.at(0);
@@ -225,7 +233,7 @@ public class SyntacsInterpreter extends StandardLRTranslatorInterpreter
 	case SyntacsGrammar.P_ThisIsStatement__THIS_IS_IDENT_VERSION_VERSION_STRING_SEMI:
 	    g.setName(((StringSymbol)s.at(2)).value);
 	    g.setVersion(((StringSymbol)s.at(4)).value);
-	    
+
 	    symbol = s.at(0);
 	    break;
 
@@ -233,15 +241,15 @@ public class SyntacsInterpreter extends StandardLRTranslatorInterpreter
 	    iter = ((ListSymbol)s.at(1)).list.iterator();
 	    while (iter.hasNext())
 		g.addTerminal( (String)iter.next() );
-	    
+
 	    symbol = s.at(0);
 	    break;
 
 	case SyntacsGrammar.P_MatchesStatement__IDENT_MATCHES_STRING_SEMI:
 	    g.setTerminalRegexp
-		(((StringSymbol)s.at(0)).value, 
+		(((StringSymbol)s.at(0)).value,
 		 ((StringSymbol)s.at(2)).value);
-	    
+
 	    symbol = s.at(0);
 	    break;
 
@@ -259,7 +267,7 @@ public class SyntacsInterpreter extends StandardLRTranslatorInterpreter
 	    while (iter.hasNext()) {
 
 		ins = (Instruction)((ObjectSymbol)iter.next()).value;
-		
+
 		switch (ins.action) {
 		case LRTranslatorGrammar.ACTION_PEEK:
 		    g.setContextPeek(context, ins.terminal);
@@ -267,11 +275,11 @@ public class SyntacsInterpreter extends StandardLRTranslatorInterpreter
 		case LRTranslatorGrammar.ACTION_POP:
 		    g.setContextPop(context, ins.terminal);
 		    break;
-		case LRTranslatorGrammar.ACTION_PUSH: 
+		case LRTranslatorGrammar.ACTION_PUSH:
 		    g.setContextPush(context, ins.terminal, ins.reg);
 		    break;
 		}
-		
+
 	    }
 
 	    symbol = s.at(1);
@@ -293,9 +301,9 @@ public class SyntacsInterpreter extends StandardLRTranslatorInterpreter
 	case SyntacsGrammar.P_ReduceStatement__REDUCE_IDENT_WHEN_NonterminalList_SEMI:
 	    String nonterminal = ((StringSymbol)s.at(1)).value;
 	    List rhs = ((ListSymbol)s.at(3)).list;
-	    
+
 	    g.addProduction(nonterminal, rhs);
-	    
+
 	    symbol = s.at(0);
 	    break;
 
@@ -306,9 +314,9 @@ public class SyntacsInterpreter extends StandardLRTranslatorInterpreter
 
 	case SyntacsGrammar.P_PropertyStatement__PROPERTY_IDENT_EQUALS_STRING_SEMI:
 	    g.setProperty
-		(((StringSymbol)s.at(1)).value, 
+		(((StringSymbol)s.at(1)).value,
 		 ((StringSymbol)s.at(3)).value);
-	    
+
 	    symbol = s.at(0);
 	    break;
 

@@ -2,7 +2,7 @@
  * $Id: StandardLRTranslator.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,29 +20,22 @@
  */
 package com.inxar.syntacs.translator.lr;
 
-import java.io.*;
-import java.util.*;
+import java.util.Properties;
 
-import org.inxar.syntacs.analyzer.*;
-import com.inxar.syntacs.analyzer.*;
-import org.inxar.syntacs.analyzer.lexical.*;
-import com.inxar.syntacs.analyzer.lexical.*;
-import org.inxar.syntacs.analyzer.syntactic.*;
-import com.inxar.syntacs.analyzer.syntactic.*;
-import org.inxar.syntacs.grammar.*;
-import org.inxar.syntacs.grammar.regular.*;
-import com.inxar.syntacs.grammar.regular.*;
-import org.inxar.syntacs.grammar.context_free.*;
-import com.inxar.syntacs.grammar.context_free.*;
-import org.inxar.syntacs.automaton.finite.*;
-import com.inxar.syntacs.automaton.finite.*;
-import org.inxar.syntacs.automaton.pushdown.*;
-import com.inxar.syntacs.automaton.pushdown.*;
-import org.inxar.syntacs.translator.*;
-import com.inxar.syntacs.translator.*;
-import org.inxar.syntacs.translator.lr.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.analyzer.Input;
+import org.inxar.syntacs.analyzer.lexical.Lexer;
+import org.inxar.syntacs.analyzer.syntactic.Parser;
+import org.inxar.syntacs.translator.TranslationException;
+import org.inxar.syntacs.translator.TranslatorGrammar;
+import org.inxar.syntacs.translator.lr.LRTranslator;
+import org.inxar.syntacs.translator.lr.LRTranslatorGrammar;
+import org.inxar.syntacs.translator.lr.LRTranslatorInterpreter;
+import org.inxar.syntacs.translator.lr.LRTranslationComponent;
+import org.inxar.syntacs.translator.Auditor;
+import org.inxar.syntacs.util.Log;
+
+import com.inxar.syntacs.translator.StandardAuditor;
+import com.inxar.syntacs.util.Mission;
 
 /**
  * Standard implementation of <code>LRTranslator</code>.
@@ -50,7 +43,7 @@ import com.inxar.syntacs.util.*;
 public class StandardLRTranslator implements LRTranslator
 {
     private static final boolean DEBUG = false;
-    private static boolean verbose = 
+    private static boolean verbose =
 	Mission.control().isTrue("verbose");
 
     public StandardLRTranslator()
@@ -59,7 +52,7 @@ public class StandardLRTranslator implements LRTranslator
 
     public Object translate(Object src) throws TranslationException
     {
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write("Translating ")
 		.write(src)
@@ -69,44 +62,44 @@ public class StandardLRTranslator implements LRTranslator
 	Auditor auditor = new StandardAuditor();
 
 	try {
-	    
+
 	    // Check
-	    if (grammar == null) 
+	    if (grammar == null)
 		throw new NullPointerException("Undefined LRTranslatorGrammar");
 
-	    if (in      == null) 
+	    if (in      == null)
 		throw new NullPointerException("Undefined Input");
 
-	    if (lexer   == null) 
+	    if (lexer   == null)
 		throw new NullPointerException("Undefined Lexer");
 
-	    if (inter   == null) 
+	    if (inter   == null)
 		throw new NullPointerException("Undefined Interpreter");
 
-	    if (parser  == null) 
+	    if (parser  == null)
 		throw new NullPointerException("Undefined Parser");
 
 	    if (p == null)
 		p = new Properties();
 
 	    // Reset
-	    in.initch(src);	
-	    reset(lexer,  auditor); 
-	    reset(inter,  auditor); 
-	    reset(parser, auditor); 
+	    in.initch(src);
+	    reset(lexer,  auditor);
+	    reset(inter,  auditor);
+	    reset(parser, auditor);
 
 	    // Chain
-	    lexer.setLexerInterpreter(inter); 
+	    lexer.setLexerInterpreter(inter);
 	    inter.setLexer(lexer);
-	    inter.setParser(parser); 
+	    inter.setParser(parser);
 	    parser.setParserInterpreter(inter);
 
 	    // Go
 	    lexer.start();
-	    
+
 	    if (!auditor.isEmpty())
 		throw new TranslationException(auditor);
-	    else 
+	    else
 		return getResult();
 
 	} catch (TranslationException tex) {
@@ -115,7 +108,7 @@ public class StandardLRTranslator implements LRTranslator
 	    ex.printStackTrace();
 	    throw new TranslationException(auditor, ex);
 	} finally {
-	    if (verbose) 
+	    if (verbose)
 		log().debug().touch();
 	}
     }
@@ -145,7 +138,7 @@ public class StandardLRTranslator implements LRTranslator
     {
 	return p;
     }
-    
+
     public void setProperties(Properties p)
     {
 	if (p != null)
@@ -195,8 +188,3 @@ public class StandardLRTranslator implements LRTranslator
 
     private Log log;
 }
-
-
-
-
-

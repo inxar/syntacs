@@ -2,7 +2,7 @@
  * $Id: StandardLexer.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,22 +20,27 @@
  */
 package com.inxar.syntacs.analyzer.lexical;
 
-import java.io.*;
-import org.inxar.syntacs.analyzer.*;
-import org.inxar.syntacs.analyzer.lexical.*;
+import java.io.IOException;
+import java.io.EOFException;
+import org.inxar.syntacs.analyzer.Input;
+import org.inxar.syntacs.analyzer.lexical.Lexer;
+import org.inxar.syntacs.analyzer.lexical.LexerInterpreter;
 import org.inxar.syntacs.grammar.Token;
-import org.inxar.syntacs.automaton.finite.*;
-import org.inxar.syntacs.translator.*;
-import org.inxar.syntacs.translator.lr.*;
-import com.inxar.syntacs.translator.lr.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.automaton.finite.DFA;
+import org.inxar.syntacs.translator.TranslationException;
+import org.inxar.syntacs.translator.lr.LRTranslatorGrammar;
+import com.inxar.syntacs.translator.lr.AbstractLRTranslationComponent;
+import org.inxar.syntacs.util.Channel;
+import org.inxar.syntacs.util.IntStack;
+import org.inxar.syntacs.util.Log;
+import com.inxar.syntacs.util.ArrayIntStack;
+import com.inxar.syntacs.util.Mission;
 
 /**
  * Concrete <code>Lexer</code> implementation which uses a
- * <code>DFA</code> for the recognition engine.  
+ * <code>DFA</code> for the recognition engine.
  */
-public class StandardLexer extends AbstractLRTranslationComponent 
+public class StandardLexer extends AbstractLRTranslationComponent
     implements Lexer
 {
     private final static boolean DEBUG = true;
@@ -49,11 +54,11 @@ public class StandardLexer extends AbstractLRTranslationComponent
 
     /**
      * The argument must be a <code>DFA</code> or a <code>DFA[]</code>
-     * array.  
+     * array.
      */
     public void initialize(Object arg)
     {
-	if (arg instanceof DFA) 
+	if (arg instanceof DFA)
 	    this.dfas = new DFA[] { (DFA)arg };
 	else if (arg instanceof DFA[]) {
 	    this.dfas = (DFA[])arg;
@@ -84,7 +89,7 @@ public class StandardLexer extends AbstractLRTranslationComponent
 	// Since this method only checks whether it has been paused
 	// AFTER it matches a token, there are no variables that need
 	// to be synchronized with instance variables.
-	
+
 	if (this.dfas == null)
 	    throw new IllegalStateException
 		("The Lexer must be initialized before it can be run.");
@@ -105,9 +110,9 @@ public class StandardLexer extends AbstractLRTranslationComponent
 	int me;			// begin error markers (end marker unnecessary)
 	int cp;			// current context
 	int off;		// input offset;
-	boolean isContextual;	// flag to say whether we do context switching. 
-				// This is used as an optimization since I 
-				// don't want to maintain two lexer classes 
+	boolean isContextual;	// flag to say whether we do context switching.
+				// This is used as an optimization since I
+				// don't want to maintain two lexer classes
 				// (contextual v. non-contextual).
 
 	// ================================================================
@@ -132,21 +137,21 @@ public class StandardLexer extends AbstractLRTranslationComponent
 
 	    // catch EOF
 	    try {
-		
+
 		if (DEBUG && debug) {
 		    int c = in.broach();
 		    Channel debug = log().debug()
 			.write("at pos ").write(off)
 			.write(" in state ").write(p)
 			.write(" facing ");
-		    
+
 		    if (c < 0)
 			debug.write("EOF");
 		    else
 			debug.write('\'').write((char)c).write('\'');
 
 		    debug.write(" tracking ");
-		    
+
 		local:
 		    switch (t) {
 		    case Token.UNDEF:
@@ -197,9 +202,9 @@ public class StandardLexer extends AbstractLRTranslationComponent
 		    // in open-error, else we're in open token.
 		token_switch:
 		    switch (t) {
-			
-		    case Token.UNDEF: 
-			if (DEBUG && debug) 
+
+		    case Token.UNDEF:
+			if (DEBUG && debug)
 			    log().debug()
 				.write("Moving from pluripotent to open-error")
 				.out();
@@ -213,9 +218,9 @@ public class StandardLexer extends AbstractLRTranslationComponent
 			mt = -1;
 			p = DFA.START_STATE;
 			break token_switch;
-			
+
 		    case Token.ERROR:
-			if (DEBUG && debug) 
+			if (DEBUG && debug)
 			    if (mt < 0)
 				log().debug()
 				    .write("Moving from open-error to open-error")
@@ -236,17 +241,17 @@ public class StandardLexer extends AbstractLRTranslationComponent
 			break token_switch;
 
 		    default:
-			if (DEBUG && debug) 
+			if (DEBUG && debug)
 			    log().debug()
 				.write("Moving from open-token to closed-token")
 				.out();
-			
+
 			// The default case is selected when the token
 			// value is defined and not ERROR.  From this
 			// we can conclude that we are in the
 			// open-token state, which can now be closed.
 
-			if (DEBUG && debug) 
+			if (DEBUG && debug)
 			    log().debug()
 				.write("Match for ")
 				.write(grammar.getTerminal(t))
@@ -260,7 +265,7 @@ public class StandardLexer extends AbstractLRTranslationComponent
 			// offset, and length.
 			interpreter.match(t, mt, nt - mt);
 
-			if (DEBUG && debug) 
+			if (DEBUG && debug)
 			    log().debug()
 				.write("Backing up ")
 				.write(off - nt)
@@ -271,13 +276,13 @@ public class StandardLexer extends AbstractLRTranslationComponent
 			// lexeme so we can start the search again
 			// from there.
 			in.bach(off - nt);
-			
+
 			// Check if we are paused, in which case we
 			// break out;
-			if (m_isPaused) 
+			if (m_isPaused)
 			    break main;
 
-			if (DEBUG && debug) 
+			if (DEBUG && debug)
 			    log().debug()
 				.write("Moving from closed-token to pluripotent"
 				       +" (through tabla-rasa)")
@@ -306,7 +311,7 @@ public class StandardLexer extends AbstractLRTranslationComponent
 				     grammar.getContextAction(cp, t));
 			    }
 			}
-			
+
 			// Reset the dfa state, token ID, and
 			// begin-token-marker.
 			p = DFA.START_STATE;
@@ -316,24 +321,24 @@ public class StandardLexer extends AbstractLRTranslationComponent
 		    } /* end-of-token-switch */
 
 		} else {
-		    
+
 		    // =====================================================
 		    // alternative B: No, not in the dead state (a
 		    // live input char).
 		    // =====================================================
-		    
+
 		    // The next thing is to check the output on this
 		    // state...
 		    u = dfa.output(p);
-		    
-		    if (DEBUG && debug) 
+
+		    if (DEBUG && debug)
 			log().debug()
 			    .write("Output for state ")
 			    .write(p)
 			    .write(" is ")
 			    .write(u)
 			    .out();
-		    
+
 		    // Test whether the input is an accepting char.
 		    if (u != Token.UNDEF) {
 			// If the output of this dfa state is defined,
@@ -344,7 +349,7 @@ public class StandardLexer extends AbstractLRTranslationComponent
 
 			if (t == Token.ERROR) {
 
-			    if (DEBUG && debug) 
+			    if (DEBUG && debug)
 				if (mt < 0)
 				    log().debug()
 					.write("Moving from open-error to open-token")
@@ -368,7 +373,7 @@ public class StandardLexer extends AbstractLRTranslationComponent
 			    if (mt < 0)
 				mt = off - 1;
 
-			    if (DEBUG && debug) 
+			    if (DEBUG && debug)
 				log().debug()
 				    .write("Notifying ERROR (")
 				    .write(me)
@@ -379,7 +384,7 @@ public class StandardLexer extends AbstractLRTranslationComponent
 
 			    interpreter.error(me, mt - me);
 			}
-			
+
 			if (DEBUG && debug) {
 			    if (t == Token.UNDEF)
 				log().debug()
@@ -399,9 +404,9 @@ public class StandardLexer extends AbstractLRTranslationComponent
 			// the end-token marker.
 			t = u;
 			nt = off;
-			
+
 		    } else if (t == Token.ERROR && mt < 0) {
-			if (DEBUG && debug) 
+			if (DEBUG && debug)
 			    log().debug()
 				.write("Moving from open-error to pheonix-error")
 				.out();
@@ -419,8 +424,8 @@ public class StandardLexer extends AbstractLRTranslationComponent
 		} /* end-if-dead-state */
 
 	    } catch (EOFException eofex) {
-		
-		
+
+
 		// The EOF exception has very similar effects to that of
 		// traversing over a dead char.
 	    token_switch:
@@ -432,11 +437,11 @@ public class StandardLexer extends AbstractLRTranslationComponent
 		    // ever even remotely matched. (2) The last char
 		    // triggered a match, and thus we are left in a
 		    // pluripotent state right before the EOF char.
-		    
+
 		    /* fall-through */
-		    
+
 		case Token.ERROR:
-		    if (DEBUG && debug) 
+		    if (DEBUG && debug)
 			log().debug()
 			    .write("Moving from pluripotent to closed-error "+
 				   "(through open-error by EOF)")
@@ -449,7 +454,7 @@ public class StandardLexer extends AbstractLRTranslationComponent
 		    // is UNDEFINED and we're here due to the case
 		    // fallthough).
 		    if (me != off - 1) {
-			if (DEBUG && debug) 
+			if (DEBUG && debug)
 			    log().debug()
 				.write("Notifying ERROR (")
 				.write(me)
@@ -462,20 +467,20 @@ public class StandardLexer extends AbstractLRTranslationComponent
 		    }
 
 		    break main;
-		    
+
 		default:
-		    if (DEBUG && debug) 
+		    if (DEBUG && debug)
 			log().debug()
 			    .write("Moving from open-token to closed-token")
 			    .out();
-		    
+
 		    // The default case is a little different here.  If
 		    // the lexer is in the open-token state, the
 		    // EOFexception has the effect of closing it.  But if
 		    // there are any characters between the end of the
 		    // token and the end of the input, that's an error, so
 		    // we need to notify that too.
-		    if (DEBUG && debug) 
+		    if (DEBUG && debug)
 			log().debug()
 			    .write("Notifying ")
 			    .write(grammar.getTerminal(t))
@@ -487,9 +492,9 @@ public class StandardLexer extends AbstractLRTranslationComponent
 			    .out();
 
 		    interpreter.match(t, mt, nt - mt);
-		    
+
 		    if (nt != off - 1) {
-			
+
 		    possibility_for_main_loop_reentry:
 			if (isContextual) {
 
@@ -503,23 +508,23 @@ public class StandardLexer extends AbstractLRTranslationComponent
 				cp = stack.peek();
 				dfa = dfas[cp];
 				break context_switch;
-				
+
 			    case LRTranslatorGrammar.ACTION_PUSH:
 				cp = grammar.getContextRegister(cp, t);
 				stack.push(cp);
 				dfa = dfas[cp];
 				break context_switch;
-				
+
 			    default:
 				throw new UnsupportedOperationException
 				    ("Unsupported Context Action: "+
 				     grammar.getContextAction(cp, t));
 			    }
-			    
+
 			    // Back up the input buffer to the end of the
 			    // lexeme so we can start the search again
 			    // from there.
-			    if (DEBUG && debug) 
+			    if (DEBUG && debug)
 				log().debug()
 				    .write("Backing up ")
 				    .write(off - nt)
@@ -527,12 +532,12 @@ public class StandardLexer extends AbstractLRTranslationComponent
 				    .out();
 
 			    in.bach(off - nt);
-			    
+
 			    // Check if we are paused, in which case we
 			    // break out;
-			    if (m_isPaused) 
+			    if (m_isPaused)
 				break main;
-			    
+
 			    // Reset the dfa state, token ID, and
 			    // begin-token-marker.
 			    p = DFA.START_STATE;
@@ -540,9 +545,9 @@ public class StandardLexer extends AbstractLRTranslationComponent
 			    mt = me = nt;
 
 			    continue main;
-			} 
-			
-			if (DEBUG && debug) 
+			}
+
+			if (DEBUG && debug)
 			    log().debug()
 				.write("Notifying ERROR (")
 				.write(nt)
@@ -554,9 +559,9 @@ public class StandardLexer extends AbstractLRTranslationComponent
 			interpreter.error(nt, off - nt);
 		    }
 		}
-		
+
 		// Finally, send the STOP token.
-		if (DEBUG && debug) 
+		if (DEBUG && debug)
 		    log().debug()
 			.write("Notifying STOP")
 			.out();
@@ -565,9 +570,9 @@ public class StandardLexer extends AbstractLRTranslationComponent
 
 		// DONE!
 		break;
-		
+
 	    } catch (IOException ioex) {
-		
+
 		System.out.println(ioex.getMessage());
 		break;
 	    }
@@ -614,7 +619,7 @@ public class StandardLexer extends AbstractLRTranslationComponent
 	    log = Mission.control().log("lex", this);
 	return log;
     }
-    
+
     private DFA[] dfas;
     private LexerInterpreter interpreter;
     private ArrayIntStack stack;

@@ -2,7 +2,7 @@
  * $Id: CFTerminal.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,7 +20,7 @@
  */
 package com.inxar.syntacs.grammar.context_free;
 
-import org.inxar.syntacs.grammar.context_free.*;
+import org.inxar.syntacs.grammar.context_free.Terminal;
 import org.inxar.syntacs.grammar.Token;
 import org.inxar.syntacs.util.IntSet;
 import com.inxar.syntacs.util.SingletonIntSet;
@@ -43,7 +43,7 @@ public class CFTerminal
     /**
      * Constructs the <code>CFTerminal</code> on the given ID number
      * of a general <code>Token</code> type and <code>Token</code>
-     * name.  
+     * name.
      */
     CFTerminal(int tokenID, String tokenName)
     {
@@ -135,4 +135,3 @@ public class CFTerminal
     }
 
 }
-

@@ -2,7 +2,7 @@
  * $Id: XML2RegexpTransformer.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -23,15 +23,15 @@ package com.inxar.syntacs.translator.regexp;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.inxar.syntacs.grammar.regular.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.util.Log;
+import com.inxar.syntacs.util.Mission;
+import com.inxar.syntacs.util.DOM;
 
 /**
  * <code>XML2RegexpTransformer</code> is a tool for parsing an XML
  * trees representing regular expressions and generating Regexp
  * objects from them.  The DTD implied for use with this class is
- * "<code>translator.dtd</code>".  
+ * "<code>translator.dtd</code>".
  */
 public class XML2RegexpTransformer
 {
@@ -39,50 +39,50 @@ public class XML2RegexpTransformer
 
     /**
      * Constructs a new <code>XML2RegexpTransformer</code>.
-     */ 
-    public XML2RegexpTransformer() 
+     */
+    public XML2RegexpTransformer()
     {
     }
-    
+
     public Regexp transform(Element e)
     {
 	Regexp r = null;
-        
+
 	// get the name of tag
         String name = e.getTagName();
 
         // "switch" on the name of the element
-        if ("char".equals(name)) 
+        if ("char".equals(name))
 	    r = new RegexpAtom( DOM.getChar("value", e) );
 
-        else if ("epsilon".equals(name)) 
+        else if ("epsilon".equals(name))
 	    r = new RegexpEpsilon();
 
-        else if ("interval".equals(name)) 
+        else if ("interval".equals(name))
 	    r = new RegexpRange( DOM.getChar("lo", e), DOM.getChar("hi", e) );
 
-        else if ("string".equals(name)) 
+        else if ("string".equals(name))
 	    r = Regexp.toConcat( DOM.getString("value", e) );
 
-        else if ("option".equals(name)) 
+        else if ("option".equals(name))
 	    r = new RegexpTerm( Regexp.OPTIONAL, transform(DOM.getFirstChildElement(e)) );
 
-	else if ("closure".equals(name)) 
+	else if ("closure".equals(name))
 	    r = new RegexpTerm( Regexp.CLOSURE, transform(DOM.getFirstChildElement(e)) );
 
-        else if ("positive-closure".equals(name)) 
+        else if ("positive-closure".equals(name))
 	    r = new RegexpTerm( Regexp.PCLOSURE, transform(DOM.getFirstChildElement(e)) );
 
-        else if ("class".equals(name)) 
+        else if ("class".equals(name))
 	    r = transformCharClass(e);
 
-        else if ("list".equals(name)) 
+        else if ("list".equals(name))
 	    r = transformList(Regexp.CONCAT, e);
 
-        else if ("union".equals(name)) 
+        else if ("union".equals(name))
 	    r = transformList(Regexp.UNION, e);
 
-        else 
+        else
 	    throw new IllegalArgumentException("Unrecognized tag having name \""+name+"\"");
 
 	if (DEBUG)
@@ -99,7 +99,7 @@ public class XML2RegexpTransformer
 	// make the class
        	RegexpCharClass cc = new RegexpCharClass();
        	cc.isNegated(DOM.getBoolean("negated", e));
-	
+
 	// get all the children
         NodeList list = e.getChildNodes();
         // see how many
@@ -153,12 +153,3 @@ public class XML2RegexpTransformer
 
     private Log log;
 }
-
-
-
-
-
-
-
-
-

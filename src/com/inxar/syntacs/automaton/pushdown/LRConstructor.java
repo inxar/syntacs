@@ -2,7 +2,7 @@
  * $Id: LRConstructor.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,10 +20,12 @@
  */
 package com.inxar.syntacs.automaton.pushdown;
 
-import org.inxar.syntacs.grammar.context_free.*;
-import org.inxar.syntacs.automaton.pushdown.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.grammar.context_free.GrammarSymbol;
+import org.inxar.syntacs.grammar.context_free.ContextFreeSet;
+import org.inxar.syntacs.automaton.pushdown.DPAConstructor;
+import org.inxar.syntacs.util.IntSet;
+import org.inxar.syntacs.util.IntIterator;
+import com.inxar.syntacs.util.StringTools;
 
 /**
  * Abstract implementation of <code>LRConstructor</code> which defines
@@ -53,7 +55,7 @@ public abstract class LRConstructor
     /**
      * This method returns the state of the given set.  If the set is
      * not already in the canonical collection, a new set is
-     * allocated.  
+     * allocated.
      */
     protected State lookup(IntSet items)
     {
@@ -82,7 +84,7 @@ public abstract class LRConstructor
     {
 	StringBuffer buf = new StringBuffer();
 	IntIterator iter = set.iterator();
-	while ( iter.hasNext() ) 
+	while ( iter.hasNext() )
 	    buf.append(grammar.getItem(iter.next())).append(StringTools.NEWLINE);
 	return buf.toString();
     }
@@ -109,7 +111,7 @@ public abstract class LRConstructor
     }
 
     // ================================================================
-    // instance fields 
+    // instance fields
     // ================================================================
 
     protected ContextFreeSet grammar;
@@ -120,7 +122,7 @@ public abstract class LRConstructor
      * Concrete implementation of a State used by several LR
      * construction algorithms.
      */
-    protected static class State 
+    protected static class State
     {
 	State(int id, IntSet set)
 	{
@@ -164,19 +166,3 @@ public abstract class LRConstructor
 	java.util.Hashtable paths;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

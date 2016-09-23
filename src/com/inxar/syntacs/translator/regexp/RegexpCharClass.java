@@ -23,6 +23,7 @@ package com.inxar.syntacs.translator.regexp;
 import java.util.List;
 import org.inxar.syntacs.grammar.regular.RegularExpression;
 import org.inxar.syntacs.grammar.regular.RegularGrammar;
+import org.inxar.syntacs.grammar.regular.CharClass;
 
 /**
  * Regexp subclass for character classes <code>[a-zA-Z]</code>.

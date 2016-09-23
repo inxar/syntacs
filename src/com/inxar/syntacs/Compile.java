@@ -2,7 +2,7 @@
  * $Id: Compile.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,18 +20,17 @@
  */
 package com.inxar.syntacs;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.Properties;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.inxar.syntacs.translator.*;
-import com.inxar.syntacs.translator.*;
-import org.inxar.syntacs.translator.lr.*;
-import com.inxar.syntacs.translator.lr.*;
-import com.inxar.syntacs.translator.regexp.*;
-import com.inxar.syntacs.translator.syntacs.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.translator.Translator;
+import org.inxar.syntacs.translator.TranslatorGrammar;
+import org.inxar.syntacs.util.Log;
+
+import com.inxar.syntacs.translator.syntacs.SyntacsGrammar;
+import com.inxar.syntacs.translator.lr.XML2LRTranslatorGrammarTransformer;
+import com.inxar.syntacs.util.Mission;
 
 /**
  * <code>Compile</code> is the command-line interface to compile
@@ -39,7 +38,7 @@ import com.inxar.syntacs.util.*;
  * the grammar file to compile (can be in XML or "native syntacs"
  * format.  <code>Properties</code> to be passed to the translator may
  * be expressed using the -D option.  <P> Two Examples:
- * 
+ *
  * <pre>
  * java -classpath $CLASSPATH com.inxar.syntacs.Compile ./abb.stt
  * </pre>
@@ -51,15 +50,15 @@ import com.inxar.syntacs.util.*;
 public class Compile
 {
     private static final boolean DEBUG = true;
-    
-    private Compile() 
+
+    private Compile()
     {
     }
 
     /**
      * Runs the tool; invoke this method with the name of the grammar
      * to process (filename must end with <code>.xml</code> or
-     * <code>.stt</code>).  
+     * <code>.stt</code>).
      */
     public static void main(String[] argv)
     {
@@ -69,28 +68,28 @@ public class Compile
 	//p.setProperty("run-parser-debug", "true");
 
 	int idx = parseopts(argv, p);
-	if (idx != argv.length - 1) 
+	if (idx != argv.length - 1)
 	    usage("The last argument must be the name of the "+
 		  "grammar filename.");
-	    
+
 	String infile = argv[idx];
 
 	verbose = Mission.control().isTrue("verbose");
-	
+
 	if (verbose)
 	    log().debug()
 		.write("Compiling ").write(infile)
 		.time();
 
 	TranslatorGrammar g = null;
-	if (infile.endsWith(".xml")) 
+	if (infile.endsWith(".xml"))
 	    processXML(infile, p);
-	else if (infile.endsWith(".stt")) 
+	else if (infile.endsWith(".stt"))
 	    processSTT(infile, p);
 	else {
 	    usage("Grammar file must be an .stt or .xml file");
 	}
-	
+
 	if (verbose)
 	    log().debug()
 		.touch();
@@ -100,7 +99,7 @@ public class Compile
 
     /**
      * Processes an <code>XML</code> grammar and returns the
-     * corresponding <code>Translator</code> for the grammar.  
+     * corresponding <code>Translator</code> for the grammar.
      */
     public static Translator processXML(String uri, Properties p)
     {
@@ -110,7 +109,7 @@ public class Compile
 	try {
 	    TranslatorGrammar g = new XML2LRTranslatorGrammarTransformer()
 		.transform(uri);
-	    
+
 	    return g.newTranslator(p);
 
 	} catch (Exception ex) {
@@ -122,7 +121,7 @@ public class Compile
 
     /**
      * Processes an <code>STT</code> grammar and returns the
-     * corresponding <code>Translator</code> for the grammar.  
+     * corresponding <code>Translator</code> for the grammar.
      */
     public static Translator processSTT(String file, Properties p)
     {
@@ -134,7 +133,7 @@ public class Compile
 
 	} catch (Exception ex) {
 	    ex.printStackTrace();
-	} 
+	}
 
 	return null;
     }
@@ -145,7 +144,7 @@ public class Compile
 	    log = Mission.control().log("cpl", new Compile());
 	return log;
     }
-    
+
     private static Log log;
     private static boolean verbose;
 
@@ -158,7 +157,7 @@ public class Compile
 	    if (opts[i].equals("--"))
 		return i;
 
-	    // All options must start with a dash 
+	    // All options must start with a dash
 	    if (!opts[i].startsWith("-"))
 		return i;
 
@@ -169,7 +168,7 @@ public class Compile
 			("The -D option must have a valid key=val argument");
 		Interpret.splitopt(opts[++i], p);
 	    }
-				       
+
 	    // Handle case where value is concatentated to the
 	    // option.
 	    else if (opts[i].startsWith("-D")) {
@@ -181,7 +180,7 @@ public class Compile
 		usage("Unknown option `"+opts[i]+"'");
 
 	    // If not an option, we should stop.
-	    else 
+	    else
 		return i;
 
 	    // Go to next option
@@ -204,16 +203,9 @@ public class Compile
 	System.err.println("|");
 	System.err.println("| Requirements:");
 	System.err.println("|  <grammar-input-file>...The name of the grammar file to compile");
-	System.err.println("|");	
+	System.err.println("|");
 
 	System.exit(-1);
     }
 
 }
-
-
-
-
-
-
-

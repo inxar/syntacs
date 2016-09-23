@@ -2,7 +2,7 @@
  * $Id: Dot.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,13 +20,14 @@
  */
 package com.inxar.syntacs.util;
 
-import java.util.*;
-import org.inxar.syntacs.util.*;
+import java.util.List;
+import java.util.LinkedList;
+import org.inxar.syntacs.util.GraphViz;
 
 /**
  * Basic implementation of the <code>GraphViz</code> interface.
  */
-public class Dot implements GraphViz 
+public class Dot implements GraphViz
 {
     public Dot(String name)
     {
@@ -52,7 +53,7 @@ public class Dot implements GraphViz
     {
 	this.name = name;
     }
-			
+
     public String getName()
     {
 	return this.name;
@@ -62,7 +63,7 @@ public class Dot implements GraphViz
     {
 	this.isDirected = isDirected;
     }
-			
+
     public boolean isDirected()
     {
 	return this.isDirected;
@@ -103,7 +104,7 @@ public class Dot implements GraphViz
 
 	b.append(name)
 	    .append(' ').append('{').append(StringTools.NEWLINE);
-	
+
 	for (int i = 0; i < entries.size(); i++) {
 	    Bufferable r = (Bufferable)entries.get(i);
 	    b.append("    ");
@@ -186,7 +187,7 @@ public class Dot implements GraphViz
 	    attrs.add(attr);
 	    return this;
 	}
-	
+
 	public void toBuffer(StringBuffer b)
 	{
 	    b.append(name);
@@ -224,7 +225,7 @@ public class Dot implements GraphViz
 	    attrs.add(attr);
 	    return this;
 	}
-	
+
 	public void toBuffer(StringBuffer b)
 	{
 	    b.append(src).append( isDirected ? " -> " : " -- ").append(dst);
@@ -247,7 +248,7 @@ public class Dot implements GraphViz
 	{
 	    b.append("subgraph ").append(name)
 		.append(' ').append('{').append(StringTools.NEWLINE);
-	    
+
 	    for (int i = 0; i < entries.size(); i++) {
 		Bufferable r = (Bufferable)entries.get(i);
 		b.append("        ");
@@ -256,12 +257,9 @@ public class Dot implements GraphViz
 		if (r instanceof BAttr)
 		    b.append(';').append(StringTools.NEWLINE);
 	    }
-	    
+
 	    b.append("    }").append(StringTools.NEWLINE);
 	}
 
     }
 }
-
-
-

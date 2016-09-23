@@ -2,7 +2,7 @@
  * $Id: TreeDFA.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -23,10 +23,13 @@ package com.inxar.syntacs.automaton.finite;
 import java.util.Vector;
 import java.util.Properties;
 import org.inxar.syntacs.grammar.Token;
-import org.inxar.syntacs.automaton.finite.*;
-import org.inxar.syntacs.translator.lr.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.automaton.finite.DFA;
+import org.inxar.syntacs.translator.lr.LRTranslatorGrammar;
+import org.inxar.syntacs.util.GraphViz;
+import org.inxar.syntacs.util.Vizualizable;
+import org.inxar.syntacs.util.Log;
+import com.inxar.syntacs.util.Mission;
+import com.inxar.syntacs.util.StringTools;
 
 /**
  * Concrete <code>DFA</code> implementation which uses tree-based
@@ -36,7 +39,7 @@ import com.inxar.syntacs.util.*;
  * Lexer (binary search versus array indexing). Thus, TreeDFA and its
  * inner classes are used often in construction and transformation
  * algorithms, but generally "burned" to a MesoArrayDFA when used by a
- * Lexer.  
+ * Lexer.
  */
 public class TreeDFA
     implements DFA, Vizualizable
@@ -45,7 +48,7 @@ public class TreeDFA
 
     /**
      * Constructs the <code>TreeDFA</code> from the given
-     * <code>State</code> table.  
+     * <code>State</code> table.
      */
     public TreeDFA(State[] table)
     {
@@ -62,7 +65,7 @@ public class TreeDFA
 	while (true) {
 	    if (edge == null) {
 
-		if (DEBUG) 
+		if (DEBUG)
 		    log().debug()
 			.write("got null")
 			.out();
@@ -71,7 +74,7 @@ public class TreeDFA
 
 	    } else if (input < edge.lo) {
 
-		if (DEBUG) 
+		if (DEBUG)
 		    log().debug()
 			.write("going left on input ").write(input)
 			.write(", edge.lo ").write(edge.lo)
@@ -81,7 +84,7 @@ public class TreeDFA
 
 	    } else if (input > edge.hi) {
 
-		if (DEBUG) 
+		if (DEBUG)
 		    log().debug()
 			.write("going right on input ").write(input)
 			.write(", edge.hi ").write(edge.hi)
@@ -172,7 +175,7 @@ public class TreeDFA
 
 	if (Mission.control().isTrue("viz-dfa-concentrate-edges"))
 	    dot.attr("concentrate", "true");
-	
+
 	dot.attr("rankdir", rankdir);
 	node = dot.node("node");
 	node.attr("color", nc);
@@ -198,7 +201,7 @@ public class TreeDFA
 	    log = Mission.control().log("tfa", this); // Tree Finite Automata
 	return log;
     }
-    
+
     Log log;
     State[] table;
 
@@ -211,13 +214,13 @@ public class TreeDFA
      * as tuple <code>(output, edge_tree)</code> where
      * <code>output</code> is an integer which records the accepting
      * NFA state and <code>edge_tree</code> holds the outgoing edges
-     * of the state tree.  
+     * of the state tree.
      */
     public static class State
     {
-	/** 
+	/**
 	 * Constructs the <code>State</code> on the given
-	 * <code>Edge</code> tree and <code>int</code> output.  
+	 * <code>Edge</code> tree and <code>int</code> output.
 	 */
 	public State(Edge tree, int output)
 	{
@@ -275,7 +278,7 @@ public class TreeDFA
 	 * the next and "previous" state, and the left and right
 	 * binary tree children.  The "previous" state number
 	 * corresponds to the number of the State which the edge
-	 * originates from. 
+	 * originates from.
 	 */
 	public Edge(int lo, int hi, int prev, int next, Edge left, Edge right)
 	{
@@ -289,7 +292,7 @@ public class TreeDFA
 
 	/**
 	 * Makes an edge suitable for a dead-end state (though not
-	 * necessarily *the* dead state).  
+	 * necessarily *the* dead state).
          */
 	public Edge(int prev)
 	{
@@ -337,9 +340,9 @@ public class TreeDFA
 
 	    GraphViz.Edge edge = dot.edge("s"+prev, "s"+next);
 
-            if (lo == hi) 
+            if (lo == hi)
 		edge.attr("label", str(lo));
-            else 
+            else
 		edge.attr("label", "["+str(lo)+"-"+str(hi)+"]");
 
 	}
@@ -347,12 +350,12 @@ public class TreeDFA
 	private String str(int val)
 	{
 	    switch (val) {
-	    case '"': 
-	    case '\\': 
+	    case '"':
+	    case '\\':
 		return String.valueOf(val);
 	    default:
-		return val > 0x20 && val <= 0xFF 
-		    ? String.valueOf((char)val) 
+		return val > 0x20 && val <= 0xFF
+		    ? String.valueOf((char)val)
 		    : String.valueOf(val);
 	    }
 	}
@@ -360,25 +363,25 @@ public class TreeDFA
 
 	/**
 	 * The inclusive hi endpoint of the Unicode interval this
-	 * <code>Edge</code> covers.  
+	 * <code>Edge</code> covers.
 	 */
 	public int lo;
 
 	/**
 	 * The inclusive lo endpoint of the Unicode interval this
-	 * <code>Edge</code> covers.  
+	 * <code>Edge</code> covers.
 	 */
 	public int hi;
 
 	/**
 	 * The number of the <code>State</code> to which the
-	 * <code>Edge</code> is rooted.  
+	 * <code>Edge</code> is rooted.
 	 */
-	public int prev; 
+	public int prev;
 
 	/**
 	 * The number of the <code>State</code> to which this
-	 * <code>Edge</code> traverses.  
+	 * <code>Edge</code> traverses.
 	 */
 	public int next;
 
@@ -394,7 +397,7 @@ public class TreeDFA
 
 	/**
 	 * The number of the <code>Token</code> which is returned by
-	 * the <code>output(int state)</code> method. 
+	 * the <code>output(int state)</code> method.
 	 */
 	public int id;
     }
@@ -425,7 +428,7 @@ public class TreeDFA
 
     /**
      * Recursively flatten the given <code>Edge</code> tree into the
-     * given <code>Vector</code>.  
+     * given <code>Vector</code>.
      */
     public static void inOrderDump(Edge tree, Vector v)
     {
@@ -476,6 +479,3 @@ public class TreeDFA
 	return edges[mid];
     }
 }
-
-
-

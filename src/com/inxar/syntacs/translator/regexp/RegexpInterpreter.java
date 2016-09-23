@@ -2,7 +2,7 @@
  * $Id: RegexpInterpreter.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,28 +20,25 @@
  */
 package com.inxar.syntacs.translator.regexp;
 
-import java.util.*;
-import org.inxar.syntacs.grammar.*;
-import org.inxar.syntacs.analyzer.*;
-import com.inxar.syntacs.analyzer.*;
-import org.inxar.syntacs.analyzer.lexical.*;
-import com.inxar.syntacs.analyzer.lexical.*;
-import org.inxar.syntacs.analyzer.syntactic.*;
-import com.inxar.syntacs.analyzer.syntactic.*;
-import org.inxar.syntacs.automaton.finite.*;
-import org.inxar.syntacs.automaton.pushdown.*;
-import org.inxar.syntacs.translator.*;
-import com.inxar.syntacs.translator.*;
-import org.inxar.syntacs.translator.lr.*;
-import com.inxar.syntacs.translator.lr.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import java.util.List;
+import java.util.ArrayList;
+
+import org.inxar.syntacs.analyzer.Symbol;
+import org.inxar.syntacs.analyzer.syntactic.Sentence;
+import org.inxar.syntacs.translator.TranslationException;
+import org.inxar.syntacs.translator.Complaint;
+import org.inxar.syntacs.util.Log;
+
+import com.inxar.syntacs.analyzer.ConstantSymbol;
+import com.inxar.syntacs.analyzer.ListSymbol;
+import com.inxar.syntacs.translator.lr.StandardLRTranslatorInterpreter;
+import com.inxar.syntacs.util.Mission;
 
 /**
  * <code>Interpreter</code> used in the translation of regular
  * expression strings.
  */
-public class RegexpInterpreter extends StandardLRTranslatorInterpreter 
+public class RegexpInterpreter extends StandardLRTranslatorInterpreter
 {
     private static final boolean DEBUG = false;
 
@@ -51,18 +48,18 @@ public class RegexpInterpreter extends StandardLRTranslatorInterpreter
 
     public void match(int type, int off, int len) throws TranslationException
     {
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write("seeing input ").write(type)
 		.out();
 
 	// init our symbol
 	Symbol symbol = null;
-	
+
         switch (type) {
 
 	case RegexpGrammar.T_WHITESPACE:
-	    if (DEBUG) 
+	    if (DEBUG)
 		log().debug()
 		    .write("Skipping whitespace")
 		    .out();
@@ -74,7 +71,7 @@ public class RegexpInterpreter extends StandardLRTranslatorInterpreter
 	case RegexpGrammar.T_CLOSE_PAREN:
 	case RegexpGrammar.T_CHAR_CLASS_DASH:
 	case RegexpGrammar.T_CLOSE_BRACKET:
-	    symbol = new ConstantSymbol(type); 
+	    symbol = new ConstantSymbol(type);
 	    break;
 
 	case RegexpGrammar.T_CHAR:
@@ -114,7 +111,7 @@ public class RegexpInterpreter extends StandardLRTranslatorInterpreter
 		break;
 	    }
 
-	case RegexpGrammar.T_ESC:         
+	case RegexpGrammar.T_ESC:
 	    char c = in.retch(off + 1);
 	    switch (c) {
 
@@ -126,38 +123,38 @@ public class RegexpInterpreter extends StandardLRTranslatorInterpreter
 	    case 'b': c = '\b'; break;
 	    case 'v': c = '\013'; break;
 
-	    case '+': case '*': case '?': 
-	    case '|': case '(': case ')': 
-	    case '[': case ']': case '\\': 
+	    case '+': case '*': case '?':
+	    case '|': case '(': case ')':
+	    case '[': case ']': case '\\':
 	    case '"':
 		break;
 
 	    default:
-		auditor.notify(Complaint.LEXICAL_ERROR, 
-			       "Undefined literal escape", 
+		auditor.notify(Complaint.LEXICAL_ERROR,
+			       "Undefined literal escape",
 			       in, off, len);
 
 	    }
 	    symbol = newAtom(type, c);
 	    break;
 
-	case RegexpGrammar.T_OPEN_BRACKET:            
+	case RegexpGrammar.T_OPEN_BRACKET:
 	    symbol = newClass(type, false, false); break;
-	case RegexpGrammar.T_OPEN_BRACKET_CARET:      
+	case RegexpGrammar.T_OPEN_BRACKET_CARET:
 	    symbol = newClass(type, true, false); break;
-	case RegexpGrammar.T_OPEN_BRACKET_DASH:       
+	case RegexpGrammar.T_OPEN_BRACKET_DASH:
 	    symbol = newClass(type, false, true); break;
-	case RegexpGrammar.T_OPEN_BRACKET_CARET_DASH: 
+	case RegexpGrammar.T_OPEN_BRACKET_CARET_DASH:
 	    symbol = newClass(type, true, true); break;
 
-	case RegexpGrammar.T_STAR:     
+	case RegexpGrammar.T_STAR:
 	    symbol = new QuantifierSymbol(type, Regexp.CLOSURE); break;
-	case RegexpGrammar.T_QUESTION: 
+	case RegexpGrammar.T_QUESTION:
 	    symbol = new QuantifierSymbol(type, Regexp.OPTIONAL); break;
-	case RegexpGrammar.T_PLUS:     
+	case RegexpGrammar.T_PLUS:
 	    symbol = new QuantifierSymbol(type, Regexp.PCLOSURE); break;
 
-	default: 
+	default:
 	    throw new InternalError
 		("Expected terminal type: " + grammar.getTerminal(type));
         }
@@ -167,7 +164,7 @@ public class RegexpInterpreter extends StandardLRTranslatorInterpreter
 
     public Symbol reduce(int type, Sentence s) throws TranslationException
     {
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write("REDUCE ")
 		.write(grammar.getProduction(type))
@@ -252,7 +249,7 @@ public class RegexpInterpreter extends StandardLRTranslatorInterpreter
 
 	case RegexpGrammar.P_Term__Atom_Quantifier:
 	    {
-		QuantifierSymbol q = (QuantifierSymbol)s.at(1); 
+		QuantifierSymbol q = (QuantifierSymbol)s.at(1);
 		RegexpTerm term = new RegexpTerm(q.regexpType);
 		term.setInternal( (Regexp)s.at(0) );
 		symbol = term;
@@ -388,7 +385,7 @@ public class RegexpInterpreter extends StandardLRTranslatorInterpreter
 		throw new InternalError();
 	    }
 	}
-	
+
 	int symbolType;
 	int regexpType;
     }

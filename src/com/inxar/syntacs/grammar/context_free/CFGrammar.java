@@ -2,7 +2,7 @@
  * $Id: CFGrammar.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -23,10 +23,20 @@ package com.inxar.syntacs.grammar.context_free;
 import java.util.Vector;
 import java.util.Hashtable;
 import java.util.Enumeration;
+
 import org.inxar.syntacs.grammar.Token;
-import org.inxar.syntacs.grammar.context_free.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.grammar.context_free.Item;
+import org.inxar.syntacs.grammar.context_free.Production;
+import org.inxar.syntacs.grammar.context_free.GrammarSymbol;
+import org.inxar.syntacs.grammar.context_free.Terminal;
+import org.inxar.syntacs.grammar.context_free.NonTerminal;
+import org.inxar.syntacs.grammar.context_free.Epsilon;
+import org.inxar.syntacs.grammar.context_free.ContextFreeGrammar;
+import org.inxar.syntacs.grammar.context_free.ContextFreeSet;
+import org.inxar.syntacs.util.Log;
+
+import com.inxar.syntacs.util.Mission;
+import com.inxar.syntacs.util.StringTools;
 
 /**
  * Standard <code>ContextFreeGrammar</code> implementation.
@@ -68,7 +78,7 @@ public class CFGrammar
     	if (type == null)
 	    throw new NullPointerException
 		("newTerminal(Token) requires a non-null argument.");
-	
+
     	CFTerminal terminal = new CFTerminal(type);
     	v_terminals.addElement(terminal);
     	return terminal;
@@ -237,16 +247,16 @@ public class CFGrammar
 
 	    // in this method we want to setup all the containers for
 	    // Terminals, NonTerminals, Productions, and Items.
-	    
+
 	    // augment the grammar with a new start production
 	    augment();
-	    
+
 	    // calculate the ID's for each of the following
 	    // classes of objects
 	    compileGrammarSymbols();
 
 	    if (DEBUG) print("compile(): grammar symbols: ", grammarSymbols);
-	    
+
 	    compileProductions();
 
 	    if (DEBUG) print("compile(): productions: ", productions);
@@ -271,7 +281,7 @@ public class CFGrammar
     	Production initial = startProduction;
 	// make the new start production on a new start nonterminal
 	// (length of 2)
-    	startProduction = newProduction( newNonTerminal("_start_") ); 
+    	startProduction = newProduction( newNonTerminal("_start_") );
     	// add the nonterminal from the start production and the end
     	// of input terminal to this new start production
     	startProduction.add(initial.getNonTerminal());
@@ -316,7 +326,7 @@ public class CFGrammar
      * want to have the array sequence {A, 1, 2, B, 4}.
      *
      * In this way no array elements are wasted and the tokens get
-     * their stubborn way.  
+     * their stubborn way.
      */
     private void compileGrammarSymbols()
     {
@@ -427,7 +437,7 @@ public class CFGrammar
 
 	int len;
 	Object o;
-	
+
 	b.append("Terminals:").append(StringTools.NEWLINE);
 	len = v_terminals.size();
 	for (int i=0; i < len; i++) {
@@ -437,7 +447,7 @@ public class CFGrammar
 		.append(o).append(StringTools.NEWLINE);
 	}
 	b.append(StringTools.NEWLINE);
-	
+
 	b.append("Nonterminals:").append(StringTools.NEWLINE);
 	len = v_nonterminals.size();
 	for (int i=0; i < len; i++) {
@@ -456,7 +466,7 @@ public class CFGrammar
 	    b.append('[').append(i).append(']').append(": ")
 		.append(o).append(StringTools.NEWLINE);
 	}
-	b.append(StringTools.NEWLINE);	
+	b.append(StringTools.NEWLINE);
 
 	GrammarSymbol gs;
 	b.append("Grammar Symbols:").append(StringTools.NEWLINE);
@@ -467,7 +477,7 @@ public class CFGrammar
 	    b.append('[').append(i).append(']').append(": ")
 		.append(gs.getName()).append(StringTools.NEWLINE);
 	}
-	b.append(StringTools.NEWLINE);	
+	b.append(StringTools.NEWLINE);
 
 	b.append("Items:").append(StringTools.NEWLINE);
 	len = v_items.size();
@@ -482,7 +492,7 @@ public class CFGrammar
 		aiiobex.printStackTrace();
 	    }
 	}
-	b.append(StringTools.NEWLINE);	
+	b.append(StringTools.NEWLINE);
 
 	return b.toString();
     }
@@ -496,7 +506,7 @@ public class CFGrammar
 	}
 	b.append(" } ").append(StringTools.NEWLINE);
 
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write(b)
 		.out();
@@ -511,7 +521,7 @@ public class CFGrammar
 	}
 	b.append('}').append(StringTools.NEWLINE);
 
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write(b)
 		.out();
@@ -614,9 +624,3 @@ public class CFGrammar
 	private int size;
     }
 }
-
-
-
-
-
-

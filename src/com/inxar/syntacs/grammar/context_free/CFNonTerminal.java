@@ -2,7 +2,7 @@
  * $Id: CFNonTerminal.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,9 +20,18 @@
  */
 package com.inxar.syntacs.grammar.context_free;
 
-import org.inxar.syntacs.grammar.context_free.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.grammar.context_free.NonTerminal;
+import org.inxar.syntacs.grammar.context_free.Item;
+import org.inxar.syntacs.grammar.context_free.Production;
+import org.inxar.syntacs.grammar.context_free.GrammarSymbol;
+import org.inxar.syntacs.util.IntSet;
+import org.inxar.syntacs.util.IntList;
+import org.inxar.syntacs.util.IntArray;
+import org.inxar.syntacs.util.IntStack;
+
+import com.inxar.syntacs.util.ArrayIntStack;
+import com.inxar.syntacs.util.ArrayIntList;
+import com.inxar.syntacs.util.BitSetIntSet;
 
 /**
  * Standard <code>NonTerminal</code> implementation.
@@ -77,7 +86,7 @@ public class CFNonTerminal
     {
 	return items;
     }
-    
+
     public IntArray getReductions()
     {
 	return alts;
@@ -94,7 +103,7 @@ public class CFNonTerminal
     /**
      * Calculates and returns the first set for the given
      * non-terminal.  Each member in the set corresponds the the id of
-     * a terminal.  
+     * a terminal.
      */
     protected IntSet first()
     {
@@ -154,7 +163,7 @@ public class CFNonTerminal
         // done populating the set.
         return set;
     }
-    
+
     public boolean isNullable()
     {
 	// check if we've calculated it yet...
@@ -182,7 +191,7 @@ public class CFNonTerminal
 	    // not nullable
 	    isNullable = Boolean.FALSE;
 	}
-	
+
         // return boolean result
         return isNullable.booleanValue();
     }
@@ -195,7 +204,7 @@ public class CFNonTerminal
 
     /**
      * Since we assume that nonTerminals have unique ID's, we base the
-     * hashCode solely upon this (also equals()).  
+     * hashCode solely upon this (also equals()).
      */
     public int hashCode()
     {
@@ -222,9 +231,3 @@ public class CFNonTerminal
     private IntList items;
     private CFGrammar grammar;
 }
-
-
-
-
-
-

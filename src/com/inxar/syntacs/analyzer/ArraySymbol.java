@@ -2,7 +2,7 @@
  * $Id: ArraySymbol.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -22,7 +22,7 @@ package com.inxar.syntacs.analyzer;
 
 import org.inxar.syntacs.grammar.Token;
 import org.inxar.syntacs.analyzer.Symbol;
-import com.inxar.syntacs.util.*;
+import com.inxar.syntacs.util.Tree;
 
 /**
  * Concrete list implementation of <code>Symbol</code> which has a
@@ -32,7 +32,7 @@ public class ArraySymbol extends AbstractSymbol
 {
     /**
      * Constructs the <code>ArraySymbol</code> with the given array
-     * length given by <code>len</code>.  
+     * length given by <code>len</code>.
      */
     public ArraySymbol(int len)
     {
@@ -41,7 +41,7 @@ public class ArraySymbol extends AbstractSymbol
 
     /**
      * Constructs the <code>ArraySymbol</code> with the given type and
-     * array length given by <code>len</code>.  
+     * array length given by <code>len</code>.
      */
     public ArraySymbol(int type, int len)
     {
@@ -52,7 +52,7 @@ public class ArraySymbol extends AbstractSymbol
 
     /**
      * Adds the given symbol to the next empty slot in the
-     * <code>Symbol</code> array.  
+     * <code>Symbol</code> array.
      */
     public void add(Symbol s)
     {
@@ -62,10 +62,10 @@ public class ArraySymbol extends AbstractSymbol
     public String toString()
     {
 	StringBuffer b = new StringBuffer();
-	
+
 	b.append('[').append(type).append(':');
 
-	if (as.length == 1) 
+	if (as.length == 1)
 	    b.append(as[0]);
 	else
 	    for (int i = 0; i < as.length; i++) {
@@ -81,13 +81,13 @@ public class ArraySymbol extends AbstractSymbol
     public void toTree(Tree t)
     {
 	if (as.length == 1) {
-	    ((AbstractSymbol)as[0]).toTree(t);	
+	    ((AbstractSymbol)as[0]).toTree(t);
 	} else {
 	    t = t.add("@");
-	    
+
 	    for (int i = 0; i < as.length; i++) {
 		if (as[i] instanceof AbstractSymbol)
-		    ((AbstractSymbol)as[i]).toTree(t);	
+		    ((AbstractSymbol)as[i]).toTree(t);
 		else
 		    t.add(as[i].toString());
 	    }
@@ -96,11 +96,10 @@ public class ArraySymbol extends AbstractSymbol
 
     /**
      * The array which holds the child <code>Symbol</code>s within
-     * this <code>Symbol</code>.  
+     * this <code>Symbol</code>.
      */
     public Symbol[] as;
 
-    // used by add() 
+    // used by add()
     private int idx;
 }
-

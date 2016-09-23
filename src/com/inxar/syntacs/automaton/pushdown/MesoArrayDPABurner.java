@@ -2,7 +2,7 @@
  * $Id: MesoArrayDPABurner.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,18 +20,17 @@
  */
 package com.inxar.syntacs.automaton.pushdown;
 
-import java.io.*;
-import java.util.*;
 import org.inxar.jenesis.*;
-import org.inxar.syntacs.automaton.pushdown.*;
-import com.inxar.syntacs.automaton.pushdown.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.util.Burner;
+import org.inxar.syntacs.util.Log;
+import com.inxar.syntacs.util.BurnTools;
+import com.inxar.syntacs.util.Pickler;
+import com.inxar.syntacs.util.Mission;
 
 /**
  * Utility class which transforms an instance of
  * <code>MesoArrayDPA</code> to a corresponding source code
- * representation.  
+ * representation.
  */
 public class MesoArrayDPABurner implements Burner
 {
@@ -48,7 +47,7 @@ public class MesoArrayDPABurner implements Burner
     {
 	this.vm = VirtualMachine.getVirtualMachine();
     }
-    
+
     public void burn(Object src, ClassDeclaration cls)
     {
 	if (DEBUG)
@@ -58,7 +57,7 @@ public class MesoArrayDPABurner implements Burner
 
 	if ( ! (src instanceof MesoArrayDPA) )
 	    throw new ClassCastException
-		("I can only work instances of " + MesoArrayDPA.class.getName() + 
+		("I can only work instances of " + MesoArrayDPA.class.getName() +
 		 ", not `" + (src == null ? "null" : src.getClass().getName()) + "'.");
 
 	this.dpa = (MesoArrayDPA)src;
@@ -86,25 +85,25 @@ public class MesoArrayDPABurner implements Burner
 	StaticInitializer si = cls.newStaticInitializer();
 
 	// Check if should /not/ pickle.
-	if (Mission.control().isFalse("compile-pickle") || 
+	if (Mission.control().isFalse("compile-pickle") ||
 	    Mission.control().isFalse("compile-dpa-pickle"))
 	    initStaticInitializerNotPickle(cls, si);
 	else
 	    initStaticInitializerPickle(cls, si);
     }
 
-    protected void initStaticInitializerNotPickle(ClassDeclaration cls, 
+    protected void initStaticInitializerNotPickle(ClassDeclaration cls,
 						  StaticInitializer si)
     {
 	si.newStmt(vm.newInvoke(null, "initAction"));
 	si.newStmt(vm.newInvoke(null, "initGo"));
 	si.newStmt(vm.newInvoke(null, "initActions"));
 
-	// make the initialization class methods 
+	// make the initialization class methods
 	ClassMethod m1 = addVoidMethod(cls, "initAction");
 	ClassMethod m2 = addVoidMethod(cls, "initGo");
 	ClassMethod m3 = addVoidMethod(cls, "initActions");
-	
+
 	// init the action[][] array
 	BurnTools.init2DArray(m1, "_action", dpa.action);
 	// make the go[][] array
@@ -113,17 +112,17 @@ public class MesoArrayDPABurner implements Burner
 	BurnTools.init1DArray(m3, "_actions", dpa.actions);
     }
 
-    protected void initStaticInitializerPickle(ClassDeclaration cls, 
+    protected void initStaticInitializerPickle(ClassDeclaration cls,
 					       StaticInitializer si)
     {
 	cls.getUnit().addImport("com.inxar.syntacs.util.Pickler");
 
 	Invoke invoke = null;
-	
+
 	invoke = vm.newInvoke("Pickler", "unpickle2D")
 	    .addArg(BurnTools.split(Pickler.pickle(dpa.action)));
 	si.newStmt( vm.newAssign( vm.newVar("_action"), invoke ) );
-	
+
 	invoke = vm.newInvoke("Pickler", "unpickle2D")
 	    .addArg(BurnTools.split(Pickler.pickle(dpa.go)));
 	si.newStmt( vm.newAssign( vm.newVar("_go"), invoke ) );
@@ -136,7 +135,7 @@ public class MesoArrayDPABurner implements Burner
     protected ClassField addIntArrayField(ClassDeclaration cls, int dims, String name)
     {
 	ClassField f = cls.newField(vm.newArray(Type.INT, dims), name);
-	f.setAccess(Access.PRIVATE); 
+	f.setAccess(Access.PRIVATE);
 	f.isStatic(true);
 	return f;
     }
@@ -144,8 +143,8 @@ public class MesoArrayDPABurner implements Burner
     protected ClassMethod addVoidMethod(ClassDeclaration cls, String name)
     {
 	ClassMethod m = cls.newMethod(vm.newType(Type.VOID), name);
-	m.setAccess(Access.PRIVATE); 
-	m.isStatic(true); 
+	m.setAccess(Access.PRIVATE);
+	m.isStatic(true);
 	return m;
     }
 
@@ -160,9 +159,3 @@ public class MesoArrayDPABurner implements Burner
     protected VirtualMachine vm;
     private Log log;
 }
-
-
-
-
-
-

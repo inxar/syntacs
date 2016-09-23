@@ -22,19 +22,36 @@ package com.inxar.syntacs.grammar.regular;
 
 import java.io.StringReader;
 import java.util.Vector;
-import org.inxar.syntacs.util.Mission;
-import com.inxar.syntacs.util.StringTools;
-import com.inxar.syntacs.util.BitSetIntSet;
+
 import org.inxar.syntacs.grammar.Token;
 import org.inxar.syntacs.grammar.regular.RegularToken;
 import org.inxar.syntacs.grammar.regular.RegularSet;
 import org.inxar.syntacs.grammar.regular.RegularGrammar;
 import org.inxar.syntacs.grammar.regular.RegularExpression;
-import org.inxar.syntacs.grammar.regular.Regexp;
 import org.inxar.syntacs.grammar.regular.Epsilon;
 import org.inxar.syntacs.grammar.regular.Interval;
+import org.inxar.syntacs.grammar.regular.Option;
+import org.inxar.syntacs.grammar.regular.PositiveClosure;
+import org.inxar.syntacs.grammar.regular.Closure;
+import org.inxar.syntacs.grammar.regular.Option;
+import org.inxar.syntacs.grammar.regular.Concatenation;
+import org.inxar.syntacs.grammar.regular.CharClass;
+import org.inxar.syntacs.grammar.regular.CharString;
+import org.inxar.syntacs.grammar.regular.Union;
+import org.inxar.syntacs.grammar.regular.ExpressionTerminator;
+import org.inxar.syntacs.translator.Translator;
 import org.inxar.syntacs.translator.TranslationException;
 import org.inxar.syntacs.translator.RuntimeTranslationException;
+
+import org.inxar.syntacs.util.Log;
+import org.inxar.syntacs.util.IntSet;
+
+import com.inxar.syntacs.translator.regexp.Regexp;
+import com.inxar.syntacs.translator.regexp.RegexpGrammar;
+
+import com.inxar.syntacs.util.Mission;
+import com.inxar.syntacs.util.StringTools;
+import com.inxar.syntacs.util.BitSetIntSet;
 
 /**
  * Standard <code>RegularGrammar</code> implementation.

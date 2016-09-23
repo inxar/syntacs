@@ -2,7 +2,7 @@
  * $Id: StandardInput.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,17 +20,25 @@
  */
 package com.inxar.syntacs.analyzer;
 
-import java.io.*;
-import java.net.*;
+import java.io.Reader;
+import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.CharArrayReader;
+import java.io.CharArrayWriter;
+import java.io.InputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.EOFException;
+import java.net.URL;
 import org.inxar.syntacs.analyzer.Input;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.util.Log;
+import com.inxar.syntacs.util.Mission;
 
 /**
  * Concrete implementation of Input which wraps a
  * <code>java.io.Reader</code>.  This particular implementation slups
  * the entire input into a char array at the upon initialization, so
- * therefore it is fast, but it is a memory hog for large files.  
+ * therefore it is fast, but it is a memory hog for large files.
  */
 public class StandardInput
     implements Input
@@ -49,15 +57,15 @@ public class StandardInput
 
     public void initch(Object src) throws IOException
     {
-	if (src instanceof char[]) 
+	if (src instanceof char[])
 	    init((char[])src);
-	else if (src instanceof URL) 
+	else if (src instanceof URL)
 	    init((URL)src);
-	else if (src instanceof Reader) 
+	else if (src instanceof Reader)
 	    init((Reader)src);
-	else if (src instanceof File) 
+	else if (src instanceof File)
 	    init((File)src);
-	else if (src instanceof String) 
+	else if (src instanceof String)
 	    init((String)src);
 	else if (src == null)
 	    throw new IllegalArgumentException
@@ -71,7 +79,7 @@ public class StandardInput
     private void init(URL url) throws IOException
     {
 	InputStream in = null;
-	
+
 	try {
 
 	    in = url.openStream();
@@ -80,31 +88,31 @@ public class StandardInput
 	    int c;
 	    while ( (c = in.read()) != -1 )
 		out.write(c);
-	    
+
 	    init( out.toCharArray() );
 
 	    in.close(); in = null;
 
 	} finally {
-	    if (in != null) 
-		try { in.close(); } 
+	    if (in != null)
+		try { in.close(); }
 		catch (Exception ex) {}
 	}
     }
 
     private void init(File file) throws IOException
     {
-	// make the src array
+      // make the src array
 	long length = file.length();
 
 	// is this bigger than we can index?
 	if (length > Integer.MAX_VALUE)
 	    throw new IOException
-		("The length of this file (" + length + 
+		("The length of this file (" + length +
 		 " bytes) is larger than the maximum size allowed " +
 		 "by this Input implementation (" + Integer.MAX_VALUE+
 		 " bytes).");
-	
+
 	// narrow
 	int len = (int)length;
 
@@ -116,8 +124,8 @@ public class StandardInput
 
 	    // and fill it from a buffered reader
 	    in = new BufferedReader(new FileReader(file), len);
-	    
-	    if (DEBUG) 
+
+	    if (DEBUG)
 		log().debug()
 		    .write("length of file ")
 		    .write(file.getAbsolutePath())
@@ -149,13 +157,13 @@ public class StandardInput
 	    int c;
 	    while ( (c = in.read()) != -1 )
 		out.write(c);
-	    
+
 	    init( out.toCharArray() );
 
 	    in.close(); in = null;
 
 	} finally {
-	    if (in != null) 
+	    if (in != null)
 		try { in.close(); } catch (Exception ex) {}
 	}
     }
@@ -184,12 +192,12 @@ public class StandardInput
     {
     	return currentPosition;
     }
-    
+
     public void atch(int pos)
     {
     	this.currentPosition = pos;
     }
-    
+
     public int atln()
     {
 	return currentLine;
@@ -208,29 +216,29 @@ public class StandardInput
 		       .write("getch(): now at ")
 		       .write(currentPosition)
 		       .out();
-	
+
 	try {
 
 	    // (1) get the next character from the stored input
 	    char c = src[currentPosition];
-	    
+
 	    // (2) check for newlines.  Assume that we are dealing with
 	    // UNIX files in which the LF is the sole newline char OR CRLF
 	    // dos files, in which case we count the transition after LF
 	    // as the moment when the newline occurs.  This does not deal
 	    // with solitary LF characters in dos files.  Hopefully this
 	    // is not too much of a problem.
-	    if (c == LF) 
+	    if (c == LF)
 		currentLine++;
-	    
+
 	    // increment our position
 	    currentPosition++;
-	    
+
 	    // return as int and we're done.
 	    return (int)c;
-	    
+
 	} catch (ArrayIndexOutOfBoundsException aiiobex) {
-	    throw new EOFException(); 
+	    throw new EOFException();
 	}
     }
 
@@ -311,7 +319,3 @@ public class StandardInput
     // The log.
     private Log log;
 }
-
-
-
-

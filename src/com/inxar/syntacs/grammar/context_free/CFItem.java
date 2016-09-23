@@ -2,7 +2,7 @@
  * $Id: CFItem.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,9 +20,16 @@
  */
 package com.inxar.syntacs.grammar.context_free;
 
-import org.inxar.syntacs.grammar.context_free.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.grammar.context_free.Production;
+import org.inxar.syntacs.grammar.context_free.Item;
+import org.inxar.syntacs.grammar.context_free.LR1Item;
+import org.inxar.syntacs.grammar.context_free.GrammarSymbol;
+import org.inxar.syntacs.grammar.context_free.Terminal;
+import org.inxar.syntacs.util.IntArray;
+import org.inxar.syntacs.util.IntSet;
+
+import com.inxar.syntacs.util.EmptyIntSet;
+import com.inxar.syntacs.util.BitSetIntSet;
 
 /**
  * Standard <code>Item</code> implementation.
@@ -33,7 +40,7 @@ public class CFItem
     /**
      * Constructs the <code>CFItem</code> on the given
      * <code>CFGrammar</code>, Production, and position in that
-     * production.  
+     * production.
      */
     CFItem(CFGrammar grammar, Production production, int position)
     {
@@ -153,9 +160,9 @@ public class CFItem
 	    IntArray array = production.getGrammarSymbols();
 	    int len = array.length();
 	    for (int i = 0; i <= len; i++) {
-		if (i > 0) 
+		if (i > 0)
 		    b.append(' ');
-		if (i == position) 	
+		if (i == position)
 		    b.append("<> ");
 		if (i < len)
 		    b.append(grammar.getGrammarSymbol( array.at(i) ));
@@ -181,5 +188,3 @@ public class CFItem
     GrammarSymbol nextSymbol = null;
     GrammarSymbol previousSymbol = null;
 }
-
-

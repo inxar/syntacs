@@ -2,7 +2,7 @@
  * $Id: LR1Constructor.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -21,15 +21,35 @@
 package com.inxar.syntacs.automaton.pushdown;
 
 import org.inxar.syntacs.grammar.Token;
-import org.inxar.syntacs.grammar.context_free.*;
-import org.inxar.syntacs.automaton.pushdown.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.grammar.context_free.Terminal;
+import org.inxar.syntacs.grammar.context_free.NonTerminal;
+import org.inxar.syntacs.grammar.context_free.Item;
+import org.inxar.syntacs.grammar.context_free.LR1Item;
+import org.inxar.syntacs.grammar.context_free.Production;
+import org.inxar.syntacs.grammar.context_free.ContextFreeSet;
+import org.inxar.syntacs.grammar.context_free.GrammarSymbol;
+import org.inxar.syntacs.automaton.pushdown.DPA;
+import org.inxar.syntacs.automaton.pushdown.AmbiguityException;
+import org.inxar.syntacs.util.IntStack;
+import org.inxar.syntacs.util.IntIterator;
+import org.inxar.syntacs.util.IntArray;
+import org.inxar.syntacs.util.IntSet;
+import org.inxar.syntacs.util.Log;
+import org.inxar.syntacs.util.GraphViz;
+import org.inxar.syntacs.util.Vizualizable;
+import org.inxar.syntacs.util.AlgorithmException;
+
+import com.inxar.syntacs.util.ArrayIntStack;
+import com.inxar.syntacs.util.BitSetIntSet;
+import com.inxar.syntacs.util.EmptyIntSet;
+import com.inxar.syntacs.util.StringTools;
+import com.inxar.syntacs.util.Mission;
+
 
 /**
  * Concrete implementation of <code>LRConstructor</code> that builds
  * canonical LR1 parse tables.  The algorithm used by this class was
- * coded based directly on the Dragon Book.  
+ * coded based directly on the Dragon Book.
  */
 public class LR1Constructor extends LRConstructor
     implements Vizualizable
@@ -39,14 +59,14 @@ public class LR1Constructor extends LRConstructor
     /**
      * Constructs an <code>LR1Constructor</code>.
      */
-    public LR1Constructor() 
+    public LR1Constructor()
     {
 	super();
     }
 
     /**
      * This method generates all the states in the grammar and builds
-     * the parse table internally.  
+     * the parse table internally.
      */
     protected void init() throws AmbiguityException
     {
@@ -69,7 +89,7 @@ public class LR1Constructor extends LRConstructor
         // symbol on the RHS is '$'.  * get start production
         Production start = grammar.getStart();
 
-        if (DEBUG) 
+        if (DEBUG)
 	    log().debug()
 		.write("init(): Start production is ")
 		.write(start)
@@ -78,7 +98,7 @@ public class LR1Constructor extends LRConstructor
         // * get it's first item
         Item initial = start.getInitialItem();
 
-        if (DEBUG) 
+        if (DEBUG)
 	    log().debug()
 		.write("init(): Initial start item is ")
 		.write(initial)
@@ -93,7 +113,7 @@ public class LR1Constructor extends LRConstructor
         // and take the closure of this
         IntSet initialSet = closure(first);
 
-        if (DEBUG) 
+        if (DEBUG)
 	    log().debug()
 		.write("init(): initialSet")
 		.write(initialSet)
@@ -102,7 +122,7 @@ public class LR1Constructor extends LRConstructor
         // we want to set this as the start state
         State startState = lookup(initialSet);
 
-        if (DEBUG) 
+        if (DEBUG)
 	    log().debug()
 		.write("init(): assigning start state ")
 		.write(startState)
@@ -128,7 +148,7 @@ public class LR1Constructor extends LRConstructor
 	    currentSet = (IntSet)stack.pop();
             // get the state number
             currentState = lookup(currentSet);
-            if (DEBUG) 
+            if (DEBUG)
 		log().debug()
 		    .write("init(): currently processing set ")
 		    .write(currentSet)
@@ -151,7 +171,7 @@ public class LR1Constructor extends LRConstructor
 		// ... and it's state number.
 		nextState = lookup(nextSet);
 
-		if (DEBUG) 
+		if (DEBUG)
 		    log().debug()
 			.write("init(): next set ")
 			.write(nextSet)
@@ -186,7 +206,7 @@ public class LR1Constructor extends LRConstructor
 		// need the item
 		currentItem = (LR1Item)grammar.getItem(currentItems.next());
 
-		if (DEBUG) 
+		if (DEBUG)
 		    log().debug()
 			.write("currently processing item ")
 			.write(currentItem)
@@ -239,13 +259,13 @@ public class LR1Constructor extends LRConstructor
      */
     public IntSet closure(IntSet set)
     {
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write("closure(): initial set is:").writeln()
 		.write(toItems(set))
 		.write("end listing of initial set.")
 		.out();
-	
+
 	// ok, need to make it.  Here's the container.
 	IntSet closure = new BitSetIntSet(11);
 
@@ -255,7 +275,7 @@ public class LR1Constructor extends LRConstructor
 
 	IntIterator iter = set.iterator();
 	// add all the items in this set to the stack
-	while ( iter.hasNext() ) 
+	while ( iter.hasNext() )
 	    stack.push(iter.next());
 
 	// A bunch of vars we init here...
@@ -274,7 +294,7 @@ public class LR1Constructor extends LRConstructor
 	    ID = stack.pop();
 	    // grab the top item from the stack
 	    item = (LR1Item)grammar.getItem( ID );
-	    if (DEBUG) 
+	    if (DEBUG)
 		log().debug()
 		    .write("closure(): processing item ")
 		    .write(ID)
@@ -289,20 +309,20 @@ public class LR1Constructor extends LRConstructor
 		// get the set of items for FIRST(beta,a)
 		first = item.nextItem().getFirstSet();
 
-		if (DEBUG) 
+		if (DEBUG)
 		    log().debug()
 			.write("closure(): first set for item ")
 			.write(item.nextItem())
 			.write(": ")
 			.write(first)
 			.out();
-		
+
 		// is it an empty set?
 		if (first.isEmpty()) {
 
 		    // case 1: the set is nullable since it's empty.
 		    // Add an LR1 item from this core with the
-		    // lookahead from the current item.  
+		    // lookahead from the current item.
 		    alternatives = nonTerminal.getReductions();
 
 		    // Process each alternative.
@@ -314,7 +334,7 @@ public class LR1Constructor extends LRConstructor
 			// add the LR1item
 			ID = core.lookahead(item.getLookahead()).getID();
 
-			if (DEBUG) 
+			if (DEBUG)
 			    log().debug()
 				.write("closure(): stacking LR1-item ")
 				.write( ID )
@@ -366,23 +386,23 @@ public class LR1Constructor extends LRConstructor
 			    // to the case FIRST(beta,a) where beta is
 			    // nullable, so we use 'a' instead.  Thus,
 			    // 'a' == item.getLookahead().
-			    ID = core.lookahead(terminal.isNullable() 
+			    ID = core.lookahead(terminal.isNullable()
 						? item.getLookahead() : terminal
 						).getID();
 
-			    if (DEBUG) 
+			    if (DEBUG)
 				log().debug()
 				    .write("closure(): stacking LR1-item ")
 				    .write(ID)
 				    .write(" with core ")
 				    .write(core)
 				    .write(" and `beta' lookahead ")
-				    .write((terminal.isNullable() 
-					    ? item.getLookahead() 
-					    : terminal) 
+				    .write((terminal.isNullable()
+					    ? item.getLookahead()
+					    : terminal)
 					   )
 				    .out();
-			    
+
 			    if ( (!closure.contains(ID)) && (!stack.contains(ID)) )
 				stack.push(ID);
 
@@ -400,7 +420,7 @@ public class LR1Constructor extends LRConstructor
 
 	} /* end when stack is empty */
 
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write("closure(): final closed set is:").writeln()
 		.write(toItems(closure))
@@ -413,7 +433,7 @@ public class LR1Constructor extends LRConstructor
     /**
      * Calculates and returns the next set of items for the given set
      * of items.  Each member in the set corresponds the the ID of a
-     * grammar symbol.  
+     * grammar symbol.
      */
     public IntSet getNextSet(IntSet items)
     {
@@ -437,7 +457,7 @@ public class LR1Constructor extends LRConstructor
 
     /**
      * Returns the closure of the set generated by following the given
-     * grammar symbol 
+     * grammar symbol
      */
     protected IntSet go(IntSet set, int grammarSymbolID)
     {
@@ -473,7 +493,7 @@ public class LR1Constructor extends LRConstructor
 		}
 	    }
 	}
-	if (DEBUG) 
+	if (DEBUG)
 	    log().debug()
 		.write("go(): got set ")
 		.write(gotoSet)
@@ -509,7 +529,7 @@ public class LR1Constructor extends LRConstructor
     public void vizualize(GraphViz dot)
     {
 	dpa.vizualize(dot);
-	
+
 	if (Mission.control().isNotTrue("viz-dpa-hide-loopback-edges"))
 	    log().warn().write("Warning! Only GraphViz visualization of shift "+
 			       "transitions is currently available for LR1").out();
@@ -525,6 +545,3 @@ public class LR1Constructor extends LRConstructor
     private ArrayDPAConstructor dpa;
     private Log log;
 }
-
-
-

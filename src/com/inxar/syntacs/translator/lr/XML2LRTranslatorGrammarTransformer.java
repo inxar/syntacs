@@ -2,7 +2,7 @@
  * $Id: XML2LRTranslatorGrammarTransformer.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,37 +20,52 @@
  */
 package com.inxar.syntacs.translator.lr;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.BufferedReader;
+import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.inxar.syntacs.translator.*;
-import com.inxar.syntacs.translator.*;
-import org.inxar.syntacs.translator.lr.*;
-import com.inxar.syntacs.translator.regexp.*;
-import com.inxar.syntacs.translator.syntacs.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+
+import org.inxar.syntacs.translator.Translator;
+import org.inxar.syntacs.translator.TranslatorGrammar;
+import org.inxar.syntacs.translator.Auditor;
+//import org.inxar.syntacs.translator.lr.*;
+import org.inxar.syntacs.util.AlgorithmException;
+import org.inxar.syntacs.util.Log;
+
+import com.inxar.syntacs.translator.StandardAuditor;
+import com.inxar.syntacs.translator.regexp.Regexp;
+import com.inxar.syntacs.translator.regexp.XML2RegexpTransformer;
+import com.inxar.syntacs.translator.syntacs.SyntacsGrammar;
+import com.inxar.syntacs.util.DOM;
+import com.inxar.syntacs.util.Mission;
+import com.inxar.syntacs.util.StringTools;
 
 /**
  * Implementation of Grammar which reads an XML instance of
- * the DTD "grammar.dtd".  
+ * the DTD "grammar.dtd".
  */
 public class XML2LRTranslatorGrammarTransformer
 {
     private static final boolean DEBUG = true;
-    
-    private static boolean verbose = 
+
+    private static boolean verbose =
 	Mission.control().isTrue("verbose");
 
-    public XML2LRTranslatorGrammarTransformer() 
+    public XML2LRTranslatorGrammarTransformer()
     {
     }
 
     public TranslatorGrammar transform(String uri) throws AlgorithmException
     {
-	if (verbose) 
+	if (verbose)
 	    log().debug()
 		.write("Parsing XML...")
 		.time();
@@ -110,7 +125,7 @@ public class XML2LRTranslatorGrammarTransformer
 
     private void parseProperties()
     {
-	Iterator i = DOM.getElements("property", doc); 
+	Iterator i = DOM.getElements("property", doc);
 	while (i.hasNext()) {
 	    Node n = (Node)i.next();
 	    if (n.getNodeType() != Node.ELEMENT_NODE)
@@ -124,7 +139,7 @@ public class XML2LRTranslatorGrammarTransformer
 
     private void parseContexts()
     {
-	Iterator i = DOM.getElements("context", doc); 
+	Iterator i = DOM.getElements("context", doc);
 	while (i.hasNext()) {
 	    Node n = (Node)i.next();
 	    if (n.getNodeType() != Node.ELEMENT_NODE)
@@ -139,7 +154,7 @@ public class XML2LRTranslatorGrammarTransformer
 
     private void parseTerminals()
     {
-	Iterator i = DOM.getElements("terminal", doc); 
+	Iterator i = DOM.getElements("terminal", doc);
 	while (i.hasNext()) {
 	    Node n = (Node)i.next();
 	    if (n.getNodeType() != Node.ELEMENT_NODE)
@@ -151,7 +166,7 @@ public class XML2LRTranslatorGrammarTransformer
 
     private void parseNonTerminals()
     {
-	Iterator i = DOM.getElements("nonterminal", doc); 
+	Iterator i = DOM.getElements("nonterminal", doc);
 	while (i.hasNext()) {
 	    Node n = (Node)i.next();
 	    if (n.getNodeType() != Node.ELEMENT_NODE)
@@ -166,26 +181,26 @@ public class XML2LRTranslatorGrammarTransformer
 
     private void parseContextMembers()
     {
-	Iterator i = DOM.getElements("context", doc); 
+	Iterator i = DOM.getElements("context", doc);
 	while (i.hasNext()) {
 	    Node n = (Node)i.next();
 	    if (n.getNodeType() != Node.ELEMENT_NODE)
 		continue;
 	    Element e = (Element)n;
-	    String contextName = DOM.getString("name", e); 
+	    String contextName = DOM.getString("name", e);
 	    Iterator j = DOM.getElements("member", e);
 	    while (j.hasNext()) {
 		Node o = (Node)j.next();
 		if (o.getNodeType() != Node.ELEMENT_NODE)
 		    continue;
 		Element f = (Element)o;
-		String terminalName = DOM.getString("terminal", f); 
-		String actionName = DOM.getString("action", f); 
+		String terminalName = DOM.getString("terminal", f);
+		String actionName = DOM.getString("action", f);
 		if (!StringTools.isDefined(actionName))
 		    g.setContextPeek(contextName, terminalName);
 		else if (actionName.equals("unshift"))
 		    g.setContextPop(contextName, terminalName);
-		else 
+		else
 		    g.setContextPush(contextName, terminalName, actionName);
 	    }
 	}
@@ -193,14 +208,14 @@ public class XML2LRTranslatorGrammarTransformer
 
     private void parseMatchDefinitions()
     {
-	Iterator i = DOM.getElements("match", doc); 
+	Iterator i = DOM.getElements("match", doc);
     outerloop:
 	while (i.hasNext()) {
 	    Node n = (Node)i.next();
 	    if (n.getNodeType() != Node.ELEMENT_NODE)
 		continue;
 	    Element e = (Element)n;
-	    String terminalName = DOM.getString("terminal", e); 
+	    String terminalName = DOM.getString("terminal", e);
 	    NodeList list = e.getChildNodes();
 	    for (int j = 0; j < list.getLength(); j++) {
 		Node o = list.item(j);
@@ -215,13 +230,13 @@ public class XML2LRTranslatorGrammarTransformer
 
     private void parseReductions()
     {
-	Iterator i = DOM.getElements("reduce", doc); 
+	Iterator i = DOM.getElements("reduce", doc);
 	while (i.hasNext()) {
 	    Node n = (Node)i.next();
 	    if (n.getNodeType() != Node.ELEMENT_NODE)
 		continue;
 	    Element e = (Element)n;
-	    String nonterminalName = DOM.getString("nonterminal", e); 
+	    String nonterminalName = DOM.getString("nonterminal", e);
 	    List symbols = new ArrayList(3);
 	    Iterator j = DOM.getElements("symbol", e);
 	    while (j.hasNext()) {
@@ -250,7 +265,7 @@ public class XML2LRTranslatorGrammarTransformer
     public static void main(String[] argv) throws Exception
     {
 	String uri = argv[0];
-	
+
 	try {
 
 	    // -------------------------------------
@@ -314,20 +329,20 @@ public class XML2LRTranslatorGrammarTransformer
 	    (new FileReader
 		(new File
 		    ("./etc/simulacs-grammar.txt")));
-	
+
 	report("Translating now...");
 	TranslatorGrammar g = (TranslatorGrammar)translator.translate(in);
 
 	in.close();
-	
-	return g;	
+
+	return g;
     }
 
     private static TranslatorGrammar transformXML(String uri) throws Exception
     {
-	XML2LRTranslatorGrammarTransformer tr = 
+	XML2LRTranslatorGrammarTransformer tr =
 	    new XML2LRTranslatorGrammarTransformer();
-	
+
 	return tr.transform(uri);
     }
 
@@ -336,21 +351,15 @@ public class XML2LRTranslatorGrammarTransformer
 	StringReader in = null;
 	Element doc = DOM.getRoot(uri, true);
 	Iterator i = DOM.getElements("accept", doc);
-	
+
 	while (i.hasNext()) {
-	    
+
 	    Element e = (Element)i.next();
 	    return DOM.getText(e);
 
 	}
-	
+
 	throw new InternalError();
     }
 
 }
-
-
-
-
-
-

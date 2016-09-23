@@ -2,7 +2,7 @@
  * $Id: ConstantSymbol.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -21,8 +21,8 @@
 package com.inxar.syntacs.analyzer;
 
 import org.inxar.syntacs.analyzer.Symbol;
-import org.inxar.syntacs.translator.lr.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.translator.lr.LRTranslatorGrammar;
+import com.inxar.syntacs.util.Tree;
 
 /**
  * Concrete implementation of <code>Symbol</code> which needs no
@@ -57,12 +57,12 @@ public class ConstantSymbol extends AbstractSymbol
 
 	    if (name == null)
 		name = g.getTerminal(type);
-	} 
+	}
 
 	if (name == null)
 	    name = "constant node "+type;
-	
-	
+
+
 	t.add(name);
     }
 

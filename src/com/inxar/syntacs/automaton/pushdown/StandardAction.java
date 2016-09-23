@@ -2,7 +2,7 @@
  * $Id: StandardAction.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,7 +20,7 @@
  */
 package com.inxar.syntacs.automaton.pushdown;
 
-import org.inxar.syntacs.automaton.pushdown.*;
+import org.inxar.syntacs.automaton.pushdown.Action;
 
 /**
  * Standard implementation of <code>Action</code>.
@@ -36,7 +36,7 @@ public class StandardAction
 	this.type = type;
 	this.value = value;
     }
-    
+
     /**
      * Constructs an error action with <code>id=0, value=0, type=ERROR</code>.
      */
@@ -44,7 +44,7 @@ public class StandardAction
     {
 	this(ERROR, 0);
     }
-    
+
     public String toString()
     {
         StringBuffer b = new StringBuffer();
@@ -53,12 +53,12 @@ public class StandardAction
 	case SHIFT: b.append("SHIFT " + value); break;
 	case REDUCE: b.append("REDUCE " + value); break;
 	case ACCEPT: b.append("ACCEPT "); break;
-	default: 
+	default:
 	    b.append("UNKNOWN: " + value); break;
         }
         return b.toString();
     }
-    
+
     public int getType()
     {
 	return type;
@@ -100,11 +100,9 @@ public class StandardAction
      * The type of this action, one of (ERROR|SHIFT|REDUCE|ACCEPT).
      */
     int type;
-    
+
     /**
      * A generic container for additional action information.
      */
     int value;
 }
-
-

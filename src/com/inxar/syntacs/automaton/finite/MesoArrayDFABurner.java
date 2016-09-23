@@ -2,7 +2,7 @@
  * $Id: MesoArrayDFABurner.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -20,17 +20,18 @@
  */
 package com.inxar.syntacs.automaton.finite;
 
-import java.io.*;
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
 import org.inxar.jenesis.*;
-import org.inxar.syntacs.automaton.finite.*;
-import com.inxar.syntacs.automaton.finite.*;
-import org.inxar.syntacs.util.*;
-import com.inxar.syntacs.util.*;
+import org.inxar.syntacs.util.Log;
+import org.inxar.syntacs.util.Burner;
+import com.inxar.syntacs.util.Mission;
+import com.inxar.syntacs.util.Pickler;
+import com.inxar.syntacs.util.BurnTools;
 
 /**
  * Utility class which transforms an instance of MesoArrayDFA to a
- * corresponding source code representation.  
+ * corresponding source code representation.
  */
 public class MesoArrayDFABurner implements Burner
 {
@@ -38,16 +39,16 @@ public class MesoArrayDFABurner implements Burner
     {
 	this.vm = VirtualMachine.getVirtualMachine();
     }
-    
+
     public void burn(Object src, ClassDeclaration cls)
     {
 	if ( ! (src instanceof MesoArrayDFA) )
 	    throw new ClassCastException
-		("I can only work instances of " + MesoArrayDFA.class.getName() + 
+		("I can only work instances of " + MesoArrayDFA.class.getName() +
 		 ", not `" + src.getClass().getName() + "'.");
 
 	this.dfa = (MesoArrayDFA)src;
-	
+
 	cls.getUnit().addImport("com.inxar.syntacs.automaton.finite.MesoArrayDFA");
 	cls.setExtends("MesoArrayDFA");
 
@@ -58,28 +59,28 @@ public class MesoArrayDFABurner implements Burner
 	con.newStmt(vm.newInvoke(null, "super")
 		    .addArg(vm.newVar("_table"))
 		    .addArg(vm.newVar("_accepts")));
-	
+
 	// ok, add all the private static fields
 	ClassField fld1 = cls.newField(vm.newArray(Type.INT, 2), "_table");
 	ClassField fld2 = cls.newField(vm.newArray(Type.INT, 1), "_accepts");
-	
+
 	// set the access constrol and modifiers
 	fld1.setAccess(Access.PRIVATE); fld1.isStatic(true); fld1.isFinal(true);
 	fld2.setAccess(Access.PRIVATE); fld2.isStatic(true); fld2.isFinal(true);
-	
+
 	// ok, looks good.  Now do the static initialization block
 	StaticInitializer si = cls.newStaticInitializer();
 
 	// Check if should /not/ pickle.
-	if (Mission.control().isFalse("compile-pickle") || 
+	if (Mission.control().isFalse("compile-pickle") ||
 	    Mission.control().isFalse("compile-dfa-pickle"))
-	    
+
 	    initStaticInitializerNotPickle(cls, si);
 	else
 	    initStaticInitializerPickle(cls, si);
     }
 
-    protected void initStaticInitializerNotPickle(ClassDeclaration cls, 
+    protected void initStaticInitializerNotPickle(ClassDeclaration cls,
 						  StaticInitializer si)
     {
 	// init the table[][] array
@@ -88,13 +89,13 @@ public class MesoArrayDFABurner implements Burner
 	BurnTools.init1DArray(si, "_accepts", dfa.accepts);
     }
 
-    protected void initStaticInitializerPickle(ClassDeclaration cls, 
+    protected void initStaticInitializerPickle(ClassDeclaration cls,
 					       StaticInitializer si)
     {
 	cls.getUnit().addImport("com.inxar.syntacs.util.Pickler");
 
 	Invoke invoke = null;
-	
+
 	invoke = vm.newInvoke("Pickler", "unpickle2D")
 	    .addArg(BurnTools.split(Pickler.pickle(dfa.table)));
 	si.newStmt( vm.newAssign( vm.newVar("_table"), invoke ) );
@@ -109,7 +110,7 @@ public class MesoArrayDFABurner implements Burner
     {
 	// Make a new Map to hold (int[],int) keys.
 	Map map = new HashMap();
-	
+
 	// set up the new array expressions
 	NewArray na  = vm.newArray(vm.newType(Type.INT))
 	    .addDim(vm.newInt(a.length))
@@ -140,12 +141,12 @@ public class MesoArrayDFABurner implements Burner
 	    block.newStmt( vm.newAssign(vm.newArrayAccess(null, var).addDim(vm.newInt(i)), e) );
 	}
     }
-    
+
     protected Object make1DIntArray(int[] a)
     {
     	if (a == null)
 	    return vm.newBlank();
-	
+
     	// make a new 1D expression array
     	Expression[] e = new Expression[a.length];
     	// d1 loop
@@ -166,8 +167,3 @@ public class MesoArrayDFABurner implements Burner
     protected VirtualMachine vm;
     private Log log;
 }
-
-
-
-
-
