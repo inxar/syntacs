@@ -1,3 +1,5 @@
+package(default_visibility = ["//visibility:public"])
+
 java_library(
     name = "compile",
     srcs = [
@@ -46,14 +48,27 @@ java_binary(
 )
 
 java_binary(
-    name = "abb",
-    args = [
-        "com.inxar.syntacs.translator.test.AbbGrammar",
-        "t+f*(id+f)",
+    name = "compile-abb",
+    main_class = "com.inxar.syntacs.Compile",
+    runtime_deps = [
+        "compile",
     ],
+    data = [
+        "//grammar/abb:stt",
+    ],
+    args = [
+        "grammar/abb/abb.stt",
+    ],
+)
+
+java_binary(
+    name = "interpret-abb",
     main_class = "com.inxar.syntacs.Interpret",
     runtime_deps = [
         "interpret",
-        "//src/com/inxar/syntacs/test",
+        "//test/com/inxar/syntacs/translator/test:abb",
+    ],
+    args = [
+        "com.inxar.syntacs.translator.test.AbbGrammar",
     ],
 )

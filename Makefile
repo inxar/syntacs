@@ -30,7 +30,7 @@ JAR         = ${JAVABINDIR}/jar
 RMIC        = ${JAVABINDIR}/rmic
 
 JIKES       = /usr/bin/jikes
-TEXI2HTML   = /usr/bin/texi2html
+TEXI2HTML   = /usr/local/bin/texi2html
 DIRCMP      = /usr/bin/dircmp
 ZIP         = /usr/bin/zip
 RSYNC       = /usr/bin/rsync
@@ -290,9 +290,12 @@ lexermanclean: check
 	cd ${P_DOCSDIR}/lexerman && ${RM} -f *.html *.png
 
 userman: check
-	cd ${P_DOCSDIR}/userman && ${DOT2PNG} construction.dot
-	cd ${P_DOCSDIR}/userman && ${DOT2PNG} components-scheme.dot
+	#cd ${P_DOCSDIR}/userman && ${DOT2PNG} construction.dot
+	#cd ${P_DOCSDIR}/userman && ${DOT2PNG} components-scheme.dot
 	cd ${P_DOCSDIR}/userman && ${TEXI2HTML} -split_chapter userman.texinfo
+
+usertxt: check
+	cd ${P_DOCSDIR}/userman && ${TEXI2HTML} --plaintext userman.texinfo
 
 usermanbrowse: check
 	${NETSCAPE} -remote "openURL(file:`cd ${P_DOCSDIR}/userman; pwd`/userman_toc.html)"

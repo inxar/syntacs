@@ -60,6 +60,7 @@ easier going if you do.
 @menu
 * Overview::
 * Definitions::
+* Processing Model::
 * Compilation Model::
 * Lexical Context::
 * Error Handling::
@@ -69,6 +70,7 @@ easier going if you do.
 * Example Grammar::
 * Graphviz::
 * Resources::
+
 @end menu
 
 @c =====================================================================
@@ -104,7 +106,7 @@ writing a new language is to write one's own lexer and parser generator
 needs to understand the wheel, and the best way to do that is to
 reinvent it.  So it was/is an educational experience.
 
-@node Definitions, Compilation Model, Overview, Top
+@node Definitions, Processing Model, Overview, Top
 @chapter Definitions
 
 It is useful to define some terms that are used throughout the STT
@@ -425,7 +427,7 @@ In summary, a simplified schematic for the translation is given below.
 
 Fig 2:  Simplified Processing Model
 
-@node Compilation Model, Lexical Context, Definitions, Top
+@node Compilation Model, Lexical Context, Processing Model, Top
 @chapter Compilation Model
 
 When a grammar is compiled, each component in the translator is
