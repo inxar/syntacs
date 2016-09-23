@@ -7,12 +7,12 @@
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
  * License, or (at your option) any later version.
-
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
-
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -60,232 +60,200 @@ import com.inxar.syntacs.util.Tree;
  *   com.inxar.syntacs.translator.test.AbbGrammar ./input-file.txt
  * </pre>
  */
-public class Interpret
-{
-    private static final boolean DEBUG = true;
+public class Interpret {
+  private static final boolean DEBUG = true;
 
-    private Interpret() {
+  private Interpret() {}
+
+  /**
+   * Runs the tool; invoke this method with the classname of the
+   * grammar to use and either a string to parse or the name of a
+   * file to parse.
+   */
+  public static void main(String[] argv) {
+    Mission.control().put("verbose", Boolean.TRUE);
+    Properties p = new Properties();
+    //p.setProperty("run-parser-debug", "true");
+    //p.setProperty("run-print-parse-tree", "true");
+
+    int idx = parseopts(argv, p);
+    if (idx != argv.length - 2)
+      usage(
+          "The last two arguments must be the name of the " + "grammar class and an input string.");
+
+    String className = argv[idx];
+    String input = argv[idx + 1];
+
+    verbose = Mission.control().isTrue("verbose");
+
+    Translator t = null;
+    try {
+
+      // Load the translator grammar.
+      TranslatorGrammar tg = (TranslatorGrammar) Class.forName(className).newInstance();
+
+      //p.setProperty("run-lexer-debug", "false");
+      //p.setProperty("run-parser-debug", "true");
+
+      // Fetch a translator.
+      t = tg.newTranslator(p);
+
+    } catch (Exception ex) {
+      System.err.println("Could not instantiate translator for " + className + ".");
+      ex.printStackTrace();
     }
 
-    /**
-     * Runs the tool; invoke this method with the classname of the
-     * grammar to use and either a string to parse or the name of a
-     * file to parse.
-     */
-    public static void main(String[] argv)
-    {
-	Mission.control().put("verbose", Boolean.TRUE);
-	Properties p = new Properties();
-	//p.setProperty("run-parser-debug", "true");
-	//p.setProperty("run-print-parse-tree", "true");
+    Reader in = null;
+    try {
 
-	int idx = parseopts(argv, p);
-	if (idx != argv.length - 2)
-	    usage("The last two arguments must be the name of the "+
-		  "grammar class and an input string.");
+      in = new BufferedReader(new FileReader(input));
 
-	String className = argv[idx];
-	String input = argv[idx + 1];
+      if (verbose) log().debug().write("Translating file ").write(input).write("...").time();
 
-	verbose = Mission.control().isTrue("verbose");
+      parse(t, in);
 
-	Translator t = null;
-	try {
+      if (verbose) log().debug().touch();
 
-	    // Load the translator grammar.
-	    TranslatorGrammar tg =
-		(TranslatorGrammar)Class.forName(className).newInstance();
+    } catch (FileNotFoundException fnfex) {
 
-	    //p.setProperty("run-lexer-debug", "false");
-	    //p.setProperty("run-parser-debug", "true");
+      if (verbose) log().debug().write("Translating string \"").write(input).write("\"").time();
 
-	    // Fetch a translator.
-	    t = tg.newTranslator(p);
+      in = new StringReader(input);
+      parse(t, in);
 
-	} catch (Exception ex) {
-	    System.err.println
-		("Could not instantiate translator for "+className+".");
-	    ex.printStackTrace();
-	}
+      if (verbose) log().debug().touch();
 
-
-	Reader in = null;
-	try {
-
-	    in = new BufferedReader(new FileReader(input));
-
-	    if (verbose)
-		log().debug()
-		    .write("Translating file ")
-		    .write(input)
-		    .write("...")
-		    .time();
-
-	    parse(t, in);
-
-	    if (verbose)
-		log().debug().touch();
-
-	} catch (FileNotFoundException fnfex) {
-
-	    if (verbose)
-		log().debug()
-		    .write("Translating string \"")
-		    .write(input)
-		    .write("\"")
-		    .time();
-
-	    in = new StringReader(input);
-	    parse(t, in);
-
-	    if (verbose)
-		log().debug().touch();
-
-	} finally {
-	    if (in != null)
-		try { in.close(); in = null; }
-		catch (Exception ex) {}
-	}
-
-	Mission.deactivate();
+    } finally {
+      if (in != null)
+        try {
+          in.close();
+          in = null;
+        } catch (Exception ex) {
+        }
     }
 
-    private static void parse(Translator t, Reader in)
-    {
-	try {
+    Mission.deactivate();
+  }
 
-	    Object o = t.translate(in);
+  private static void parse(Translator t, Reader in) {
+    try {
 
-	    if ("true".equals
-		(t.getProperties().getProperty
-		 ("run-print-parse-tree"))) {
+      Object o = t.translate(in);
 
-		if (o instanceof Arboreal) {
+      if ("true".equals(t.getProperties().getProperty("run-print-parse-tree"))) {
 
-		    Tree tree = true
-			? new Tree("TOP")
-			    : new Tree.Box("TOP");
+        if (o instanceof Arboreal) {
 
-		    ((Arboreal)o).toTree(tree);
+          Tree tree = true ? new Tree("TOP") : new Tree.Box("TOP");
 
-		    System.out.println();
-		    System.out.println("Parse Tree:");
-		    System.out.println(tree);
+          ((Arboreal) o).toTree(tree);
 
-		} else {
+          System.out.println();
+          System.out.println("Parse Tree:");
+          System.out.println(tree);
 
-		    System.out.println("Cannot print parse tree: result must "+
-				       "implement interface Arboreal.");
+        } else {
 
-		}
+          System.out.println(
+              "Cannot print parse tree: result must " + "implement interface Arboreal.");
+        }
 
-	    } else {
-	    }
+      } else {
+      }
 
-	    System.out.println("Parse Result:");
-	    System.out.println(o);
-	    System.out.println();
+      System.out.println("Parse Result:");
+      System.out.println(o);
+      System.out.println();
 
-	} catch (TranslationException tex) {
-	    System.out.println();
-	    System.out.println(tex.getAuditor());
-	}
+    } catch (TranslationException tex) {
+      System.out.println();
+      System.out.println(tex.getAuditor());
+    }
+  }
+
+  private static Log log() {
+    if (log == null) log = Mission.control().log("run", new Interpret());
+    return log;
+  }
+
+  private static Log log;
+  private static boolean verbose;
+
+  public static void pause(int len) {
+    try {
+      Thread thr = Thread.currentThread();
+      thr.sleep(len);
+    } catch (Exception ex) {
+    }
+  }
+
+  private static int parseopts(String[] opts, Properties p) {
+    int i = 0;
+    while (i < opts.length) {
+      //System.out.println("opts["+i+"]: "+opts[i]);
+      // "--" Signals the end of options
+      if (opts[i].equals("--")) return i;
+
+      // All options must start with a dash
+      if (!opts[i].startsWith("-")) return i;
+
+      // Handle lone -D case.
+      if ("-D".equals(opts[i])) {
+        if (i + 1 == opts.length)
+          throw new IllegalArgumentException("The -D option must have a valid key=val argument");
+        splitopt(opts[++i], p);
+      }
+
+      // Handle case where value is concatentated to the
+      // option.
+      else if (opts[i].startsWith("-D")) {
+        splitopt(opts[i].substring(2), p);
+      }
+
+      // Unknown option.
+      else if (opts[i].startsWith("-")) usage("Unknown option `" + opts[i] + "'");
+
+      // If not an option, we should stop.
+      else return i;
+
+      // Go to next option
+      ++i;
     }
 
-    private static Log log()
-    {
-	if (log == null)
-	    log = Mission.control().log("run", new Interpret());
-	return log;
-    }
+    return i;
+  }
 
-    private static Log log;
-    private static boolean verbose;
+  static void splitopt(String keyval, Properties p) {
+    int eq = keyval.indexOf('=');
+    //System.out.println("eq: "+eq);
+    // Equals sign must exist and not be at the very end
+    // of the string.
+    if (eq < 0 || eq > keyval.length() - 1)
+      usage("Argument to the -D option must be a key=val " + "pair with no intervening space");
 
+    String key = keyval.substring(0, eq).trim();
+    String val = keyval.substring(eq + 1).trim();
+    //System.out.println("key = "+key+", val = "+val);
+    p.put(key, val);
+  }
 
-    public static void pause(int len)
-    {
-	try {
-	    Thread thr = Thread.currentThread();
-	    thr.sleep(len);
-	} catch (Exception ex) {
-	}
-    }
+  private static void usage(String msg) {
+    System.err.println("|");
+    System.err.println("| Error: " + msg);
+    System.err.println("|");
+    System.err.println(
+        "| Usage: java com.inxar.syntacs.Interpret [options] "
+            + "<grammar-classname> <input-string>");
+    System.err.println("|");
+    System.err.println("| Options:");
+    System.err.println("|  -D<key=val>...........Set translator property");
+    System.err.println("|");
+    System.err.println("| Requirements:");
+    System.err.println(
+        "|  <grammar-classname>...The name of the translator grammar to instantiate");
+    System.err.println("|  <input-string>........The name of a file or a raw string to parse");
+    System.err.println("|");
 
-    private static int parseopts(String[] opts, Properties p)
-    {
-	int i = 0;
-	while (i < opts.length) {
-	    //System.out.println("opts["+i+"]: "+opts[i]);
-	    // "--" Signals the end of options
-	    if (opts[i].equals("--"))
-		return i;
-
-	    // All options must start with a dash
-	    if (!opts[i].startsWith("-"))
-		return i;
-
-	    // Handle lone -D case.
-	    if ("-D".equals(opts[i])) {
-		if (i + 1 == opts.length)
-		    throw new IllegalArgumentException
-			("The -D option must have a valid key=val argument");
-		splitopt(opts[++i], p);
-	    }
-
-	    // Handle case where value is concatentated to the
-	    // option.
-	    else if (opts[i].startsWith("-D")) {
-		splitopt(opts[i].substring(2), p);
-	    }
-
-	    // Unknown option.
-	    else if ( opts[i].startsWith("-") )
-		usage("Unknown option `"+opts[i]+"'");
-
-	    // If not an option, we should stop.
-	    else
-		return i;
-
-	    // Go to next option
-	    ++i;
-	}
-
-	return i;
-    }
-
-    static void splitopt(String keyval, Properties p)
-    {
-	int eq = keyval.indexOf('=');
-	//System.out.println("eq: "+eq);
-	// Equals sign must exist and not be at the very end
-	// of the string.
-	if (eq < 0 || eq > keyval.length() - 1)
-	    usage("Argument to the -D option must be a key=val "+
-		  "pair with no intervening space");
-
-	String key = keyval.substring(0, eq).trim();
-	String val = keyval.substring(eq + 1).trim();
-	//System.out.println("key = "+key+", val = "+val);
-	p.put(key,val);
-    }
-
-    private static void usage(String msg)
-    {
-	System.err.println("|");
-	System.err.println("| Error: "+msg);
-	System.err.println("|");
-	System.err.println("| Usage: java com.inxar.syntacs.Interpret [options] "+
-			   "<grammar-classname> <input-string>");
-	System.err.println("|");
-	System.err.println("| Options:");
-	System.err.println("|  -D<key=val>...........Set translator property");
-	System.err.println("|");
-	System.err.println("| Requirements:");
-	System.err.println("|  <grammar-classname>...The name of the translator grammar to instantiate");
-	System.err.println("|  <input-string>........The name of a file or a raw string to parse");
-	System.err.println("|");
-
-	System.exit(-1);
-    }
+    System.exit(-1);
+  }
 }

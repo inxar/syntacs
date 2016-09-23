@@ -7,12 +7,12 @@
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
  * License, or (at your option) any later version.
-
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
-
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -30,56 +30,45 @@ import com.inxar.syntacs.util.Tree;
  * might be used for tokens like "COLON_CHAR" or other punctuation
  * symbols whose definition can be derived solely from its type.
  */
-public class ConstantSymbol extends AbstractSymbol
+public class ConstantSymbol extends AbstractSymbol {
 
-{
-    /**
-     * Constructs an <code>ConstantSymbol</code> with the given type.
-     */
-    public ConstantSymbol(int type)
-    {
-	super(type);
+  /**
+   * Constructs an <code>ConstantSymbol</code> with the given type.
+   */
+  public ConstantSymbol(int type) {
+    super(type);
+  }
+
+  public String toString() {
+    return "(" + type + ", CONSTANT)";
+  }
+
+  public void toTree(Tree t) {
+    String name = null;
+
+    getGrammar();
+    if (g != null) {
+      name = g.getTerminal(type);
+
+      if (name == null) name = g.getTerminal(type);
     }
 
-    public String toString()
-    {
-	return "("+type+", CONSTANT)";
-    }
+    if (name == null) name = "constant node " + type;
 
+    t.add(name);
+  }
 
-    public void toTree(Tree t)
-    {
-	String name = null;
+  public boolean equals(Object other) {
+    // obviously true
+    if (this == other) return true;
 
-	getGrammar();
-	if (g != null) {
-	    name = g.getTerminal(type);
+    // obviously false
+    if (other == null || !(other instanceof Symbol)) return false;
 
-	    if (name == null)
-		name = g.getTerminal(type);
-	}
+    // ok to narrow
+    Symbol that = (Symbol) other;
 
-	if (name == null)
-	    name = "constant node "+type;
-
-
-	t.add(name);
-    }
-
-    public boolean equals(Object other)
-    {
-	// obviously true
-	if (this == other)
-	    return true;
-
-	// obviously false
-	if (other == null || !(other instanceof Symbol))
-	    return false;
-
-	// ok to narrow
-	Symbol that = (Symbol)other;
-
-	// compare fields
-	return this.type == that.getSymbolType();
-    }
+    // compare fields
+    return this.type == that.getSymbolType();
+  }
 }

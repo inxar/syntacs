@@ -21,7 +21,7 @@ import java.util.Properties;
  *  Translation Toolkit</a> on Fri Jul 06 12:05:08 PDT 2001<P><PRE># GRAMMAR
  *  DECLARATION
  * this is regexp version 0.1.0;
- * 
+ *
  * # PROPERTY DEFINITIONS
  * property viz-namespace = "regexp";
  * property viz-dpa-size = "20,20";
@@ -38,7 +38,7 @@ import java.util.Properties;
  * property compile-namespace = "com.inxar.syntacs.translator.regexp";
  * property compile-dpa-constructor-method = "LALR1";
  * property compile-sourcepath = "./src";
- * 
+ *
  * # TERMINAL DECLARATIONS
  * terminal WHITESPACE;
  * terminal CHAR;
@@ -58,7 +58,7 @@ import java.util.Properties;
  * terminal ESC;
  * terminal ESC_OCTAL;
  * terminal ESC_UNICODE;
- * 
+ *
  * # TERMINAL DEFINITIONS
  * WHITESPACE matches "(\t|\n|\v|\r|\s)+";
  * CHAR matches "[^\\|()[\]*+?]";
@@ -79,7 +79,7 @@ import java.util.Properties;
  * ESC matches " \\ [^\t\n\v\r\s] ";
  * ESC_OCTAL matches "(\\0[0-3][0-7][0-7])";
  * ESC_UNICODE matches "(\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])";
- * 
+ *
  * # NONTERMINAL DECLARATIONS
  * nonterminal Goal;
  * nonterminal Union;
@@ -92,7 +92,7 @@ import java.util.Properties;
  * nonterminal CharClassTermList;
  * nonterminal CharClassTerm;
  * nonterminal CharClassAtom;
- * 
+ *
  * # NONTERMINAL DEFINITIONS
  * reduce Goal when Union;
  * reduce Union when Concat;
@@ -124,13 +124,13 @@ import java.util.Properties;
  * reduce CharClassAtom when ESC;
  * reduce CharClassAtom when ESC_OCTAL;
  * reduce CharClassAtom when ESC_UNICODE;
- * 
+ *
  * accept when Goal;
- * 
+ *
  * # CONTEXT DECLARATIONS
  * context default;
  * context charclass;
- * 
+ *
  * # CONTEXT DEFINITIONS
  * default includes WHITESPACE, CHAR, PIPE, STAR, QUESTION, PLUS, OPEN_PAREN,
  *  CLOSE_PAREN, ESC, ESC_OCTAL, ESC_UNICODE, OPEN_BRACKET shifts charclass,
@@ -138,1206 +138,1441 @@ import java.util.Properties;
  *  OPEN_BRACKET_CARET_DASH shifts charclass;
  * charclass includes WHITESPACE, CHAR_CLASS_CHAR, CHAR_CLASS_DASH, ESC,
  *  ESC_OCTAL, ESC_UNICODE, CLOSE_BRACKET unshifts;
- * 
+ *
  * start in context default;
- * 
+ *
  * </PRE>
  */
-public class RegexpGrammar
-implements LRTranslatorGrammar
-{
-    
-    /**
-     * Constant ID for default
-     */
-    public static final int C_default = 0;
-    
-    /**
-     * Constant ID for charclass
-     */
-    public static final int C_charclass = 1;
-    
-    /**
-     * Terminal ID for WHITESPACE
-     */
-    public static final int T_WHITESPACE = 1;
-    
-    /**
-     * Terminal ID for CHAR
-     */
-    public static final int T_CHAR = 2;
-    
-    /**
-     * Terminal ID for CHAR_CLASS_CHAR
-     */
-    public static final int T_CHAR_CLASS_CHAR = 3;
-    
-    /**
-     * Terminal ID for PIPE
-     */
-    public static final int T_PIPE = 4;
-    
-    /**
-     * Terminal ID for STAR
-     */
-    public static final int T_STAR = 5;
-    
-    /**
-     * Terminal ID for QUESTION
-     */
-    public static final int T_QUESTION = 6;
-    
-    /**
-     * Terminal ID for PLUS
-     */
-    public static final int T_PLUS = 7;
-    
-    /**
-     * Terminal ID for OPEN_PAREN
-     */
-    public static final int T_OPEN_PAREN = 8;
-    
-    /**
-     * Terminal ID for CLOSE_PAREN
-     */
-    public static final int T_CLOSE_PAREN = 9;
-    
-    /**
-     * Terminal ID for OPEN_BRACKET
-     */
-    public static final int T_OPEN_BRACKET = 10;
-    
-    /**
-     * Terminal ID for OPEN_BRACKET_CARET
-     */
-    public static final int T_OPEN_BRACKET_CARET = 11;
-    
-    /**
-     * Terminal ID for OPEN_BRACKET_DASH
-     */
-    public static final int T_OPEN_BRACKET_DASH = 12;
-    
-    /**
-     * Terminal ID for OPEN_BRACKET_CARET_DASH
-     */
-    public static final int T_OPEN_BRACKET_CARET_DASH = 13;
-    
-    /**
-     * Terminal ID for CLOSE_BRACKET
-     */
-    public static final int T_CLOSE_BRACKET = 14;
-    
-    /**
-     * Terminal ID for CHAR_CLASS_DASH
-     */
-    public static final int T_CHAR_CLASS_DASH = 15;
-    
-    /**
-     * Terminal ID for ESC
-     */
-    public static final int T_ESC = 16;
-    
-    /**
-     * Terminal ID for ESC_OCTAL
-     */
-    public static final int T_ESC_OCTAL = 17;
-    
-    /**
-     * Terminal ID for ESC_UNICODE
-     */
-    public static final int T_ESC_UNICODE = 18;
-    
-    /**
-     * NonTerminal ID for Goal
-     */
-    public static final int N_Goal = 19;
-    
-    /**
-     * NonTerminal ID for Union
-     */
-    public static final int N_Union = 20;
-    
-    /**
-     * NonTerminal ID for Concat
-     */
-    public static final int N_Concat = 21;
-    
-    /**
-     * NonTerminal ID for Term
-     */
-    public static final int N_Term = 22;
-    
-    /**
-     * NonTerminal ID for Quantifier
-     */
-    public static final int N_Quantifier = 23;
-    
-    /**
-     * NonTerminal ID for Atom
-     */
-    public static final int N_Atom = 24;
-    
-    /**
-     * NonTerminal ID for CharClass
-     */
-    public static final int N_CharClass = 25;
-    
-    /**
-     * NonTerminal ID for CharClassBegin
-     */
-    public static final int N_CharClassBegin = 26;
-    
-    /**
-     * NonTerminal ID for CharClassTermList
-     */
-    public static final int N_CharClassTermList = 27;
-    
-    /**
-     * NonTerminal ID for CharClassTerm
-     */
-    public static final int N_CharClassTerm = 28;
-    
-    /**
-     * NonTerminal ID for CharClassAtom
-     */
-    public static final int N_CharClassAtom = 29;
-    
-    /**
-     * Production ID for Goal__Union
-     */
-    public static final int P_Goal__Union = 0;
-    
-    /**
-     * Production ID for Union__Concat
-     */
-    public static final int P_Union__Concat = 1;
-    
-    /**
-     * Production ID for Union__Union_PIPE_Concat
-     */
-    public static final int P_Union__Union_PIPE_Concat = 2;
-    
-    /**
-     * Production ID for Concat__Term
-     */
-    public static final int P_Concat__Term = 3;
-    
-    /**
-     * Production ID for Concat__Concat_Term
-     */
-    public static final int P_Concat__Concat_Term = 4;
-    
-    /**
-     * Production ID for Term__Atom
-     */
-    public static final int P_Term__Atom = 5;
-    
-    /**
-     * Production ID for Term__Atom_Quantifier
-     */
-    public static final int P_Term__Atom_Quantifier = 6;
-    
-    /**
-     * Production ID for Quantifier__STAR
-     */
-    public static final int P_Quantifier__STAR = 7;
-    
-    /**
-     * Production ID for Quantifier__PLUS
-     */
-    public static final int P_Quantifier__PLUS = 8;
-    
-    /**
-     * Production ID for Quantifier__QUESTION
-     */
-    public static final int P_Quantifier__QUESTION = 9;
-    
-    /**
-     * Production ID for Atom__CHAR
-     */
-    public static final int P_Atom__CHAR = 10;
-    
-    /**
-     * Production ID for Atom__ESC
-     */
-    public static final int P_Atom__ESC = 11;
-    
-    /**
-     * Production ID for Atom__ESC_OCTAL
-     */
-    public static final int P_Atom__ESC_OCTAL = 12;
-    
-    /**
-     * Production ID for Atom__ESC_UNICODE
-     */
-    public static final int P_Atom__ESC_UNICODE = 13;
-    
-    /**
-     * Production ID for Atom__CharClass
-     */
-    public static final int P_Atom__CharClass = 14;
-    
-    /**
-     * Production ID for Atom__OPEN_PAREN_Union_CLOSE_PAREN
-     */
-    public static final int P_Atom__OPEN_PAREN_Union_CLOSE_PAREN = 15;
-    
-    /**
-     * Production ID for CharClass__CharClassBegin_CharClassTermList_CLOSE_BRACKET
-     */
-    public static final int P_CharClass__CharClassBegin_CharClassTermList_CLOSE_BRACKET = 16;
-    
-    /**
-     * Production ID for CharClass__OPEN_BRACKET_CARET_DASH_CLOSE_BRACKET
-     */
-    public static final int P_CharClass__OPEN_BRACKET_CARET_DASH_CLOSE_BRACKET = 17;
-    
-    /**
-     * Production ID for CharClassBegin__OPEN_BRACKET
-     */
-    public static final int P_CharClassBegin__OPEN_BRACKET = 18;
-    
-    /**
-     * Production ID for CharClassBegin__OPEN_BRACKET_CARET
-     */
-    public static final int P_CharClassBegin__OPEN_BRACKET_CARET = 19;
-    
-    /**
-     * Production ID for CharClassBegin__OPEN_BRACKET_DASH
-     */
-    public static final int P_CharClassBegin__OPEN_BRACKET_DASH = 20;
-    
-    /**
-     * Production ID for CharClassBegin__OPEN_BRACKET_CARET_DASH
-     */
-    public static final int P_CharClassBegin__OPEN_BRACKET_CARET_DASH = 21;
-    
-    /**
-     * Production ID for CharClassTermList__CharClassTerm
-     */
-    public static final int P_CharClassTermList__CharClassTerm = 22;
-    
-    /**
-     * Production ID for CharClassTermList__CharClassTermList_CharClassTerm
-     */
-    public static final int P_CharClassTermList__CharClassTermList_CharClassTerm = 23;
-    
-    /**
-     * Production ID for CharClassTerm__CharClassAtom
-     */
-    public static final int P_CharClassTerm__CharClassAtom = 24;
-    
-    /**
-     * Production ID for
-     *  CharClassTerm__CharClassAtom_CHAR_CLASS_DASH_CharClassAtom
-     */
-    public static final int P_CharClassTerm__CharClassAtom_CHAR_CLASS_DASH_CharClassAtom = 25;
-    
-    /**
-     * Production ID for CharClassAtom__CHAR_CLASS_CHAR
-     */
-    public static final int P_CharClassAtom__CHAR_CLASS_CHAR = 26;
-    
-    /**
-     * Production ID for CharClassAtom__ESC
-     */
-    public static final int P_CharClassAtom__ESC = 27;
-    
-    /**
-     * Production ID for CharClassAtom__ESC_OCTAL
-     */
-    public static final int P_CharClassAtom__ESC_OCTAL = 28;
-    
-    /**
-     * Production ID for CharClassAtom__ESC_UNICODE
-     */
-    public static final int P_CharClassAtom__ESC_UNICODE = 29;
-    
-    public String getContext(int ID)
-    {
-        switch (ID) {
-            case 0: {
-                return "default";
-            } 
-            case 1: {
-                return "charclass";
-            } 
-            default: {
-                return null;
-            } 
-        } 
+public class RegexpGrammar implements LRTranslatorGrammar {
+
+  /**
+   * Constant ID for default
+   */
+  public static final int C_default = 0;
+
+  /**
+   * Constant ID for charclass
+   */
+  public static final int C_charclass = 1;
+
+  /**
+   * Terminal ID for WHITESPACE
+   */
+  public static final int T_WHITESPACE = 1;
+
+  /**
+   * Terminal ID for CHAR
+   */
+  public static final int T_CHAR = 2;
+
+  /**
+   * Terminal ID for CHAR_CLASS_CHAR
+   */
+  public static final int T_CHAR_CLASS_CHAR = 3;
+
+  /**
+   * Terminal ID for PIPE
+   */
+  public static final int T_PIPE = 4;
+
+  /**
+   * Terminal ID for STAR
+   */
+  public static final int T_STAR = 5;
+
+  /**
+   * Terminal ID for QUESTION
+   */
+  public static final int T_QUESTION = 6;
+
+  /**
+   * Terminal ID for PLUS
+   */
+  public static final int T_PLUS = 7;
+
+  /**
+   * Terminal ID for OPEN_PAREN
+   */
+  public static final int T_OPEN_PAREN = 8;
+
+  /**
+   * Terminal ID for CLOSE_PAREN
+   */
+  public static final int T_CLOSE_PAREN = 9;
+
+  /**
+   * Terminal ID for OPEN_BRACKET
+   */
+  public static final int T_OPEN_BRACKET = 10;
+
+  /**
+   * Terminal ID for OPEN_BRACKET_CARET
+   */
+  public static final int T_OPEN_BRACKET_CARET = 11;
+
+  /**
+   * Terminal ID for OPEN_BRACKET_DASH
+   */
+  public static final int T_OPEN_BRACKET_DASH = 12;
+
+  /**
+   * Terminal ID for OPEN_BRACKET_CARET_DASH
+   */
+  public static final int T_OPEN_BRACKET_CARET_DASH = 13;
+
+  /**
+   * Terminal ID for CLOSE_BRACKET
+   */
+  public static final int T_CLOSE_BRACKET = 14;
+
+  /**
+   * Terminal ID for CHAR_CLASS_DASH
+   */
+  public static final int T_CHAR_CLASS_DASH = 15;
+
+  /**
+   * Terminal ID for ESC
+   */
+  public static final int T_ESC = 16;
+
+  /**
+   * Terminal ID for ESC_OCTAL
+   */
+  public static final int T_ESC_OCTAL = 17;
+
+  /**
+   * Terminal ID for ESC_UNICODE
+   */
+  public static final int T_ESC_UNICODE = 18;
+
+  /**
+   * NonTerminal ID for Goal
+   */
+  public static final int N_Goal = 19;
+
+  /**
+   * NonTerminal ID for Union
+   */
+  public static final int N_Union = 20;
+
+  /**
+   * NonTerminal ID for Concat
+   */
+  public static final int N_Concat = 21;
+
+  /**
+   * NonTerminal ID for Term
+   */
+  public static final int N_Term = 22;
+
+  /**
+   * NonTerminal ID for Quantifier
+   */
+  public static final int N_Quantifier = 23;
+
+  /**
+   * NonTerminal ID for Atom
+   */
+  public static final int N_Atom = 24;
+
+  /**
+   * NonTerminal ID for CharClass
+   */
+  public static final int N_CharClass = 25;
+
+  /**
+   * NonTerminal ID for CharClassBegin
+   */
+  public static final int N_CharClassBegin = 26;
+
+  /**
+   * NonTerminal ID for CharClassTermList
+   */
+  public static final int N_CharClassTermList = 27;
+
+  /**
+   * NonTerminal ID for CharClassTerm
+   */
+  public static final int N_CharClassTerm = 28;
+
+  /**
+   * NonTerminal ID for CharClassAtom
+   */
+  public static final int N_CharClassAtom = 29;
+
+  /**
+   * Production ID for Goal__Union
+   */
+  public static final int P_Goal__Union = 0;
+
+  /**
+   * Production ID for Union__Concat
+   */
+  public static final int P_Union__Concat = 1;
+
+  /**
+   * Production ID for Union__Union_PIPE_Concat
+   */
+  public static final int P_Union__Union_PIPE_Concat = 2;
+
+  /**
+   * Production ID for Concat__Term
+   */
+  public static final int P_Concat__Term = 3;
+
+  /**
+   * Production ID for Concat__Concat_Term
+   */
+  public static final int P_Concat__Concat_Term = 4;
+
+  /**
+   * Production ID for Term__Atom
+   */
+  public static final int P_Term__Atom = 5;
+
+  /**
+   * Production ID for Term__Atom_Quantifier
+   */
+  public static final int P_Term__Atom_Quantifier = 6;
+
+  /**
+   * Production ID for Quantifier__STAR
+   */
+  public static final int P_Quantifier__STAR = 7;
+
+  /**
+   * Production ID for Quantifier__PLUS
+   */
+  public static final int P_Quantifier__PLUS = 8;
+
+  /**
+   * Production ID for Quantifier__QUESTION
+   */
+  public static final int P_Quantifier__QUESTION = 9;
+
+  /**
+   * Production ID for Atom__CHAR
+   */
+  public static final int P_Atom__CHAR = 10;
+
+  /**
+   * Production ID for Atom__ESC
+   */
+  public static final int P_Atom__ESC = 11;
+
+  /**
+   * Production ID for Atom__ESC_OCTAL
+   */
+  public static final int P_Atom__ESC_OCTAL = 12;
+
+  /**
+   * Production ID for Atom__ESC_UNICODE
+   */
+  public static final int P_Atom__ESC_UNICODE = 13;
+
+  /**
+   * Production ID for Atom__CharClass
+   */
+  public static final int P_Atom__CharClass = 14;
+
+  /**
+   * Production ID for Atom__OPEN_PAREN_Union_CLOSE_PAREN
+   */
+  public static final int P_Atom__OPEN_PAREN_Union_CLOSE_PAREN = 15;
+
+  /**
+   * Production ID for CharClass__CharClassBegin_CharClassTermList_CLOSE_BRACKET
+   */
+  public static final int P_CharClass__CharClassBegin_CharClassTermList_CLOSE_BRACKET = 16;
+
+  /**
+   * Production ID for CharClass__OPEN_BRACKET_CARET_DASH_CLOSE_BRACKET
+   */
+  public static final int P_CharClass__OPEN_BRACKET_CARET_DASH_CLOSE_BRACKET = 17;
+
+  /**
+   * Production ID for CharClassBegin__OPEN_BRACKET
+   */
+  public static final int P_CharClassBegin__OPEN_BRACKET = 18;
+
+  /**
+   * Production ID for CharClassBegin__OPEN_BRACKET_CARET
+   */
+  public static final int P_CharClassBegin__OPEN_BRACKET_CARET = 19;
+
+  /**
+   * Production ID for CharClassBegin__OPEN_BRACKET_DASH
+   */
+  public static final int P_CharClassBegin__OPEN_BRACKET_DASH = 20;
+
+  /**
+   * Production ID for CharClassBegin__OPEN_BRACKET_CARET_DASH
+   */
+  public static final int P_CharClassBegin__OPEN_BRACKET_CARET_DASH = 21;
+
+  /**
+   * Production ID for CharClassTermList__CharClassTerm
+   */
+  public static final int P_CharClassTermList__CharClassTerm = 22;
+
+  /**
+   * Production ID for CharClassTermList__CharClassTermList_CharClassTerm
+   */
+  public static final int P_CharClassTermList__CharClassTermList_CharClassTerm = 23;
+
+  /**
+   * Production ID for CharClassTerm__CharClassAtom
+   */
+  public static final int P_CharClassTerm__CharClassAtom = 24;
+
+  /**
+   * Production ID for
+   *  CharClassTerm__CharClassAtom_CHAR_CLASS_DASH_CharClassAtom
+   */
+  public static final int P_CharClassTerm__CharClassAtom_CHAR_CLASS_DASH_CharClassAtom = 25;
+
+  /**
+   * Production ID for CharClassAtom__CHAR_CLASS_CHAR
+   */
+  public static final int P_CharClassAtom__CHAR_CLASS_CHAR = 26;
+
+  /**
+   * Production ID for CharClassAtom__ESC
+   */
+  public static final int P_CharClassAtom__ESC = 27;
+
+  /**
+   * Production ID for CharClassAtom__ESC_OCTAL
+   */
+  public static final int P_CharClassAtom__ESC_OCTAL = 28;
+
+  /**
+   * Production ID for CharClassAtom__ESC_UNICODE
+   */
+  public static final int P_CharClassAtom__ESC_UNICODE = 29;
+
+  public String getContext(int ID) {
+    switch (ID) {
+      case 0:
+        {
+          return "default";
+        }
+      case 1:
+        {
+          return "charclass";
+        }
+      default:
+        {
+          return null;
+        }
     }
-    
-    public int getContextAction(int cID, int tID)
-    {
-        switch (cID) {
-            case 0: {
-                return getDefaultContextAction(tID);
-            } 
-            case 1: {
-                return getCharclassContextAction(tID);
-            } 
-            default: {
-                return -2147483647;
-            } 
-        } 
+  }
+
+  public int getContextAction(int cID, int tID) {
+    switch (cID) {
+      case 0:
+        {
+          return getDefaultContextAction(tID);
+        }
+      case 1:
+        {
+          return getCharclassContextAction(tID);
+        }
+      default:
+        {
+          return -2147483647;
+        }
     }
-    
-    public int getContextRegister(int cID, int tID)
-    {
-        switch (cID) {
-            case 0: {
-                return getDefaultContextRegister(tID);
-            } 
-            case 1: {
-                return getCharclassContextRegister(tID);
-            } 
-            default: {
-                return -2147483647;
-            } 
-        } 
+  }
+
+  public int getContextRegister(int cID, int tID) {
+    switch (cID) {
+      case 0:
+        {
+          return getDefaultContextRegister(tID);
+        }
+      case 1:
+        {
+          return getCharclassContextRegister(tID);
+        }
+      default:
+        {
+          return -2147483647;
+        }
     }
-    
-    public IntArray getContextTerminals(int ID)
-    {
-        switch (ID) {
-            case 0: {
-                return new ArrayIntArray(contextTerminals[0]);
-            } 
-            case 1: {
-                return new ArrayIntArray(contextTerminals[1]);
-            } 
-            default: {
-                return null;
-            } 
-        } 
+  }
+
+  public IntArray getContextTerminals(int ID) {
+    switch (ID) {
+      case 0:
+        {
+          return new ArrayIntArray(contextTerminals[0]);
+        }
+      case 1:
+        {
+          return new ArrayIntArray(contextTerminals[1]);
+        }
+      default:
+        {
+          return null;
+        }
     }
-    
-    public IntArray getContexts()
-    {
-        return contexts;
+  }
+
+  public IntArray getContexts() {
+    return contexts;
+  }
+
+  public int getGoalNonTerminal() {
+    return 19;
+  }
+
+  public String getName() {
+    return "regexp";
+  }
+
+  public String getNonTerminal(int ID) {
+    switch (ID) {
+      case 19:
+        {
+          return "Goal";
+        }
+      case 20:
+        {
+          return "Union";
+        }
+      case 21:
+        {
+          return "Concat";
+        }
+      case 22:
+        {
+          return "Term";
+        }
+      case 23:
+        {
+          return "Quantifier";
+        }
+      case 24:
+        {
+          return "Atom";
+        }
+      case 25:
+        {
+          return "CharClass";
+        }
+      case 26:
+        {
+          return "CharClassBegin";
+        }
+      case 27:
+        {
+          return "CharClassTermList";
+        }
+      case 28:
+        {
+          return "CharClassTerm";
+        }
+      case 29:
+        {
+          return "CharClassAtom";
+        }
+      default:
+        {
+          return null;
+        }
     }
-    
-    public int getGoalNonTerminal()
-    {
-        return 19;
+  }
+
+  public IntArray getNonTerminals() {
+    return nonTerminals;
+  }
+
+  public String getProduction(int ID) {
+    switch (ID) {
+      case 0:
+        {
+          return "Goal: Union";
+        }
+      case 1:
+        {
+          return "Union: Concat";
+        }
+      case 2:
+        {
+          return "Union: Union PIPE Concat";
+        }
+      case 3:
+        {
+          return "Concat: Term";
+        }
+      case 4:
+        {
+          return "Concat: Concat Term";
+        }
+      case 5:
+        {
+          return "Term: Atom";
+        }
+      case 6:
+        {
+          return "Term: Atom Quantifier";
+        }
+      case 7:
+        {
+          return "Quantifier: STAR";
+        }
+      case 8:
+        {
+          return "Quantifier: PLUS";
+        }
+      case 9:
+        {
+          return "Quantifier: QUESTION";
+        }
+      case 10:
+        {
+          return "Atom: CHAR";
+        }
+      case 11:
+        {
+          return "Atom: ESC";
+        }
+      case 12:
+        {
+          return "Atom: ESC_OCTAL";
+        }
+      case 13:
+        {
+          return "Atom: ESC_UNICODE";
+        }
+      case 14:
+        {
+          return "Atom: CharClass";
+        }
+      case 15:
+        {
+          return "Atom: OPEN_PAREN Union CLOSE_PAREN";
+        }
+      case 16:
+        {
+          return "CharClass: CharClassBegin CharClassTermList CLOSE_BRACKET";
+        }
+      case 17:
+        {
+          return "CharClass: OPEN_BRACKET_CARET_DASH CLOSE_BRACKET";
+        }
+      case 18:
+        {
+          return "CharClassBegin: OPEN_BRACKET";
+        }
+      case 19:
+        {
+          return "CharClassBegin: OPEN_BRACKET_CARET";
+        }
+      case 20:
+        {
+          return "CharClassBegin: OPEN_BRACKET_DASH";
+        }
+      case 21:
+        {
+          return "CharClassBegin: OPEN_BRACKET_CARET_DASH";
+        }
+      case 22:
+        {
+          return "CharClassTermList: CharClassTerm";
+        }
+      case 23:
+        {
+          return "CharClassTermList: CharClassTermList CharClassTerm";
+        }
+      case 24:
+        {
+          return "CharClassTerm: CharClassAtom";
+        }
+      case 25:
+        {
+          return "CharClassTerm: CharClassAtom CHAR_CLASS_DASH CharClassAtom";
+        }
+      case 26:
+        {
+          return "CharClassAtom: CHAR_CLASS_CHAR";
+        }
+      case 27:
+        {
+          return "CharClassAtom: ESC";
+        }
+      case 28:
+        {
+          return "CharClassAtom: ESC_OCTAL";
+        }
+      case 29:
+        {
+          return "CharClassAtom: ESC_UNICODE";
+        }
+      default:
+        {
+          return null;
+        }
     }
-    
-    public String getName()
-    {
-        return "regexp";
+  }
+
+  public int getProductionLength(int ID) {
+    switch (ID) {
+      case 0:
+        {
+          return 1;
+        }
+      case 1:
+        {
+          return 1;
+        }
+      case 2:
+        {
+          return 3;
+        }
+      case 3:
+        {
+          return 1;
+        }
+      case 4:
+        {
+          return 2;
+        }
+      case 5:
+        {
+          return 1;
+        }
+      case 6:
+        {
+          return 2;
+        }
+      case 7:
+        {
+          return 1;
+        }
+      case 8:
+        {
+          return 1;
+        }
+      case 9:
+        {
+          return 1;
+        }
+      case 10:
+        {
+          return 1;
+        }
+      case 11:
+        {
+          return 1;
+        }
+      case 12:
+        {
+          return 1;
+        }
+      case 13:
+        {
+          return 1;
+        }
+      case 14:
+        {
+          return 1;
+        }
+      case 15:
+        {
+          return 3;
+        }
+      case 16:
+        {
+          return 3;
+        }
+      case 17:
+        {
+          return 2;
+        }
+      case 18:
+        {
+          return 1;
+        }
+      case 19:
+        {
+          return 1;
+        }
+      case 20:
+        {
+          return 1;
+        }
+      case 21:
+        {
+          return 1;
+        }
+      case 22:
+        {
+          return 1;
+        }
+      case 23:
+        {
+          return 2;
+        }
+      case 24:
+        {
+          return 1;
+        }
+      case 25:
+        {
+          return 3;
+        }
+      case 26:
+        {
+          return 1;
+        }
+      case 27:
+        {
+          return 1;
+        }
+      case 28:
+        {
+          return 1;
+        }
+      case 29:
+        {
+          return 1;
+        }
+      default:
+        {
+          return -2147483644;
+        }
     }
-    
-    public String getNonTerminal(int ID)
-    {
-        switch (ID) {
-            case 19: {
-                return "Goal";
-            } 
-            case 20: {
-                return "Union";
-            } 
-            case 21: {
-                return "Concat";
-            } 
-            case 22: {
-                return "Term";
-            } 
-            case 23: {
-                return "Quantifier";
-            } 
-            case 24: {
-                return "Atom";
-            } 
-            case 25: {
-                return "CharClass";
-            } 
-            case 26: {
-                return "CharClassBegin";
-            } 
-            case 27: {
-                return "CharClassTermList";
-            } 
-            case 28: {
-                return "CharClassTerm";
-            } 
-            case 29: {
-                return "CharClassAtom";
-            } 
-            default: {
-                return null;
-            } 
-        } 
+  }
+
+  public int getProductionNonTerminal(int ID) {
+    switch (ID) {
+      case 0:
+        {
+          return 19;
+        }
+      case 1:
+        {
+          return 20;
+        }
+      case 2:
+        {
+          return 20;
+        }
+      case 3:
+        {
+          return 21;
+        }
+      case 4:
+        {
+          return 21;
+        }
+      case 5:
+        {
+          return 22;
+        }
+      case 6:
+        {
+          return 22;
+        }
+      case 7:
+        {
+          return 23;
+        }
+      case 8:
+        {
+          return 23;
+        }
+      case 9:
+        {
+          return 23;
+        }
+      case 10:
+        {
+          return 24;
+        }
+      case 11:
+        {
+          return 24;
+        }
+      case 12:
+        {
+          return 24;
+        }
+      case 13:
+        {
+          return 24;
+        }
+      case 14:
+        {
+          return 24;
+        }
+      case 15:
+        {
+          return 24;
+        }
+      case 16:
+        {
+          return 25;
+        }
+      case 17:
+        {
+          return 25;
+        }
+      case 18:
+        {
+          return 26;
+        }
+      case 19:
+        {
+          return 26;
+        }
+      case 20:
+        {
+          return 26;
+        }
+      case 21:
+        {
+          return 26;
+        }
+      case 22:
+        {
+          return 27;
+        }
+      case 23:
+        {
+          return 27;
+        }
+      case 24:
+        {
+          return 28;
+        }
+      case 25:
+        {
+          return 28;
+        }
+      case 26:
+        {
+          return 29;
+        }
+      case 27:
+        {
+          return 29;
+        }
+      case 28:
+        {
+          return 29;
+        }
+      case 29:
+        {
+          return 29;
+        }
+      default:
+        {
+          return -2147483644;
+        }
     }
-    
-    public IntArray getNonTerminals()
-    {
-        return nonTerminals;
+  }
+
+  public IntArray getProductionSymbols(int ID) {
+    switch (ID) {
+      case 0:
+        {
+          return new ArrayIntArray(productionSymbols[0]);
+        }
+      case 1:
+        {
+          return new ArrayIntArray(productionSymbols[1]);
+        }
+      case 2:
+        {
+          return new ArrayIntArray(productionSymbols[2]);
+        }
+      case 3:
+        {
+          return new ArrayIntArray(productionSymbols[3]);
+        }
+      case 4:
+        {
+          return new ArrayIntArray(productionSymbols[4]);
+        }
+      case 5:
+        {
+          return new ArrayIntArray(productionSymbols[5]);
+        }
+      case 6:
+        {
+          return new ArrayIntArray(productionSymbols[6]);
+        }
+      case 7:
+        {
+          return new ArrayIntArray(productionSymbols[7]);
+        }
+      case 8:
+        {
+          return new ArrayIntArray(productionSymbols[8]);
+        }
+      case 9:
+        {
+          return new ArrayIntArray(productionSymbols[9]);
+        }
+      case 10:
+        {
+          return new ArrayIntArray(productionSymbols[10]);
+        }
+      case 11:
+        {
+          return new ArrayIntArray(productionSymbols[11]);
+        }
+      case 12:
+        {
+          return new ArrayIntArray(productionSymbols[12]);
+        }
+      case 13:
+        {
+          return new ArrayIntArray(productionSymbols[13]);
+        }
+      case 14:
+        {
+          return new ArrayIntArray(productionSymbols[14]);
+        }
+      case 15:
+        {
+          return new ArrayIntArray(productionSymbols[15]);
+        }
+      case 16:
+        {
+          return new ArrayIntArray(productionSymbols[16]);
+        }
+      case 17:
+        {
+          return new ArrayIntArray(productionSymbols[17]);
+        }
+      case 18:
+        {
+          return new ArrayIntArray(productionSymbols[18]);
+        }
+      case 19:
+        {
+          return new ArrayIntArray(productionSymbols[19]);
+        }
+      case 20:
+        {
+          return new ArrayIntArray(productionSymbols[20]);
+        }
+      case 21:
+        {
+          return new ArrayIntArray(productionSymbols[21]);
+        }
+      case 22:
+        {
+          return new ArrayIntArray(productionSymbols[22]);
+        }
+      case 23:
+        {
+          return new ArrayIntArray(productionSymbols[23]);
+        }
+      case 24:
+        {
+          return new ArrayIntArray(productionSymbols[24]);
+        }
+      case 25:
+        {
+          return new ArrayIntArray(productionSymbols[25]);
+        }
+      case 26:
+        {
+          return new ArrayIntArray(productionSymbols[26]);
+        }
+      case 27:
+        {
+          return new ArrayIntArray(productionSymbols[27]);
+        }
+      case 28:
+        {
+          return new ArrayIntArray(productionSymbols[28]);
+        }
+      case 29:
+        {
+          return new ArrayIntArray(productionSymbols[29]);
+        }
+      default:
+        {
+          return null;
+        }
     }
-    
-    public String getProduction(int ID)
-    {
-        switch (ID) {
-            case 0: {
-                return "Goal: Union";
-            } 
-            case 1: {
-                return "Union: Concat";
-            } 
-            case 2: {
-                return "Union: Union PIPE Concat";
-            } 
-            case 3: {
-                return "Concat: Term";
-            } 
-            case 4: {
-                return "Concat: Concat Term";
-            } 
-            case 5: {
-                return "Term: Atom";
-            } 
-            case 6: {
-                return "Term: Atom Quantifier";
-            } 
-            case 7: {
-                return "Quantifier: STAR";
-            } 
-            case 8: {
-                return "Quantifier: PLUS";
-            } 
-            case 9: {
-                return "Quantifier: QUESTION";
-            } 
-            case 10: {
-                return "Atom: CHAR";
-            } 
-            case 11: {
-                return "Atom: ESC";
-            } 
-            case 12: {
-                return "Atom: ESC_OCTAL";
-            } 
-            case 13: {
-                return "Atom: ESC_UNICODE";
-            } 
-            case 14: {
-                return "Atom: CharClass";
-            } 
-            case 15: {
-                return "Atom: OPEN_PAREN Union CLOSE_PAREN";
-            } 
-            case 16: {
-                return "CharClass: CharClassBegin CharClassTermList CLOSE_BRACKET";
-            } 
-            case 17: {
-                return "CharClass: OPEN_BRACKET_CARET_DASH CLOSE_BRACKET";
-            } 
-            case 18: {
-                return "CharClassBegin: OPEN_BRACKET";
-            } 
-            case 19: {
-                return "CharClassBegin: OPEN_BRACKET_CARET";
-            } 
-            case 20: {
-                return "CharClassBegin: OPEN_BRACKET_DASH";
-            } 
-            case 21: {
-                return "CharClassBegin: OPEN_BRACKET_CARET_DASH";
-            } 
-            case 22: {
-                return "CharClassTermList: CharClassTerm";
-            } 
-            case 23: {
-                return "CharClassTermList: CharClassTermList CharClassTerm";
-            } 
-            case 24: {
-                return "CharClassTerm: CharClassAtom";
-            } 
-            case 25: {
-                return "CharClassTerm: CharClassAtom CHAR_CLASS_DASH CharClassAtom";
-            } 
-            case 26: {
-                return "CharClassAtom: CHAR_CLASS_CHAR";
-            } 
-            case 27: {
-                return "CharClassAtom: ESC";
-            } 
-            case 28: {
-                return "CharClassAtom: ESC_OCTAL";
-            } 
-            case 29: {
-                return "CharClassAtom: ESC_UNICODE";
-            } 
-            default: {
-                return null;
-            } 
-        } 
+  }
+
+  public IntArray getProductions() {
+    return productions;
+  }
+
+  public int getStartContext() {
+    return 0;
+  }
+
+  public String getTerminal(int ID) {
+    switch (ID) {
+      case 1:
+        {
+          return "WHITESPACE";
+        }
+      case 2:
+        {
+          return "CHAR";
+        }
+      case 3:
+        {
+          return "CHAR_CLASS_CHAR";
+        }
+      case 4:
+        {
+          return "PIPE";
+        }
+      case 5:
+        {
+          return "STAR";
+        }
+      case 6:
+        {
+          return "QUESTION";
+        }
+      case 7:
+        {
+          return "PLUS";
+        }
+      case 8:
+        {
+          return "OPEN_PAREN";
+        }
+      case 9:
+        {
+          return "CLOSE_PAREN";
+        }
+      case 10:
+        {
+          return "OPEN_BRACKET";
+        }
+      case 11:
+        {
+          return "OPEN_BRACKET_CARET";
+        }
+      case 12:
+        {
+          return "OPEN_BRACKET_DASH";
+        }
+      case 13:
+        {
+          return "OPEN_BRACKET_CARET_DASH";
+        }
+      case 14:
+        {
+          return "CLOSE_BRACKET";
+        }
+      case 15:
+        {
+          return "CHAR_CLASS_DASH";
+        }
+      case 16:
+        {
+          return "ESC";
+        }
+      case 17:
+        {
+          return "ESC_OCTAL";
+        }
+      case 18:
+        {
+          return "ESC_UNICODE";
+        }
+      default:
+        {
+          return null;
+        }
     }
-    
-    public int getProductionLength(int ID)
-    {
-        switch (ID) {
-            case 0: {
-                return 1;
-            } 
-            case 1: {
-                return 1;
-            } 
-            case 2: {
-                return 3;
-            } 
-            case 3: {
-                return 1;
-            } 
-            case 4: {
-                return 2;
-            } 
-            case 5: {
-                return 1;
-            } 
-            case 6: {
-                return 2;
-            } 
-            case 7: {
-                return 1;
-            } 
-            case 8: {
-                return 1;
-            } 
-            case 9: {
-                return 1;
-            } 
-            case 10: {
-                return 1;
-            } 
-            case 11: {
-                return 1;
-            } 
-            case 12: {
-                return 1;
-            } 
-            case 13: {
-                return 1;
-            } 
-            case 14: {
-                return 1;
-            } 
-            case 15: {
-                return 3;
-            } 
-            case 16: {
-                return 3;
-            } 
-            case 17: {
-                return 2;
-            } 
-            case 18: {
-                return 1;
-            } 
-            case 19: {
-                return 1;
-            } 
-            case 20: {
-                return 1;
-            } 
-            case 21: {
-                return 1;
-            } 
-            case 22: {
-                return 1;
-            } 
-            case 23: {
-                return 2;
-            } 
-            case 24: {
-                return 1;
-            } 
-            case 25: {
-                return 3;
-            } 
-            case 26: {
-                return 1;
-            } 
-            case 27: {
-                return 1;
-            } 
-            case 28: {
-                return 1;
-            } 
-            case 29: {
-                return 1;
-            } 
-            default: {
-                return -2147483644;
-            } 
-        } 
+  }
+
+  public IntArray getTerminalContexts(int ID) {
+    switch (ID) {
+      case 1:
+        {
+          return new ArrayIntArray(terminalContexts[0]);
+        }
+      case 2:
+        {
+          return new ArrayIntArray(terminalContexts[1]);
+        }
+      case 3:
+        {
+          return new ArrayIntArray(terminalContexts[2]);
+        }
+      case 4:
+        {
+          return new ArrayIntArray(terminalContexts[3]);
+        }
+      case 5:
+        {
+          return new ArrayIntArray(terminalContexts[4]);
+        }
+      case 6:
+        {
+          return new ArrayIntArray(terminalContexts[5]);
+        }
+      case 7:
+        {
+          return new ArrayIntArray(terminalContexts[6]);
+        }
+      case 8:
+        {
+          return new ArrayIntArray(terminalContexts[7]);
+        }
+      case 9:
+        {
+          return new ArrayIntArray(terminalContexts[8]);
+        }
+      case 10:
+        {
+          return new ArrayIntArray(terminalContexts[9]);
+        }
+      case 11:
+        {
+          return new ArrayIntArray(terminalContexts[10]);
+        }
+      case 12:
+        {
+          return new ArrayIntArray(terminalContexts[11]);
+        }
+      case 13:
+        {
+          return new ArrayIntArray(terminalContexts[12]);
+        }
+      case 14:
+        {
+          return new ArrayIntArray(terminalContexts[13]);
+        }
+      case 15:
+        {
+          return new ArrayIntArray(terminalContexts[14]);
+        }
+      case 16:
+        {
+          return new ArrayIntArray(terminalContexts[15]);
+        }
+      case 17:
+        {
+          return new ArrayIntArray(terminalContexts[16]);
+        }
+      case 18:
+        {
+          return new ArrayIntArray(terminalContexts[17]);
+        }
+      default:
+        {
+          return null;
+        }
     }
-    
-    public int getProductionNonTerminal(int ID)
-    {
-        switch (ID) {
-            case 0: {
-                return 19;
-            } 
-            case 1: {
-                return 20;
-            } 
-            case 2: {
-                return 20;
-            } 
-            case 3: {
-                return 21;
-            } 
-            case 4: {
-                return 21;
-            } 
-            case 5: {
-                return 22;
-            } 
-            case 6: {
-                return 22;
-            } 
-            case 7: {
-                return 23;
-            } 
-            case 8: {
-                return 23;
-            } 
-            case 9: {
-                return 23;
-            } 
-            case 10: {
-                return 24;
-            } 
-            case 11: {
-                return 24;
-            } 
-            case 12: {
-                return 24;
-            } 
-            case 13: {
-                return 24;
-            } 
-            case 14: {
-                return 24;
-            } 
-            case 15: {
-                return 24;
-            } 
-            case 16: {
-                return 25;
-            } 
-            case 17: {
-                return 25;
-            } 
-            case 18: {
-                return 26;
-            } 
-            case 19: {
-                return 26;
-            } 
-            case 20: {
-                return 26;
-            } 
-            case 21: {
-                return 26;
-            } 
-            case 22: {
-                return 27;
-            } 
-            case 23: {
-                return 27;
-            } 
-            case 24: {
-                return 28;
-            } 
-            case 25: {
-                return 28;
-            } 
-            case 26: {
-                return 29;
-            } 
-            case 27: {
-                return 29;
-            } 
-            case 28: {
-                return 29;
-            } 
-            case 29: {
-                return 29;
-            } 
-            default: {
-                return -2147483644;
-            } 
-        } 
+  }
+
+  public Object getTerminalRegexp(int ID) {
+    switch (ID) {
+      case 1:
+        {
+          return "(\\t|\\n|\\v|\\r|\\s)+";
+        }
+      case 2:
+        {
+          return "[^\\\\|()[\\]*+?]";
+        }
+      case 3:
+        {
+          return "[^-\\]\\\\]";
+        }
+      case 4:
+        {
+          return "\\|";
+        }
+      case 5:
+        {
+          return "\\*";
+        }
+      case 6:
+        {
+          return "\\?";
+        }
+      case 7:
+        {
+          return "\\+";
+        }
+      case 8:
+        {
+          return "\\(";
+        }
+      case 9:
+        {
+          return "\\)";
+        }
+      case 10:
+        {
+          return "(\\[(\\t|\\n|\\v|\\r|\\s)*)";
+        }
+      case 11:
+        {
+          return "(\\[(\\t|\\n|\\v|\\r|\\s)*^)";
+        }
+      case 12:
+        {
+          return "(\\[(\\t|\\n|\\v|\\r|\\s)*-)";
+        }
+      case 13:
+        {
+          return "(\\[(\\t|\\n|\\v|\\r|\\s)*^(\\t|\\n|\\v|\\r|\\s)*-)";
+        }
+      case 14:
+        {
+          return "\\]";
+        }
+      case 15:
+        {
+          return "(-)";
+        }
+      case 16:
+        {
+          return " \\\\ [^\\t\\n\\v\\r\\s] ";
+        }
+      case 17:
+        {
+          return "(\\\\0[0-3][0-7][0-7])";
+        }
+      case 18:
+        {
+          return "(\\\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])";
+        }
+      default:
+        {
+          return null;
+        }
     }
-    
-    public IntArray getProductionSymbols(int ID)
-    {
-        switch (ID) {
-            case 0: {
-                return new ArrayIntArray(productionSymbols[0]);
-            } 
-            case 1: {
-                return new ArrayIntArray(productionSymbols[1]);
-            } 
-            case 2: {
-                return new ArrayIntArray(productionSymbols[2]);
-            } 
-            case 3: {
-                return new ArrayIntArray(productionSymbols[3]);
-            } 
-            case 4: {
-                return new ArrayIntArray(productionSymbols[4]);
-            } 
-            case 5: {
-                return new ArrayIntArray(productionSymbols[5]);
-            } 
-            case 6: {
-                return new ArrayIntArray(productionSymbols[6]);
-            } 
-            case 7: {
-                return new ArrayIntArray(productionSymbols[7]);
-            } 
-            case 8: {
-                return new ArrayIntArray(productionSymbols[8]);
-            } 
-            case 9: {
-                return new ArrayIntArray(productionSymbols[9]);
-            } 
-            case 10: {
-                return new ArrayIntArray(productionSymbols[10]);
-            } 
-            case 11: {
-                return new ArrayIntArray(productionSymbols[11]);
-            } 
-            case 12: {
-                return new ArrayIntArray(productionSymbols[12]);
-            } 
-            case 13: {
-                return new ArrayIntArray(productionSymbols[13]);
-            } 
-            case 14: {
-                return new ArrayIntArray(productionSymbols[14]);
-            } 
-            case 15: {
-                return new ArrayIntArray(productionSymbols[15]);
-            } 
-            case 16: {
-                return new ArrayIntArray(productionSymbols[16]);
-            } 
-            case 17: {
-                return new ArrayIntArray(productionSymbols[17]);
-            } 
-            case 18: {
-                return new ArrayIntArray(productionSymbols[18]);
-            } 
-            case 19: {
-                return new ArrayIntArray(productionSymbols[19]);
-            } 
-            case 20: {
-                return new ArrayIntArray(productionSymbols[20]);
-            } 
-            case 21: {
-                return new ArrayIntArray(productionSymbols[21]);
-            } 
-            case 22: {
-                return new ArrayIntArray(productionSymbols[22]);
-            } 
-            case 23: {
-                return new ArrayIntArray(productionSymbols[23]);
-            } 
-            case 24: {
-                return new ArrayIntArray(productionSymbols[24]);
-            } 
-            case 25: {
-                return new ArrayIntArray(productionSymbols[25]);
-            } 
-            case 26: {
-                return new ArrayIntArray(productionSymbols[26]);
-            } 
-            case 27: {
-                return new ArrayIntArray(productionSymbols[27]);
-            } 
-            case 28: {
-                return new ArrayIntArray(productionSymbols[28]);
-            } 
-            case 29: {
-                return new ArrayIntArray(productionSymbols[29]);
-            } 
-            default: {
-                return null;
-            } 
-        } 
+  }
+
+  public IntArray getTerminals() {
+    return terminals;
+  }
+
+  public String getVersion() {
+    return "0.1.0";
+  }
+
+  public Translator newTranslator() {
+    return newTranslator(null);
+  }
+
+  public Translator newTranslator(Properties p) {
+    LRTranslator t = new com.inxar.syntacs.translator.lr.StandardLRTranslator();
+    t.setLRTranslatorGrammar(this);
+    t.setProperties(p);
+    Input input = new com.inxar.syntacs.analyzer.StandardInput();
+    t.setInput(input);
+    Lexer lexer = new com.inxar.syntacs.analyzer.lexical.StandardLexer();
+    t.setLexer(lexer);
+    Parser parser = new com.inxar.syntacs.analyzer.syntactic.StandardParser();
+    t.setParser(parser);
+    LRTranslatorInterpreter interp = new com.inxar.syntacs.translator.regexp.RegexpInterpreter();
+    t.setLRTranslatorInterpreter(interp);
+    lexer.initialize(new DFA[] {new RegexpDefaultDFA(), new RegexpCharclassDFA()});
+    parser.initialize(new RegexpDPA());
+    return t;
+  }
+
+  private int getCharclassContextAction(int tID) {
+    switch (tID) {
+      case 18:
+        {}
+      case 17:
+        {}
+      case 16:
+        {}
+      case 15:
+        {}
+      case 3:
+        {}
+      case 1:
+        {
+          return 1;
+        }
+      case 14:
+        {
+          return 2;
+        }
+      default:
+        {
+          return -2147483646;
+        }
     }
-    
-    public IntArray getProductions()
-    {
-        return productions;
+  }
+
+  private int getCharclassContextRegister(int tID) {
+    switch (tID) {
+      case 14:
+        {}
+      case 18:
+        {}
+      case 17:
+        {}
+      case 16:
+        {}
+      case 15:
+        {}
+      case 3:
+        {}
+      case 1:
+        {
+          return 0;
+        }
+      default:
+        {
+          return -2147483646;
+        }
     }
-    
-    public int getStartContext()
-    {
-        return 0;
+  }
+
+  private int getDefaultContextAction(int tID) {
+    switch (tID) {
+      case 18:
+        {}
+      case 17:
+        {}
+      case 16:
+        {}
+      case 9:
+        {}
+      case 8:
+        {}
+      case 7:
+        {}
+      case 6:
+        {}
+      case 5:
+        {}
+      case 4:
+        {}
+      case 2:
+        {}
+      case 1:
+        {
+          return 1;
+        }
+      case 13:
+        {}
+      case 12:
+        {}
+      case 11:
+        {}
+      case 10:
+        {
+          return 3;
+        }
+      default:
+        {
+          return -2147483646;
+        }
     }
-    
-    public String getTerminal(int ID)
-    {
-        switch (ID) {
-            case 1: {
-                return "WHITESPACE";
-            } 
-            case 2: {
-                return "CHAR";
-            } 
-            case 3: {
-                return "CHAR_CLASS_CHAR";
-            } 
-            case 4: {
-                return "PIPE";
-            } 
-            case 5: {
-                return "STAR";
-            } 
-            case 6: {
-                return "QUESTION";
-            } 
-            case 7: {
-                return "PLUS";
-            } 
-            case 8: {
-                return "OPEN_PAREN";
-            } 
-            case 9: {
-                return "CLOSE_PAREN";
-            } 
-            case 10: {
-                return "OPEN_BRACKET";
-            } 
-            case 11: {
-                return "OPEN_BRACKET_CARET";
-            } 
-            case 12: {
-                return "OPEN_BRACKET_DASH";
-            } 
-            case 13: {
-                return "OPEN_BRACKET_CARET_DASH";
-            } 
-            case 14: {
-                return "CLOSE_BRACKET";
-            } 
-            case 15: {
-                return "CHAR_CLASS_DASH";
-            } 
-            case 16: {
-                return "ESC";
-            } 
-            case 17: {
-                return "ESC_OCTAL";
-            } 
-            case 18: {
-                return "ESC_UNICODE";
-            } 
-            default: {
-                return null;
-            } 
-        } 
+  }
+
+  private int getDefaultContextRegister(int tID) {
+    switch (tID) {
+      case 18:
+        {}
+      case 17:
+        {}
+      case 16:
+        {}
+      case 9:
+        {}
+      case 8:
+        {}
+      case 7:
+        {}
+      case 6:
+        {}
+      case 5:
+        {}
+      case 4:
+        {}
+      case 2:
+        {}
+      case 1:
+        {
+          return 0;
+        }
+      case 13:
+        {}
+      case 12:
+        {}
+      case 11:
+        {}
+      case 10:
+        {
+          return 1;
+        }
+      default:
+        {
+          return -2147483646;
+        }
     }
-    
-    public IntArray getTerminalContexts(int ID)
-    {
-        switch (ID) {
-            case 1: {
-                return new ArrayIntArray(terminalContexts[0]);
-            } 
-            case 2: {
-                return new ArrayIntArray(terminalContexts[1]);
-            } 
-            case 3: {
-                return new ArrayIntArray(terminalContexts[2]);
-            } 
-            case 4: {
-                return new ArrayIntArray(terminalContexts[3]);
-            } 
-            case 5: {
-                return new ArrayIntArray(terminalContexts[4]);
-            } 
-            case 6: {
-                return new ArrayIntArray(terminalContexts[5]);
-            } 
-            case 7: {
-                return new ArrayIntArray(terminalContexts[6]);
-            } 
-            case 8: {
-                return new ArrayIntArray(terminalContexts[7]);
-            } 
-            case 9: {
-                return new ArrayIntArray(terminalContexts[8]);
-            } 
-            case 10: {
-                return new ArrayIntArray(terminalContexts[9]);
-            } 
-            case 11: {
-                return new ArrayIntArray(terminalContexts[10]);
-            } 
-            case 12: {
-                return new ArrayIntArray(terminalContexts[11]);
-            } 
-            case 13: {
-                return new ArrayIntArray(terminalContexts[12]);
-            } 
-            case 14: {
-                return new ArrayIntArray(terminalContexts[13]);
-            } 
-            case 15: {
-                return new ArrayIntArray(terminalContexts[14]);
-            } 
-            case 16: {
-                return new ArrayIntArray(terminalContexts[15]);
-            } 
-            case 17: {
-                return new ArrayIntArray(terminalContexts[16]);
-            } 
-            case 18: {
-                return new ArrayIntArray(terminalContexts[17]);
-            } 
-            default: {
-                return null;
-            } 
-        } 
-    }
-    
-    public Object getTerminalRegexp(int ID)
-    {
-        switch (ID) {
-            case 1: {
-                return "(\\t|\\n|\\v|\\r|\\s)+";
-            } 
-            case 2: {
-                return "[^\\\\|()[\\]*+?]";
-            } 
-            case 3: {
-                return "[^-\\]\\\\]";
-            } 
-            case 4: {
-                return "\\|";
-            } 
-            case 5: {
-                return "\\*";
-            } 
-            case 6: {
-                return "\\?";
-            } 
-            case 7: {
-                return "\\+";
-            } 
-            case 8: {
-                return "\\(";
-            } 
-            case 9: {
-                return "\\)";
-            } 
-            case 10: {
-                return "(\\[(\\t|\\n|\\v|\\r|\\s)*)";
-            } 
-            case 11: {
-                return "(\\[(\\t|\\n|\\v|\\r|\\s)*^)";
-            } 
-            case 12: {
-                return "(\\[(\\t|\\n|\\v|\\r|\\s)*-)";
-            } 
-            case 13: {
-                return "(\\[(\\t|\\n|\\v|\\r|\\s)*^(\\t|\\n|\\v|\\r|\\s)*-)";
-            } 
-            case 14: {
-                return "\\]";
-            } 
-            case 15: {
-                return "(-)";
-            } 
-            case 16: {
-                return " \\\\ [^\\t\\n\\v\\r\\s] ";
-            } 
-            case 17: {
-                return "(\\\\0[0-3][0-7][0-7])";
-            } 
-            case 18: {
-                return "(\\\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])";
-            } 
-            default: {
-                return null;
-            } 
-        } 
-    }
-    
-    public IntArray getTerminals()
-    {
-        return terminals;
-    }
-    
-    public String getVersion()
-    {
-        return "0.1.0";
-    }
-    
-    public Translator newTranslator()
-    {
-        return newTranslator(null);
-    }
-    
-    public Translator newTranslator(Properties p)
-    {
-        LRTranslator t = new com.inxar.syntacs.translator.lr.StandardLRTranslator();
-        t.setLRTranslatorGrammar(this);
-        t.setProperties(p);
-        Input input = new com.inxar.syntacs.analyzer.StandardInput();
-        t.setInput(input);
-        Lexer lexer = new com.inxar.syntacs.analyzer.lexical.StandardLexer();
-        t.setLexer(lexer);
-        Parser parser = new com.inxar.syntacs.analyzer.syntactic.StandardParser();
-        t.setParser(parser);
-        LRTranslatorInterpreter interp = new com.inxar.syntacs.translator.regexp.RegexpInterpreter();
-        t.setLRTranslatorInterpreter(interp);
-        lexer.initialize(new DFA[]{new RegexpDefaultDFA(), new RegexpCharclassDFA()});
-        parser.initialize(new RegexpDPA());
-        return t;
-    }
-    
-    private int getCharclassContextAction(int tID)
-    {
-        switch (tID) {
-            case 18: {
-            }
-            case 17: {
-            }
-            case 16: {
-            }
-            case 15: {
-            }
-            case 3: {
-            }
-            case 1: {
-                return 1;
-            } 
-            case 14: {
-                return 2;
-            } 
-            default: {
-                return -2147483646;
-            } 
-        } 
-    }
-    
-    private int getCharclassContextRegister(int tID)
-    {
-        switch (tID) {
-            case 14: {
-            }
-            case 18: {
-            }
-            case 17: {
-            }
-            case 16: {
-            }
-            case 15: {
-            }
-            case 3: {
-            }
-            case 1: {
-                return 0;
-            } 
-            default: {
-                return -2147483646;
-            } 
-        } 
-    }
-    
-    private int getDefaultContextAction(int tID)
-    {
-        switch (tID) {
-            case 18: {
-            }
-            case 17: {
-            }
-            case 16: {
-            }
-            case 9: {
-            }
-            case 8: {
-            }
-            case 7: {
-            }
-            case 6: {
-            }
-            case 5: {
-            }
-            case 4: {
-            }
-            case 2: {
-            }
-            case 1: {
-                return 1;
-            } 
-            case 13: {
-            }
-            case 12: {
-            }
-            case 11: {
-            }
-            case 10: {
-                return 3;
-            } 
-            default: {
-                return -2147483646;
-            } 
-        } 
-    }
-    
-    private int getDefaultContextRegister(int tID)
-    {
-        switch (tID) {
-            case 18: {
-            }
-            case 17: {
-            }
-            case 16: {
-            }
-            case 9: {
-            }
-            case 8: {
-            }
-            case 7: {
-            }
-            case 6: {
-            }
-            case 5: {
-            }
-            case 4: {
-            }
-            case 2: {
-            }
-            case 1: {
-                return 0;
-            } 
-            case 13: {
-            }
-            case 12: {
-            }
-            case 11: {
-            }
-            case 10: {
-                return 1;
-            } 
-            default: {
-                return -2147483646;
-            } 
-        } 
-    }
-    private int[][] contextTerminals = new int[][]{{1, 2, 4, 5, 6, 7, 8, 9, 16, 17, 18, 10, 11, 12, 13}, {1, 3, 15, 16, 17, 18, 14}};
-    private IntArray contexts = new ArrayIntArray(new int[]{0, 1});
-    private IntArray nonTerminals = new ArrayIntArray(new int[]{19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29});
-    private int[][] productionSymbols = new int[][]{{20}, {21}, {20, 4, 21}, {22}, {21, 22}, {24}, {24, 23}, {5}, {7}, {6}, {2}, {16}, {17}, {18}, {25}, {8, 20, 9}, {26, 27, 14}, {13, 14}, {10}, {11}, {12}, {13}, {28}, {27, 28}, {29}, {29, 15, 29}, {3}, {16}, {17}, {18}};
-    private IntArray productions = new ArrayIntArray(new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29});
-    private int[][] terminalContexts = new int[][]{{0, 1}, {0}, {1}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {1}, {1}, {0, 1}, {0, 1}, {0, 1}};
-    private IntArray terminals = new ArrayIntArray(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18});
+  }
+
+  private int[][] contextTerminals =
+      new int[][] {
+        {1, 2, 4, 5, 6, 7, 8, 9, 16, 17, 18, 10, 11, 12, 13}, {1, 3, 15, 16, 17, 18, 14}
+      };
+  private IntArray contexts = new ArrayIntArray(new int[] {0, 1});
+  private IntArray nonTerminals =
+      new ArrayIntArray(new int[] {19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29});
+  private int[][] productionSymbols =
+      new int[][] {
+        {20},
+        {21},
+        {20, 4, 21},
+        {22},
+        {21, 22},
+        {24},
+        {24, 23},
+        {5},
+        {7},
+        {6},
+        {2},
+        {16},
+        {17},
+        {18},
+        {25},
+        {8, 20, 9},
+        {26, 27, 14},
+        {13, 14},
+        {10},
+        {11},
+        {12},
+        {13},
+        {28},
+        {27, 28},
+        {29},
+        {29, 15, 29},
+        {3},
+        {16},
+        {17},
+        {18}
+      };
+  private IntArray productions =
+      new ArrayIntArray(
+          new int[] {
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+            24, 25, 26, 27, 28, 29
+          });
+  private int[][] terminalContexts =
+      new int[][] {
+        {0, 1}, {0}, {1}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {1}, {1}, {0, 1},
+        {0, 1}, {0, 1}
+      };
+  private IntArray terminals =
+      new ArrayIntArray(new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18});
 }

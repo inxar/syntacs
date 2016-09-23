@@ -5,21 +5,21 @@ java_library(
     srcs = [
         "CharClass.java",
         "CharString.java",
+        "Closure.java",
         "Concatenation.java",
+        "Epsilon.java",
         "ExpressionTerminator.java",
-        "Option.java",
         "Interval.java",
+        "Option.java",
+        "PositiveClosure.java",
         "RegularExpression.java",
-        "RegularToken.java",
         "RegularGrammar.java",
         "RegularSet.java",
-        "Closure.java",
-        "PositiveClosure.java",
-        "Epsilon.java",
+        "RegularToken.java",
         "Union.java",
     ],
     deps = [
         "//src/org/inxar/syntacs/grammar",
         "//src/org/inxar/syntacs/util",
-    ]
+    ],
 )

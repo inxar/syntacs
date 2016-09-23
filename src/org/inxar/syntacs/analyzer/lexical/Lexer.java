@@ -2,17 +2,17 @@
  * $Id: Lexer.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
  * License, or (at your option) any later version.
-
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
-
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -64,55 +64,53 @@ import org.inxar.syntacs.util.IntStack;
  * for identification of the locations of tokens in the
  * <code>Input</code>, not the actual instantiation of
  * <code>Symbol</code> (token) objects.  Rather, this functionality is
- * delegated to the <code>LexerInterpreter</code>. 
+ * delegated to the <code>LexerInterpreter</code>.
  */
-public interface Lexer extends LRTranslationComponent
-{
-    /**
-     * Resets the internal state of the <code>Lexer</code> and
-     * triggers the search for the next lexeme from the input.
-     * Notification will take place through the
-     * <code>LexerInterpreter</code>. This method will run until the
-     * input buffer has been exhausted or <code>stop()</code> is
-     * called.  
-     */
-    void start() throws TranslationException;
-    
-    /**
-     * Pauses the lexing process.  Lexing can be restarted via calling
-     * <code>resume()</code>.  The lexer should check before the start
-     * of each token search to see whether stop has been called.
-     * Therefore, the granularity of stop is limited to the moment
-     * between token searches.  
-     */
-    void stop();
+public interface Lexer extends LRTranslationComponent {
+  /**
+   * Resets the internal state of the <code>Lexer</code> and
+   * triggers the search for the next lexeme from the input.
+   * Notification will take place through the
+   * <code>LexerInterpreter</code>. This method will run until the
+   * input buffer has been exhausted or <code>stop()</code> is
+   * called.
+   */
+  void start() throws TranslationException;
 
-    /**
-     * Continues the lexing process from the current
-     * <code>Input</code> position.  
-     */
-    void resume() throws TranslationException;
+  /**
+   * Pauses the lexing process.  Lexing can be restarted via calling
+   * <code>resume()</code>.  The lexer should check before the start
+   * of each token search to see whether stop has been called.
+   * Therefore, the granularity of stop is limited to the moment
+   * between token searches.
+   */
+  void stop();
 
-    /**
-     * Returns the id of the current context.
-    **/
-    int getCurrentContext();
+  /**
+   * Continues the lexing process from the current
+   * <code>Input</code> position.
+   */
+  void resume() throws TranslationException;
 
-    /**
-     * Accesses the context stack history.
-    **/
-    IntStack getContextStack();
+  /**
+   * Returns the id of the current context.
+   **/
+  int getCurrentContext();
 
-    /**
-     * Sets the <code>Listener</code> to be notified of token
-     * <code>Symbol</code> events.  
-     */
-    void setLexerInterpreter(LexerInterpreter interpreter);
+  /**
+   * Accesses the context stack history.
+   **/
+  IntStack getContextStack();
 
-    /**
-     * Gets the <code>Listener</code> to be notified of token
-     * <code>Symbol</code> events.  
-     */
-    LexerInterpreter getLexerInterpreter();
+  /**
+   * Sets the <code>Listener</code> to be notified of token
+   * <code>Symbol</code> events.
+   */
+  void setLexerInterpreter(LexerInterpreter interpreter);
+
+  /**
+   * Gets the <code>Listener</code> to be notified of token
+   * <code>Symbol</code> events.
+   */
+  LexerInterpreter getLexerInterpreter();
 }
-

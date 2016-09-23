@@ -4,23 +4,21 @@ java_library(
     name = "analyzer",
     srcs = [
         "AbstractSymbol.java",
-        "ListSymbol.java",
         "ArraySymbol.java",
-        "ConstantSymbol.java",
         "CharSymbol.java",
+        "ConstantSymbol.java",
+        "ListSymbol.java",
         "ObjectSymbol.java",
         "StringSymbol.java",
     ],
     deps = [
-        "//src/org/inxar/syntacs/grammar",
-        "//src/org/inxar/syntacs/analyzer",
-        "//src/org/inxar/syntacs/translator/lr:grammar",
-
         "//src/com/inxar/syntacs/util:arbor",
         "//src/com/inxar/syntacs/util:session",
-    ]
+        "//src/org/inxar/syntacs/analyzer",
+        "//src/org/inxar/syntacs/grammar",
+        "//src/org/inxar/syntacs/translator/lr:grammar",
+    ],
 )
-
 
 java_library(
     name = "input",
@@ -28,9 +26,8 @@ java_library(
         "StandardInput.java",
     ],
     deps = [
+        "//src/com/inxar/syntacs/util:session",
         "//src/org/inxar/syntacs/analyzer",
         "//src/org/inxar/syntacs/util:session",
-
-        "//src/com/inxar/syntacs/util:session",
-    ]
+    ],
 )

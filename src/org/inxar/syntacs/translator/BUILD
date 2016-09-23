@@ -5,10 +5,10 @@ java_library(
     srcs = [
         "Auditor.java",
         "Complaint.java",
+        "RuntimeTranslationException.java",
+        "TranslationException.java",
         "Translator.java",
         "TranslatorGrammar.java",
-        "TranslationException.java",
-        "RuntimeTranslationException.java",
     ],
     deps = [
         "//src/org/inxar/syntacs/analyzer",

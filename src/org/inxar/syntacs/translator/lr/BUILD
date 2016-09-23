@@ -8,11 +8,11 @@ java_library(
     ],
     deps = [
         "grammar",
-        "//src/org/inxar/syntacs/util",
-        "//src/org/inxar/syntacs/translator",
         "//src/org/inxar/syntacs/analyzer",
         "//src/org/inxar/syntacs/analyzer/lexical",
         "//src/org/inxar/syntacs/analyzer/syntactic",
+        "//src/org/inxar/syntacs/translator",
+        "//src/org/inxar/syntacs/util",
     ],
 )
 
@@ -34,7 +34,7 @@ java_library(
         "LRTranslatorGrammar.java",
     ],
     deps = [
-        "//src/org/inxar/syntacs/util",
         "//src/org/inxar/syntacs/translator",
+        "//src/org/inxar/syntacs/util",
     ],
 )

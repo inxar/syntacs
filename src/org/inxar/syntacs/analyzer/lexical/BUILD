@@ -7,8 +7,8 @@ java_library(
         "LexerInterpreter.java",
     ]),
     deps = [
-        "//src/org/inxar/syntacs/translator",
         "//src/org/inxar/syntacs/analyzer/syntactic",
+        "//src/org/inxar/syntacs/translator",
         "//src/org/inxar/syntacs/translator/lr:component",
         "//src/org/inxar/syntacs/util",
     ],

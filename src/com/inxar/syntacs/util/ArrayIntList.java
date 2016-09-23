@@ -2,17 +2,17 @@
  * $Id: ArrayIntList.java,v 1.1.1.1 2001/07/06 09:08:04 pcj Exp $
  *
  * Copyright (C) 2001 Paul Cody Johnston - pcj@inxar.org
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
  * License, or (at your option) any later version.
-
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
-
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -24,111 +24,85 @@ import org.inxar.syntacs.util.*;
 
 /**
  * Concrete implementation of <code>IntList</code> which uses an
- * array internally.  
+ * array internally.
  */
-public class ArrayIntList
-    implements IntList
-{
-    /**
-     * Constructs a new <code>ArrayIntList</code> with the given initial
-     * capacity.  
-     */
-    public ArrayIntList(int capacity)
-    {
-	this.src = new int[capacity];
-	this.index = 0;
+public class ArrayIntList implements IntList {
+  /**
+   * Constructs a new <code>ArrayIntList</code> with the given initial
+   * capacity.
+   */
+  public ArrayIntList(int capacity) {
+    this.src = new int[capacity];
+    this.index = 0;
+  }
+
+  /**
+   * Constructs a new <code>ArrayIntList</code> using a default
+   * initial capacity.
+   */
+  public ArrayIntList() {
+    this(7);
+  }
+
+  public int add(int value) {
+    if (index == src.length) enlarge();
+
+    src[index] = value;
+    return index++;
+  }
+
+  public void set(int index, int value) {
+    while (index >= src.length) enlarge();
+    src[index] = value;
+  }
+
+  public int at(int index) {
+    return src[index];
+  }
+
+  public int[] toArray() {
+    int[] dst = new int[index];
+    System.arraycopy(src, 0, dst, 0, index);
+    return dst;
+  }
+
+  public IntIterator iterator() {
+    return new IntArrayIterator(src, index);
+  }
+
+  public boolean contains(int value) {
+    for (int i = 0; i < index; i++) if (src[i] == value) return true;
+    return false;
+  }
+
+  public int length() {
+    return index;
+  }
+
+  private void enlarge() {
+    int[] dst = new int[src.length * 2];
+    System.arraycopy(src, 0, dst, 0, src.length);
+    src = dst;
+  }
+
+  public String toString() {
+    StringBuffer b = new StringBuffer();
+    b.append('[');
+    for (int i = 0; i < index; i++) {
+      if (i > 0) b.append(',');
+      b.append(src[i]);
     }
 
-    /**
-     * Constructs a new <code>ArrayIntList</code> using a default
-     * initial capacity.  
-     */
-    public ArrayIntList()
-    {
-	this(7);
-    }
+    b.append(']');
+    return b.toString();
+  }
 
-    public int add(int value)
-    {
-	if (index == src.length)
-	    enlarge();
+  public Object clone() throws CloneNotSupportedException {
+    ArrayIntList clone = (ArrayIntList) super.clone();
+    clone.src = (int[]) this.src.clone();
+    return clone;
+  }
 
-	src[index] = value;
-	return index++;
-    }
-
-    public void set(int index, int value)
-    {
-	while (index >= src.length)
-	    enlarge();
-	src[index] = value;
-    }
-
-    public int at(int index)
-    {
-	return src[index];
-    }
-
-    public int[] toArray()
-    {
-	int[] dst = new int[index];
-	System.arraycopy(src, 0, dst, 0, index);
-	return dst;
-    }
-
-    public IntIterator iterator()
-    {
-	return new IntArrayIterator(src, index);
-    }
-
-    public boolean contains(int value)
-    {
-	for (int i = 0; i < index; i++)
-	    if (src[i] == value)
-		return true;
-	return false;
-    }
-
-    public int length()
-    {
-	return index;
-    }
-
-    private void enlarge()
-    {
-	int[] dst = new int[src.length * 2];
-	System.arraycopy(src, 0, dst, 0, src.length);
-	src = dst;
-    }
-
-    public String toString()
-    {
-	StringBuffer b = new StringBuffer();
-	b.append('[');
-	for (int i = 0; i < index; i++) {
-	    if (i > 0)
-		b.append(',');
-	    b.append(src[i]);
-	}
-
-	b.append(']');
-	return b.toString();
-    }
-
-    public Object clone() throws CloneNotSupportedException
-    {
-	ArrayIntList clone = (ArrayIntList)super.clone();
-	clone.src = (int[])this.src.clone();
-	return clone;
-    }
-
-    private int[] src;
-    private int index;
+  private int[] src;
+  private int index;
 }
-
-
-
-
-
-
-

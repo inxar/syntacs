@@ -5,16 +5,16 @@ java_library(
     srcs = [
         "ContextFreeGrammar.java",
         "ContextFreeSet.java",
-        "Terminal.java",
-        "NonTerminal.java",
+        "Epsilon.java",
+        "GrammarSymbol.java",
         "Item.java",
         "LR1Item.java",
-        "GrammarSymbol.java",
+        "NonTerminal.java",
         "Production.java",
-        "Epsilon.java",
+        "Terminal.java",
     ],
     deps = [
         "//src/org/inxar/syntacs/grammar",
         "//src/org/inxar/syntacs/util",
-    ]
+    ],
 )

@@ -7,12 +7,12 @@
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
  * License, or (at your option) any later version.
-
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
-
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -41,180 +41,160 @@ import com.inxar.syntacs.util.*;
  * <code>PackageClass</code> and handing it off it to a
  * <code>Burner</code> to get burned.
  */
-public class BurnerController
-{
-    private static final boolean DEBUG = true;
+public class BurnerController {
+  private static final boolean DEBUG = true;
 
-    private static boolean verbose =
-	Mission.control().isTrue("verbose");
+  private static boolean verbose = Mission.control().isTrue("verbose");
 
-    public BurnerController()
-    {
-	this.vm = VirtualMachine.getVirtualMachine();
+  public BurnerController() {
+    this.vm = VirtualMachine.getVirtualMachine();
+  }
+
+  public void burn() {
+    if (Mission.control().isFalse("compile")) return;
+
+    init();
+    burnLexical();
+    burnSyntactic();
+    burnGrammar();
+  }
+
+  private void init() {
+    this.srcpath = Mission.control().getString("compile-sourcepath", ".");
+    this.namespace = Mission.control().getString("compile-namespace");
+    this.author = Mission.control().getString("author");
+    this.email = Mission.control().getString("author-email");
+    this.copyright = Mission.control().getString("copyright");
+
+    if (author != null) {
+      if (email != null) author += " - " + email;
+    } else {
+      if (email != null) author = email;
     }
 
-    public void burn()
-    {
-	if (Mission.control().isFalse("compile"))
-	    return;
-
-	init();
-	burnLexical();
-	burnSyntactic();
-	burnGrammar();
+    if (copyright == null) {
+      copyright = "Copyright (C) " + (new Date().getYear() + 1900);
+      if (author != null) copyright += " " + author;
+      else copyright += " unattributed";
     }
+  }
 
-    private void init()
-    {
-	this.srcpath   = Mission.control().getString("compile-sourcepath", ".");
-	this.namespace = Mission.control().getString("compile-namespace");
-	this.author    = Mission.control().getString("author");
-	this.email     = Mission.control().getString("author-email");
-	this.copyright = Mission.control().getString("copyright");
+  private void burnLexical() {
+    if (Mission.control().isFalse("compile-lexical")) return;
 
-	if (author != null) {
-	    if (email != null)
-		author += " - " + email;
-	} else {
-	    if (email != null)
-		author = email;
-	}
+    String[] names = (String[]) Mission.control().get("_dfa-names");
+    MesoArrayDFA[] dfas = (MesoArrayDFA[]) Mission.control().get("_meso-array-dfas");
+    Burner burner = new MesoArrayDFABurner();
 
-	if (copyright == null) {
-	    copyright = "Copyright (C) " + (new Date().getYear() + 1900);
-	    if (author != null)
-		copyright += " " + author;
-	    else
-		copyright += " unattributed";
-	}
+    ClassDeclaration cls;
+    for (int i = 0; i < dfas.length; i++) {
+      cls = newClass(names[i]);
+
+      if (verbose)
+        log()
+            .debug()
+            .write("Burning ")
+            .write(StringTools.getPath(srcpath, namespace))
+            .write(cls.getName())
+            .write(".java")
+            .time();
+
+      burner.burn(dfas[i], cls);
+      emit(cls);
+
+      if (verbose) log().debug().touch();
     }
+  }
 
-    private void burnLexical()
-    {
-	if (Mission.control().isFalse("compile-lexical"))
-	    return;
+  private void burnSyntactic() {
+    if (Mission.control().isFalse("compile-syntactic")) return;
 
-	String[] names = (String[])Mission.control().get("_dfa-names");
-	MesoArrayDFA[] dfas = (MesoArrayDFA[])Mission.control().get("_meso-array-dfas");
-	Burner burner = new MesoArrayDFABurner();
+    String name = Mission.control().getString("_dpa-name");
+    DPA dpa = (DPA) Mission.control().get("_meso-array-dpa");
+    Burner burner = new MesoArrayDPABurner();
+    ClassDeclaration cls = newClass(name);
 
-	ClassDeclaration cls;
-	for (int i = 0; i < dfas.length; i++) {
-	    cls = newClass(names[i]);
+    if (verbose)
+      log()
+          .debug()
+          .write("Burning ")
+          .write(StringTools.getPath(srcpath, namespace))
+          .write(cls.getName())
+          .write(".java")
+          .time();
 
-	    if (verbose)
-		log().debug()
-		    .write("Burning ")
-		    .write(StringTools.getPath(srcpath, namespace))
-		    .write(cls.getName())
-		    .write(".java")
-		    .time();
+    burner.burn(dpa, cls);
+    emit(cls);
 
-	    burner.burn(dfas[i], cls);
-	    emit(cls);
+    if (verbose) log().debug().touch();
+  }
 
-	    if (verbose)
-		log().debug().touch();
-	}
+  private void burnGrammar() {
+    if (Mission.control().isFalse("compile-grammar")) return;
+
+    String name = Mission.control().getString("_grammar-name");
+    LRTranslatorGrammar grammar =
+        (LRTranslatorGrammar) Mission.control().get("_lr-translator-grammar");
+    Burner burner = new LRTranslatorGrammarBurner();
+    ClassDeclaration cls = newClass(name);
+
+    if (verbose)
+      log()
+          .debug()
+          .write("Burning ")
+          .write(StringTools.getPath(srcpath, namespace))
+          .write(cls.getName())
+          .write(".java")
+          .time();
+
+    burner.burn(grammar, cls);
+    emit(cls);
+
+    if (verbose) log().debug().touch();
+  }
+
+  private void emit(ClassDeclaration cls) {
+    try {
+
+      cls.getUnit().encode();
+
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    } finally {
     }
+  }
 
-    private void burnSyntactic()
-    {
-	if (Mission.control().isFalse("compile-syntactic"))
-	    return;
+  private ClassDeclaration newClass(String className) {
+    CompilationUnit unit = vm.newCompilationUnit(srcpath);
+    unit.setNamespace(namespace);
+    unit.setComment(Comment.D, "");
+    DocumentationComment c = (DocumentationComment) unit.getComment();
+    if (copyright != null) c.setText(copyright);
+    else
+      c.setText(
+          "Automatically generated by <a href='http://www.inxar"
+              + ".org/syntacs'>Syntacs Translation Toolkit</a>");
+    if (author != null) c.setAuthor(author);
 
-	String name = Mission.control().getString("_dpa-name");
-	DPA dpa = (DPA)Mission.control().get("_meso-array-dpa");
-	Burner burner = new MesoArrayDPABurner();
-	ClassDeclaration cls = newClass(name);
+    PackageClass cls = unit.newClass(className);
+    cls.setComment(
+        Comment.D,
+        "Automatically generated by <a href='http://www.inxar"
+            + ".org/syntacs'>Syntacs Translation Toolkit</a> on "
+            + new Date());
+    return cls;
+  }
 
-	if (verbose)
-	    log().debug()
-		.write("Burning ")
-		.write(StringTools.getPath(srcpath, namespace))
-		.write(cls.getName())
-		.write(".java")
-		.time();
+  private Log log() {
+    if (log == null) log = Mission.control().log("bct", this); // Burner ConTroller
+    return log;
+  }
 
-	burner.burn(dpa, cls);
-	emit(cls);
-
-	if (verbose)
-	    log().debug().touch();
-    }
-
-    private void burnGrammar()
-    {
-	if (Mission.control().isFalse("compile-grammar"))
-	    return;
-
-	String name = Mission.control().getString("_grammar-name");
-	LRTranslatorGrammar grammar =
-	    (LRTranslatorGrammar)Mission.control().get("_lr-translator-grammar");
-	Burner burner = new LRTranslatorGrammarBurner();
-	ClassDeclaration cls = newClass(name);
-
-	if (verbose)
-	    log().debug()
-		.write("Burning ")
-		.write(StringTools.getPath(srcpath, namespace))
-		.write(cls.getName())
-		.write(".java")
-		.time();
-
-	burner.burn(grammar, cls);
-	emit(cls);
-
-	if (verbose)
-	    log().debug().touch();
-    }
-
-    private void emit(ClassDeclaration cls)
-    {
-	try {
-
-	    cls.getUnit().encode();
-
-	} catch (Exception ex) {
-	    ex.printStackTrace();
-	} finally {
-	}
-    }
-
-    private ClassDeclaration newClass(String className)
-    {
-	CompilationUnit unit = vm.newCompilationUnit(srcpath);
-	unit.setNamespace(namespace);
-	unit.setComment(Comment.D, "");
-	DocumentationComment c = (DocumentationComment)unit.getComment();
-	if (copyright != null)
-	    c.setText(copyright);
-	else
-	    c.setText("Automatically generated by <a href='http://www.inxar" +
-	     ".org/syntacs'>Syntacs Translation Toolkit</a>");
-	if (author != null)
-	    c.setAuthor(author);
-
-	PackageClass cls = unit.newClass(className);
-	cls.setComment
-	    (Comment.D,
-	     "Automatically generated by <a href='http://www.inxar" +
-	     ".org/syntacs'>Syntacs Translation Toolkit</a> on "+new Date());
-	return cls;
-    }
-
-    private Log log()
-    {
-	if (log == null)
-	    log = Mission.control().log("bct", this); // Burner ConTroller
-	return log;
-    }
-
-    private VirtualMachine vm;
-    private String srcpath;
-    private String namespace;
-    private String author;
-    private String email;
-    private String copyright;
-    private Log log;
+  private VirtualMachine vm;
+  private String srcpath;
+  private String namespace;
+  private String author;
+  private String email;
+  private String copyright;
+  private Log log;
 }

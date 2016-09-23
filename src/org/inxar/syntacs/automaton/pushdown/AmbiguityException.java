@@ -7,12 +7,12 @@
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
  * License, or (at your option) any later version.
-
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
-
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -28,40 +28,36 @@ import org.inxar.syntacs.util.AlgorithmException;
  * the algorithm used to compute the state machine to recognize that
  * grammars.
  */
-public class AmbiguityException
-    extends AlgorithmException
-{
-    /**
-     * Type of AmbiguityException to indicate a shift-shift
-     * conflict.
-     */
-    public static final int SHIFT_SHIFT = 1;
+public class AmbiguityException extends AlgorithmException {
+  /**
+   * Type of AmbiguityException to indicate a shift-shift
+   * conflict.
+   */
+  public static final int SHIFT_SHIFT = 1;
 
-    /**
-     * Type of AmbiguityException to indicate a shift-reduce
-     * conflict.
-     */
-    public static final int SHIFT_REDUCE = 2;
+  /**
+   * Type of AmbiguityException to indicate a shift-reduce
+   * conflict.
+   */
+  public static final int SHIFT_REDUCE = 2;
 
-    /**
-     * Type of AmbiguityException to indicate a reduce-reduce
-     * conflict.
-     */
-    public static final int REDUCE_REDUCE = 3;
+  /**
+   * Type of AmbiguityException to indicate a reduce-reduce
+   * conflict.
+   */
+  public static final int REDUCE_REDUCE = 3;
 
-    /**
-     * Constructs a new AmbiguityException with the given message.
-     */
-    public AmbiguityException(int type, String msg)
-    {
-	super(msg);
-	this.type = type;
-    }
+  /**
+   * Constructs a new AmbiguityException with the given message.
+   */
+  public AmbiguityException(int type, String msg) {
+    super(msg);
+    this.type = type;
+  }
 
-    public int getType()
-    {
-	return type;
-    }
+  public int getType() {
+    return type;
+  }
 
-    private int type;
+  private int type;
 }

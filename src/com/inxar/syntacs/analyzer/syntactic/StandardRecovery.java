@@ -7,12 +7,12 @@
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
  * License, or (at your option) any later version.
-
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
-
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -29,77 +29,65 @@ import org.inxar.syntacs.analyzer.syntactic.Recovery;
 /**
  * Concrete implementation of <code>Recovery</code>.
  */
-public class StandardRecovery implements Recovery
-{
-    private static final boolean DEBUG = true;
+public class StandardRecovery implements Recovery {
+  private static final boolean DEBUG = true;
 
-    /*
-     * Constructs a new parser.
-     */
-    public StandardRecovery()
-    {
-	this.list = new LinkedList();
-	this.index = 0;
+  /*
+   * Constructs a new parser.
+   */
+  public StandardRecovery() {
+    this.list = new LinkedList();
+    this.index = 0;
+  }
+
+  public boolean hasNext() {
+    return index < list.size();
+  }
+
+  public Correction next() {
+    return (Correction) list.get(index++);
+  }
+
+  public void add(int type, Object val) {
+    list.add(new StandardCorrection(type, val));
+  }
+
+  public void add(int type) {
+    list.add(new StandardCorrection(type));
+  }
+
+  private List list;
+  private int index;
+
+  private static class StandardCorrection implements Correction {
+    StandardCorrection(int type) {
+      this.type = type;
     }
 
-    public boolean hasNext()
-    {
-	return index < list.size();
+    StandardCorrection(int type, Object val) {
+      this.type = type;
+      this.val = val;
     }
 
-    public Correction next()
-    {
-	return (Correction)list.get(index++);
+    public int getType() {
+      return type;
     }
 
-    public void add(int type, Object val)
-    {
-	list.add(new StandardCorrection(type, val));
+    public Object getValue() {
+      return val;
     }
 
-    public void add(int type)
-    {
-	list.add(new StandardCorrection(type));
+    public String toString() {
+      switch (type) {
+        case Correction.WAIT:
+          return "WAIT";
+        case Correction.TUMBLE:
+          return "TUMBLE";
+      }
+      return "UNKNOWN";
     }
 
-    private List list;
-    private int index;
-
-    private static class StandardCorrection implements Correction
-    {
-	StandardCorrection(int type)
-	{
-	    this.type = type;
-	}
-
-	StandardCorrection(int type, Object val)
-	{
-	    this.type = type;
-	    this.val = val;
-	}
-
-	public int getType()
-	{
-	    return type;
-	}
-
-	public Object getValue()
-	{
-	    return val;
-	}
-
-	public String toString()
-	{
-	    switch (type) {
-	    case Correction.WAIT:
-		return "WAIT";
-	    case Correction.TUMBLE:
-		return "TUMBLE";
-	    }
-	    return "UNKNOWN";
-	}
-
-	private int type;
-	private Object val;
-    }
+    private int type;
+    private Object val;
+  }
 }

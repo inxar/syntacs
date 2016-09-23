@@ -8,11 +8,11 @@ java_library(
         "BinaryIntFunction.java",
         "IntArray.java",
         "IntFunction.java",
-        "IntList.java",
-        "IntSet.java",
-        "IntRelation.java",
-        "IntStack.java",
         "IntIterator.java",
+        "IntList.java",
+        "IntRelation.java",
+        "IntSet.java",
+        "IntStack.java",
         "Reiterator.java",
     ],
 )
@@ -28,9 +28,9 @@ java_library(
 java_library(
     name = "session",
     srcs = [
+        "Channel.java",
         "Log.java",
         "Session.java",
-        "Channel.java",
     ],
 )
 

@@ -7,12 +7,12 @@
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
  * License, or (at your option) any later version.
-
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
-
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -95,130 +95,104 @@ import com.inxar.syntacs.util.*;
  * <code>ContextFreeSet</code> were developed at different times; they
  * have not yet been completely unified.
  */
-public class ProxyLRTranslatorGrammar
-    implements LRTranslatorGrammar
-{
-    public ProxyLRTranslatorGrammar(LRTranslatorGrammar g, ContextFreeSet c)
-    {
-	this.g = g;
-	this.c = c;
-    }
+public class ProxyLRTranslatorGrammar implements LRTranslatorGrammar {
+  public ProxyLRTranslatorGrammar(LRTranslatorGrammar g, ContextFreeSet c) {
+    this.g = g;
+    this.c = c;
+  }
 
-    public String getName()
-    {
-	return g.getName();
-    }
+  public String getName() {
+    return g.getName();
+  }
 
-    public String getVersion()
-    {
-	return g.getVersion();
-    }
+  public String getVersion() {
+    return g.getVersion();
+  }
 
-    public Translator newTranslator()
-    {
-	return g.newTranslator();
-    }
+  public Translator newTranslator() {
+    return g.newTranslator();
+  }
 
-    public Translator newTranslator(Properties p)
-    {
-	return g.newTranslator(p);
-    }
+  public Translator newTranslator(Properties p) {
+    return g.newTranslator(p);
+  }
 
-    public IntArray getContexts()
-    {
-	return g.getContexts();
-    }
+  public IntArray getContexts() {
+    return g.getContexts();
+  }
 
-    public String getContext(int ID)
-    {
-	return g.getContext(ID);
-    }
+  public String getContext(int ID) {
+    return g.getContext(ID);
+  }
 
-    public int getStartContext()
-    {
-	return g.getStartContext();
-    }
+  public int getStartContext() {
+    return g.getStartContext();
+  }
 
-    public int getContextAction(int contextID, int symbolID)
-    {
-	return g.getContextAction(contextID, symbolID);
-    }
+  public int getContextAction(int contextID, int symbolID) {
+    return g.getContextAction(contextID, symbolID);
+  }
 
-    public int getContextRegister(int contextID, int symbolID)
-    {
-	return g.getContextRegister(contextID, symbolID);
-    }
+  public int getContextRegister(int contextID, int symbolID) {
+    return g.getContextRegister(contextID, symbolID);
+  }
 
-    public IntArray getContextTerminals(int ID)
-    {
-	return g.getContextTerminals(ID);
-    }
+  public IntArray getContextTerminals(int ID) {
+    return g.getContextTerminals(ID);
+  }
 
-    public IntArray getTerminals()
-    {
-	return g.getTerminals();
-    }
+  public IntArray getTerminals() {
+    return g.getTerminals();
+  }
 
-    public String getTerminal(int ID)
-    {
-	return g.getTerminal(ID);
-    }
+  public String getTerminal(int ID) {
+    return g.getTerminal(ID);
+  }
 
-    public Object getTerminalRegexp(int ID)
-    {
-	return g.getTerminalRegexp(ID);
-    }
+  public Object getTerminalRegexp(int ID) {
+    return g.getTerminalRegexp(ID);
+  }
 
-    public IntArray getTerminalContexts(int ID)
-    {
-	return g.getTerminalContexts(ID);
-    }
+  public IntArray getTerminalContexts(int ID) {
+    return g.getTerminalContexts(ID);
+  }
 
-    public IntArray getNonTerminals()
-    {
-	return g.getNonTerminals();
-    }
+  public IntArray getNonTerminals() {
+    return g.getNonTerminals();
+  }
 
-    public String getNonTerminal(int ID)
-    {
-	return g.getNonTerminal(ID);
-    }
+  public String getNonTerminal(int ID) {
+    return g.getNonTerminal(ID);
+  }
 
-    public int getGoalNonTerminal()
-    {
-	return g.getGoalNonTerminal();
-    }
+  public int getGoalNonTerminal() {
+    return g.getGoalNonTerminal();
+  }
 
-    public IntArray getProductions()
-    {
-	return g.getProductions();
-    }
+  public IntArray getProductions() {
+    return g.getProductions();
+  }
 
-    public String getProduction(int ID)
-    {
-	return g.getProduction(ID);
-    }
+  public String getProduction(int ID) {
+    return g.getProduction(ID);
+  }
 
-    public int getProductionNonTerminal(int ID)
-    {
-	return c.getProduction(ID).getNonTerminal().getID();
-    }
+  public int getProductionNonTerminal(int ID) {
+    return c.getProduction(ID).getNonTerminal().getID();
+  }
 
-    public IntArray getProductionSymbols(int ID)
-    {
-	return g.getProductionSymbols(ID);
-    }
+  public IntArray getProductionSymbols(int ID) {
+    return g.getProductionSymbols(ID);
+  }
 
-    public int getProductionLength(int ID)
-    {
-	return c.getProduction(ID).length();
-    }
+  public int getProductionLength(int ID) {
+    return c.getProduction(ID).length();
+  }
 
-    public String toString()
-    {
-	return g.toString();
-    }
+  public String toString() {
+    return g.toString();
+  }
 
-    private ContextFreeSet c;
-    private LRTranslatorGrammar g;
+  private ContextFreeSet c;
+  private LRTranslatorGrammar g;
 }

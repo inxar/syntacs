@@ -7,12 +7,12 @@
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
  * License, or (at your option) any later version.
-
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
-
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -27,60 +27,52 @@ import com.inxar.syntacs.util.Tree;
 /**
  * General concrete implementation of <code>Symbol</code>.
  */
-public class ObjectSymbol extends AbstractSymbol
-{
-    /**
-     * Constructs the <code>ObjectSymbol</code> with the given
-     * <code>Object</code> value.
-     */
-    public ObjectSymbol(Object value)
-    {
-	super(Token.ERROR);
-	this.value = value;
-    }
+public class ObjectSymbol extends AbstractSymbol {
+  /**
+   * Constructs the <code>ObjectSymbol</code> with the given
+   * <code>Object</code> value.
+   */
+  public ObjectSymbol(Object value) {
+    super(Token.ERROR);
+    this.value = value;
+  }
 
-    /**
-     * Constructs the <code>ObjectSymbol</code> with the given
-     * type and <code>Object</code> value.
-     */
-    public ObjectSymbol(int type, Object value)
-    {
-	super(type);
-	this.value = value;
-    }
+  /**
+   * Constructs the <code>ObjectSymbol</code> with the given
+   * type and <code>Object</code> value.
+   */
+  public ObjectSymbol(int type, Object value) {
+    super(type);
+    this.value = value;
+  }
 
-    public String toString()
-    {
-	return "("+type+", `"+value+"')";
-    }
+  public String toString() {
+    return "(" + type + ", `" + value + "')";
+  }
 
-    public void toTree(Tree t)
-    {
-	t.add(value.toString());
-    }
+  public void toTree(Tree t) {
+    t.add(value.toString());
+  }
 
-    public boolean equals(Object other)
-    {
-	// obviously true
-	if (this == other)
-	    return true;
+  public boolean equals(Object other) {
+    // obviously true
+    if (this == other) return true;
 
-	// obviously false
-	if (other == null || !(other instanceof ObjectSymbol))
-	    return false;
+    // obviously false
+    if (other == null || !(other instanceof ObjectSymbol)) return false;
 
-	// ok to narrow
-	ObjectSymbol that = (ObjectSymbol)other;
+    // ok to narrow
+    ObjectSymbol that = (ObjectSymbol) other;
 
-	// compare fields
-	return this.type == that.type && this.value == that.value;
-    }
+    // compare fields
+    return this.type == that.type && this.value == that.value;
+  }
 
-    /**
-     * The value of the symbol <code>Symbol</code> represented as an
-     * <code>Object</code>. This might be a <code>String</code> for
-     * identifier tokens or an <code>Integer</code> object for integer
-     * literals.
-     */
-    public Object value;
+  /**
+   * The value of the symbol <code>Symbol</code> represented as an
+   * <code>Object</code>. This might be a <code>String</code> for
+   * identifier tokens or an <code>Integer</code> object for integer
+   * literals.
+   */
+  public Object value;
 }

@@ -8,13 +8,13 @@ java_library(
         "ArrayIntList.java",
         "ArrayIntStack.java",
         "BitSetIntSet.java",
-        "ImmutableIntSet.java",
-        "ListIntSet.java",
-        "IntArrayIterator.java",
-        "SingletonIntSet.java",
         "EmptyIntSet.java",
-        "HashIntFunction.java",
         "HashBitSetIntRelation.java",
+        "HashIntFunction.java",
+        "ImmutableIntSet.java",
+        "IntArrayIterator.java",
+        "ListIntSet.java",
+        "SingletonIntSet.java",
         "TreeListIntRelation.java",
     ],
     deps = [
@@ -42,9 +42,9 @@ java_library(
     deps = [
         "buffer",
         "session",
-        "//src/org/inxar/syntacs/util:session",
-        "//src/org/inxar/syntacs/util",
         "//src/com/inxar/syntacs/util",
+        "//src/org/inxar/syntacs/util",
+        "//src/org/inxar/syntacs/util:session",
     ],
 )
 

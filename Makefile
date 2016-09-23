@@ -1,3 +1,13 @@
+fmt:
+	buildifier WORKSPACE
+	find . -name BUILD | xargs buildifier
+	find src -name '*.java' | xargs java -jar ~/bin/google-java-format-0.1-alpha.jar --replace
+
+#================================================================
+# Everything below here is pretty old. I'm not using these
+# Targets anymore but the jdk1.3 and netscape reference are
+# pretty sweet.
+#================================================================
 
 #================================================================
 # SYSTEM SETTINGS
@@ -30,10 +40,10 @@ CVS         = /usr/bin/cvs
 FIND        = /usr/bin/find
 
 # Flags
-SYS_JCFLAGS      = 
-SYS_JIFLAGS      = 
-SYS_JAVADOCFLAGS = 
-SYS_JARFLAGS     = 
+SYS_JCFLAGS      =
+SYS_JIFLAGS      =
+SYS_JAVADOCFLAGS =
+SYS_JARFLAGS     =
 
 # Java classpath
 SYS_CLASSPATH = ${JAVADIR}/jre/lib/rt.jar
@@ -104,7 +114,7 @@ P_JAVADOCFLAGS = \
 	-overview ${P_SRCDIR}/overview.html \
 	-windowtitle "API Documentation for ${P_VENDOR}:${P_NAME} version ${P_VERSION}" \
 
-P_JARFLAGS = 
+P_JARFLAGS =
 
 #================================================================
 # MISC TARGETS
@@ -124,10 +134,10 @@ realclean: check apiclean classesclean tmpclean libjarclean srcjarclean buildcle
 backupclean: check
 	${FIND} ${P_ROOTDIR} -name '*~' -exec ${RM} {} \;
 
-tmpdir: check 
+tmpdir: check
 	${MKDIR} -p ${P_TMPDIR}
 
-tmpclean: check 
+tmpclean: check
 	${RM} -rf ${P_TMPDIR}
 
 #================================================================
@@ -187,7 +197,7 @@ libdir: check
 # LIBJAR TARGETS
 # ================================================================
 
-libjar: check libdir 
+libjar: check libdir
 	cd ${P_CLASSESDIR} \
 		&& ${JAR} cfm ${P_NAME}.jar \
 		${P_SRCDIR}/MANIFEST.MF ${SYS_JARFLAGS} ${P_JARFLAGS} .
@@ -201,7 +211,7 @@ libjarclean: check
 # SRCJAR TARGETS
 # ================================================================
 
-srcjar: check 
+srcjar: check
 	cd ${P_ROOTDIR} && ${JAR} cfm src.jar ${P_SRCDIR}/MANIFEST.MF src
 
 srcjarclean: check
@@ -233,23 +243,23 @@ _dist: check distdir
 
 zipdist: check tmpdir dist _zipdist
 
-_zipdist: check 
-	cd ${P_BUILDDIR} && ${ZIP} -r ${P_NAME}-${P_VERSION}.zip . 
+_zipdist: check
+	cd ${P_BUILDDIR} && ${ZIP} -r ${P_NAME}-${P_VERSION}.zip .
 	${MV} ${P_BUILDDIR}/${P_NAME}-${P_VERSION}.zip ${P_TMPDIR}
 
 tardist: check tmpdir dist _tardist
 
-_tardist: check 
+_tardist: check
 	${TAR} cf ${P_TMPDIR}/${P_NAME}-${P_VERSION}.tar -C ${P_BUILDDIR} ${P_VENDOR}
 
 gzipdist: check tardist _gzipdist
 
-_gzipdist: check 
+_gzipdist: check
 	${GZIP} -f ${P_TMPDIR}/${P_NAME}-${P_VERSION}.tar
 
 bzipdist: check tardist _bzipdist
 
-_bzipdist: check 
+_bzipdist: check
 	${BZIP2} -f ${P_TMPDIR}/${P_NAME}-${P_VERSION}.tar
 
 # ================================================================
@@ -384,6 +394,3 @@ regexp_i: check
 
 etf_i: check
 	${P_BINDIR}/stti com.inxar.syntacs.translator.test.EtfGrammar 'id+id*id+id*id'
-
-
-

@@ -9,13 +9,13 @@ java_library(
     ],
     deps = [
         "action",
-        "//src/org/inxar/syntacs/automaton/pushdown",
-        "//src/org/inxar/syntacs/grammar/context_free",
-        "//src/org/inxar/syntacs/translator/lr:translator",
-        "//src/org/inxar/syntacs/translator/lr:grammar",
-        "//src/org/inxar/syntacs/util",
         "//src/com/inxar/syntacs/util",
         "//src/com/inxar/syntacs/util:session",
+        "//src/org/inxar/syntacs/automaton/pushdown",
+        "//src/org/inxar/syntacs/grammar/context_free",
+        "//src/org/inxar/syntacs/translator/lr:grammar",
+        "//src/org/inxar/syntacs/translator/lr:translator",
+        "//src/org/inxar/syntacs/util",
         "//src/org/inxar/syntacs/util:session",
         "//src/org/inxar/syntacs/util:viz",
     ],
@@ -38,10 +38,10 @@ java_library(
     ],
     deps = [
         "pushdown",
-        "//src/org/inxar/syntacs/automaton/pushdown",
         "//src/com/inxar/syntacs/util",
-        "//src/org/inxar/syntacs/util:session",
         "//src/com/inxar/syntacs/util:session",
+        "//src/org/inxar/syntacs/automaton/pushdown",
+        "//src/org/inxar/syntacs/util:session",
     ],
 )
 
@@ -52,14 +52,13 @@ java_library(
     ],
     deps = [
         "//lib:jenesis",
-        "//src/org/inxar/syntacs/util:burner",
-        "//src/org/inxar/syntacs/util:session",
-
         "//src/com/inxar/syntacs/automaton/pushdown",
         "//src/com/inxar/syntacs/util:burntools",
-        "//src/com/inxar/syntacs/util:string",
         "//src/com/inxar/syntacs/util:pickler",
         "//src/com/inxar/syntacs/util:session",
+        "//src/com/inxar/syntacs/util:string",
+        "//src/org/inxar/syntacs/util:burner",
+        "//src/org/inxar/syntacs/util:session",
     ],
 )
 
@@ -70,37 +69,35 @@ java_library(
         "SCCTransitiveClosure.java",
     ],
     deps = [
-        "//src/org/inxar/syntacs/grammar",
-        "//src/org/inxar/syntacs/grammar/context_free",
-        "//src/org/inxar/syntacs/automaton/pushdown",
-        "//src/org/inxar/syntacs/translator/lr:grammar",
-        "//src/org/inxar/syntacs/util",
-        "//src/org/inxar/syntacs/util:viz",
-        "//src/org/inxar/syntacs/util:session",
-
         "//src/com/inxar/syntacs/automaton/pushdown",
         "//src/com/inxar/syntacs/util",
-        "//src/com/inxar/syntacs/util:string",
         "//src/com/inxar/syntacs/util:session",
+        "//src/com/inxar/syntacs/util:string",
+        "//src/org/inxar/syntacs/automaton/pushdown",
+        "//src/org/inxar/syntacs/grammar",
+        "//src/org/inxar/syntacs/grammar/context_free",
+        "//src/org/inxar/syntacs/translator/lr:grammar",
+        "//src/org/inxar/syntacs/util",
+        "//src/org/inxar/syntacs/util:session",
+        "//src/org/inxar/syntacs/util:viz",
     ],
 )
 
 java_library(
     name = "lr1",
     srcs = [
-        "LRConstructor.java",
         "LR1Constructor.java",
+        "LRConstructor.java",
     ],
     deps = [
-        "//src/org/inxar/syntacs/grammar",
-        "//src/org/inxar/syntacs/grammar/context_free",
-        "//src/org/inxar/syntacs/automaton/pushdown",
-        "//src/org/inxar/syntacs/util",
-        "//src/org/inxar/syntacs/util:viz",
-        "//src/org/inxar/syntacs/util:session",
-
         "//src/com/inxar/syntacs/automaton/pushdown",
         "//src/com/inxar/syntacs/util",
         "//src/com/inxar/syntacs/util:session",
+        "//src/org/inxar/syntacs/automaton/pushdown",
+        "//src/org/inxar/syntacs/grammar",
+        "//src/org/inxar/syntacs/grammar/context_free",
+        "//src/org/inxar/syntacs/util",
+        "//src/org/inxar/syntacs/util:session",
+        "//src/org/inxar/syntacs/util:viz",
     ],
 )

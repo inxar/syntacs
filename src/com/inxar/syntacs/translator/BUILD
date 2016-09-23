@@ -6,10 +6,10 @@ java_library(
         "StandardAuditor.java",
     ],
     deps = [
+        "//src/com/inxar/syntacs/util:session",
+        "//src/com/inxar/syntacs/util:string",
         "//src/org/inxar/syntacs/analyzer",
         "//src/org/inxar/syntacs/translator",
-        "//src/com/inxar/syntacs/util:string",
         "//src/org/inxar/syntacs/util:session",
-        "//src/com/inxar/syntacs/util:session",
     ],
 )
