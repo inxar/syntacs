@@ -283,6 +283,9 @@ lexerman: check
 	cd ${P_DOCSDIR}/lexerman && ${DOT2PNG} lexer.dot
 	cd ${P_DOCSDIR}/lexerman && ${TEXI2HTML} -monolithic lexerman.texinfo
 
+lexertxt: check
+	cd ${P_DOCSDIR}/lexerman && ${TEXI2HTML} --plaintext lexerman.texinfo
+
 lexermanbrowse: check
 	${NETSCAPE} -remote "openURL(file:`cd ${P_DOCSDIR}/lexerman; pwd`/lexerman.html)"
 
