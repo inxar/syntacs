@@ -57,19 +57,25 @@ public class BitSetIntSet implements IntSet {
     return vals.length() == 0;
   }
 
-  public void put(int value) {
+  public IntSet put(int value) {
     if (!bits.get(value)) {
       bits.set(value);
       hasChanged = true;
     }
+    return this;
   }
 
-  public void put(IntIterator iter) {
-    while (iter.hasNext()) put(iter.next());
+  public IntSet put(IntIterator iter) {
+    while (iter.hasNext()) {
+      put(iter.next());
+    }
+    return this;
   }
 
-  public void union(IntSet other) {
-    if (other == this || other == null) return;
+  public IntSet union(IntSet other) {
+    if (other == this || other == null) {
+      return this;
+    }
 
     if (DEBUG) trace(this.toString() + " | " + other.toString());
 
@@ -82,6 +88,7 @@ public class BitSetIntSet implements IntSet {
     } else {
       put(other.iterator());
     }
+    return this;
   }
 
   public IntIterator iterator() {

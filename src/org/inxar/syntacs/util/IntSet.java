@@ -25,10 +25,11 @@ package org.inxar.syntacs.util;
  * are generally expected to be <code>Cloneable</code>.
  */
 public interface IntSet extends Cloneable {
+
   /**
    * Puts the given <code>int</code> value in the <code>IntSet</code>.
    */
-  void put(int value);
+  IntSet put(int value);
 
   /**
    * Returns an <code>IntIterator</code> view of the members in the
@@ -40,7 +41,7 @@ public interface IntSet extends Cloneable {
    * All the members of the given other <code>IntSet</code> are added
    * to this <code>IntSet</code>.
    */
-  void union(IntSet other);
+  IntSet union(IntSet other);
 
   /**
    * Returns <code>true</code> if there are no members in this

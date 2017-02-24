@@ -13,3 +13,10 @@ java_import(
         "jenesis.jar",
     ],
 )
+
+java_library(
+    name = "junit4",
+    exports = [
+        "@junit_junit_4//jar",
+    ],
+)

@@ -94,6 +94,7 @@ java_library(
     name = "burntools",
     srcs = [
         "BurnTools.java",
+        "Jar.java",
     ],
     deps = [
         "string",

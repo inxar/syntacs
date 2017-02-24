@@ -31,6 +31,11 @@ public interface IntRelation {
   IntSet keys();
 
   /**
+   * Returns the size of the key set.
+   */
+  int size();
+
+  /**
    * Returns the set under the given key.
    */
   IntSet get(int key);

@@ -49,7 +49,7 @@ public class HashBitSetIntRelation implements IntRelation {
 
   public IntSet get(int key) {
     // Changed semantics here!  I Used to return the empty set,
-    // but I don't know how such sense that makes.
+    // but I don't know how much sense that makes.
     return keys.contains(key) ? (IntSet) hash.get(new Integer(key)) : null;
   }
 
@@ -95,6 +95,10 @@ public class HashBitSetIntRelation implements IntRelation {
       // singleton.
       set.put(value);
     }
+  }
+
+  public int size() {
+    return hash.size();
   }
 
   public IntSet keys() {

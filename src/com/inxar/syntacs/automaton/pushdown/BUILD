@@ -63,12 +63,23 @@ java_library(
 )
 
 java_library(
-    name = "lalr1",
+    name = "scc",
     srcs = [
-        "LALR1Constructor.java",
         "SCCTransitiveClosure.java",
     ],
     deps = [
+        "//src/com/inxar/syntacs/util",
+        "//src/org/inxar/syntacs/util",
+    ],
+)
+
+java_library(
+    name = "lalr1",
+    srcs = [
+        "LALR1Constructor.java",
+    ],
+    deps = [
+        "scc",
         "//src/com/inxar/syntacs/automaton/pushdown",
         "//src/com/inxar/syntacs/util",
         "//src/com/inxar/syntacs/util:session",
@@ -99,5 +110,21 @@ java_library(
         "//src/org/inxar/syntacs/util",
         "//src/org/inxar/syntacs/util:session",
         "//src/org/inxar/syntacs/util:viz",
+    ],
+)
+
+
+java_test(
+    name = "scc-test",
+    size = "small",
+    srcs = [
+        "SCCTransitiveClosureTest.java",
+    ],
+    test_class = "com.inxar.syntacs.automaton.pushdown.SCCTransitiveClosureTest",
+    deps = [
+        ":scc",
+        "//lib:junit4",
+        "//src/org/inxar/syntacs/util",
+        "//src/com/inxar/syntacs/util",
     ],
 )

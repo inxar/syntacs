@@ -50,21 +50,25 @@ public class ListIntSet implements IntSet {
     return root == null;
   }
 
-  public void put(int val) {
+  public IntSet put(int val) {
     if (!contains(val)) {
       root = new Link(val, root);
       hash += val * size;
       size++;
     }
+    return this;
   }
 
   public IntIterator iterator() {
     return new ListIterator(root);
   }
 
-  public void union(IntSet other) {
+  public IntSet union(IntSet other) {
     IntIterator iterator = other.iterator();
-    while (iterator.hasNext()) put(iterator.next());
+    while (iterator.hasNext()) {
+      put(iterator.next());
+    }
+    return this;
   }
 
   public int size() {

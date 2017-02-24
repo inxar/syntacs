@@ -39,6 +39,10 @@ public class TreeListIntRelation implements IntRelation {
     return new ImmutableIntSet(keys);
   }
 
+  public int size() {
+    return keys.size();
+  }
+
   public boolean isEmpty() {
     return keys.size() == 0;
   }

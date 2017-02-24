@@ -20,7 +20,11 @@
  */
 package com.inxar.syntacs.translator.lr;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
+import java.util.jar.JarFile;
+
 import org.inxar.jenesis.*;
 
 import org.inxar.syntacs.automaton.pushdown.DPA;
@@ -31,7 +35,9 @@ import org.inxar.syntacs.translator.lr.LRTranslatorGrammar;
 import com.inxar.syntacs.automaton.finite.MesoArrayDFA;
 import com.inxar.syntacs.automaton.finite.MesoArrayDFABurner;
 import com.inxar.syntacs.automaton.pushdown.MesoArrayDPABurner;
-import com.inxar.syntacs.util.*;
+import com.inxar.syntacs.util.Jar;
+import com.inxar.syntacs.util.Mission;
+import com.inxar.syntacs.util.StringTools;
 
 /**
  * The <code>BurnerController</code> is centrally responsible for
@@ -57,14 +63,18 @@ public class BurnerController {
     burnLexical();
     burnSyntactic();
     burnGrammar();
+    burnSrcjar();
   }
 
   private void init() {
+    this.srcjar = Mission.control().getString("compile-srcjar");
     this.srcpath = Mission.control().getString("compile-sourcepath", ".");
     this.namespace = Mission.control().getString("compile-namespace");
     this.author = Mission.control().getString("author");
     this.email = Mission.control().getString("author-email");
     this.copyright = Mission.control().getString("copyright");
+
+    System.out.println("srcpath: " + srcpath);
 
     if (author != null) {
       if (email != null) author += " - " + email;
@@ -153,6 +163,34 @@ public class BurnerController {
     if (verbose) log().debug().touch();
   }
 
+  private void burnSrcjar() {
+    if (srcjar == null) {
+      return;
+    }
+    try {
+      File srcdir = new File(srcpath);
+      File jarfile = new File(srcjar);
+      srcdir.mkdirs();
+      if (!srcdir.isDirectory()) {
+        throw new IllegalArgumentException("srcdir is not a directory: " + srcdir.getAbsolutePath());
+      }
+      Jar jar = new Jar(jarfile, true /* recursive */);
+      for (File d : srcdir.listFiles()) {
+        jar.add(srcpath, d);
+      }
+      jar.close();
+
+      if (verbose)
+        log()
+          .debug()
+          .write("Wrote jar ")
+          .write(jarfile)
+          .time();
+    } catch (IOException ioex) {
+      throw new RuntimeException(ioex);
+    }
+  }
+
   private void emit(ClassDeclaration cls) {
     try {
 
@@ -191,6 +229,7 @@ public class BurnerController {
   }
 
   private VirtualMachine vm;
+  private String srcjar;
   private String srcpath;
   private String namespace;
   private String author;
