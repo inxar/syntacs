@@ -233,7 +233,7 @@ public class Interpret {
 
     String key = keyval.substring(0, eq).trim();
     String val = keyval.substring(eq + 1).trim();
-    //System.out.println("key = "+key+", val = "+val);
+    //System.out.println("splitopt: key = "+key+", val = "+val);
     p.put(key, val);
   }
 

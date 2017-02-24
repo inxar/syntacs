@@ -55,11 +55,11 @@ public class ImmutableIntSet implements IntSet {
     return set.isEmpty();
   }
 
-  public void put(int id) {
+  public IntSet put(int id) {
     throw new UnsupportedOperationException("This set is immutable");
   }
 
-  public void put(IntIterator iter) {
+  public IntSet put(IntIterator iter) {
     throw new UnsupportedOperationException("This set is immutable");
   }
 
@@ -67,7 +67,7 @@ public class ImmutableIntSet implements IntSet {
     return set.iterator();
   }
 
-  public void union(IntSet other) {
+  public IntSet union(IntSet other) {
     throw new UnsupportedOperationException("This set is immutable");
   }
 

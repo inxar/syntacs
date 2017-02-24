@@ -27,6 +27,11 @@ import org.inxar.syntacs.util.*;
  * single element.
  */
 public class SingletonIntSet implements IntSet, IntIterator, IntArray {
+
+  public static IntSet of(int val) {
+    return new SingletonIntSet(val);
+  }
+
   /**
    * Constructs the <code>SingletonIntSet</code> on the given singleton
    * value.  This value cannot change over the life of the
@@ -44,11 +49,11 @@ public class SingletonIntSet implements IntSet, IntIterator, IntArray {
     return false;
   }
 
-  public void put(int val) {
+  public IntSet put(int val) {
     throw new RuntimeException("Uncle!");
   }
 
-  public void put(IntIterator iter) {
+  public IntSet put(IntIterator iter) {
     throw new RuntimeException("Uncle!");
   }
 
@@ -57,7 +62,7 @@ public class SingletonIntSet implements IntSet, IntIterator, IntArray {
     return this;
   }
 
-  public void union(IntSet other) {
+  public IntSet union(IntSet other) {
     throw new RuntimeException("Uncle!");
   }
 

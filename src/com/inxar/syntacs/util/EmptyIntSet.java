@@ -44,11 +44,11 @@ public class EmptyIntSet implements IntSet, IntIterator, IntArray {
     return true;
   }
 
-  public void put(int id) {
+  public IntSet put(int id) {
     throw new ArrayIndexOutOfBoundsException("IntSet is empty");
   }
 
-  public void put(IntIterator iter) {
+  public IntSet put(IntIterator iter) {
     throw new ArrayIndexOutOfBoundsException("IntSet is empty");
   }
 
@@ -56,8 +56,13 @@ public class EmptyIntSet implements IntSet, IntIterator, IntArray {
     return this;
   }
 
-  public void union(IntSet other) {
-    throw new ArrayIndexOutOfBoundsException("IntSet is empty");
+  public IntSet union(IntSet other) {
+    //throw new ArrayIndexOutOfBoundsException("IntSet is empty");
+    try {
+      return (IntSet)other.clone();
+    } catch (CloneNotSupportedException cnex) {
+      throw new RuntimeException("Does not implement clone(): " + other.getClass().getName());
+    }
   }
 
   public int size() {

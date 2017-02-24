@@ -21,16 +21,17 @@
 package com.inxar.syntacs;
 
 import java.io.File;
+import java.util.Enumeration;
 import java.util.Properties;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.inxar.syntacs.translator.Translator;
 import org.inxar.syntacs.translator.TranslatorGrammar;
 import org.inxar.syntacs.util.Log;
-
 import com.inxar.syntacs.translator.syntacs.SyntacsGrammar;
 import com.inxar.syntacs.translator.lr.XML2LRTranslatorGrammarTransformer;
 import com.inxar.syntacs.util.Mission;
+import org.inxar.syntacs.util.Session;
 
 /**
  * <code>Compile</code> is the command-line interface to compile
@@ -62,12 +63,20 @@ public class Compile {
 
     Properties p = new Properties();
     //p.setProperty("run-parser-debug", "true");
-
     int idx = parseopts(argv, p);
     if (idx != argv.length - 1)
       usage("The last argument must be the name of the " + "grammar filename.");
 
     String infile = argv[idx];
+
+    log().debug().write("Properties: " + p);
+    Session session = Mission.control();
+    Enumeration e = p.propertyNames();
+    while (e.hasMoreElements()) {
+      String key = (String)e.nextElement();
+      Object val = p.get(key);
+      session.put(key, val);
+    }
 
     verbose = Mission.control().isTrue("verbose");
 

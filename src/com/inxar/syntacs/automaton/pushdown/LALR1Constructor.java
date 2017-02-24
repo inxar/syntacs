@@ -622,8 +622,9 @@ public class LALR1Constructor implements DPAConstructor, Vizualizable {
 
           // add and transition if the nonterminal is
           // nullable
-          if (nt_link.transition.label.isNullable()) /* ; fixed! */
+          if (nt_link.transition.label.isNullable()) {/* ; fixed! */
             reads.put(nt_transition.ID, nt_link.transition.ID);
+          }
           // advance
           nt_link = nt_link.next;
         }
@@ -1089,6 +1090,10 @@ public class LALR1Constructor implements DPAConstructor, Vizualizable {
   private static abstract class VectorSetFunction implements IntRelation {
     VectorSetFunction(Vector vect) {
       this.vect = vect;
+    }
+
+    public int size() {
+      return vect.size();
     }
 
     public void put(int key, int value) {

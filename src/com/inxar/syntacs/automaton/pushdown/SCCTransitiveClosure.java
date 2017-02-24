@@ -30,6 +30,7 @@ import org.inxar.syntacs.util.Algorithm;
 import org.inxar.syntacs.util.AlgorithmException;
 
 import com.inxar.syntacs.util.ArrayIntStack;
+import com.inxar.syntacs.util.EmptyIntSet;
 import com.inxar.syntacs.util.HashIntFunction;
 
 /**
@@ -43,7 +44,7 @@ import com.inxar.syntacs.util.HashIntFunction;
  * p.382</code>.
  */
 public class SCCTransitiveClosure implements Algorithm {
-  private static final boolean DEBUG = false;
+  private static final boolean DEBUG = true;
 
   /**
    * Constructs the <code>SCCTransitiveClosure</code> on the given
@@ -73,6 +74,10 @@ public class SCCTransitiveClosure implements Algorithm {
     if (DEBUG) this.tab = -1;
   }
 
+  public IntFunction getMap() {
+    return map;
+  }
+
   public void evaluate() throws NonTrivialSCCException {
     // need iterator over vertices
     IntIterator vertex = vertices.iterator();
@@ -84,8 +89,11 @@ public class SCCTransitiveClosure implements Algorithm {
       // get each one
       x = vertex.next();
       // have we seen it?
-      if (map.get(x) == 0) traverse(x);
+      if (map.get(x) == 0) {
+        traverse(x);
+      }
     }
+
   }
 
   private void traverse(int x) throws NonTrivialSCCException {
@@ -109,16 +117,15 @@ public class SCCTransitiveClosure implements Algorithm {
 
     if (set != null) {
 
-      // Note: It has been awhile since I coded this algorithm.
-      // The design of the HashSetFunction used to be such that
-      // the empty set (non-null) would be returned if x was not
-      // mapped to a value in the function.  This was changed
-      // such that null is now the return value, so it was
-      // necessary to add the null check above.  The question
-      // is, does the existence of a null set from the
-      // projection over x mean something significant?  Should
-      // we always expect that the values we choose for x always
-      // have a corresponding IntSet value?  Hmm....
+      // Note: It has been awhile since I coded this algorithm.  The
+      // design of the HashSetFunction used to be such that the empty
+      // set (non-null) would be returned if x was not mapped to a
+      // value in the function.  This was changed such that null is
+      // now the return value, so it was necessary to add the null
+      // check above.  The question is, does the existence of a null
+      // set from the projection over x mean something significant?
+      // Should we always expect that the values we choose for x
+      // always have a corresponding IntSet value?  Hmm....
 
       IntIterator iterator = set.iterator();
 
@@ -129,8 +136,10 @@ public class SCCTransitiveClosure implements Algorithm {
         // get each one
         y = iterator.next();
         if (DEBUG) trace("checking y of xRy " + y);
-        // Seen it?
-        if (map.get(y) == 0) traverse(y); // recursion
+        // Seen it? 0 means no.
+        if (map.get(y) == 0) {
+          traverse(y); // recursion
+        }
         // mark the minimal SCC cycle
         //map.put(y, Math.min(map.get(x), map.get(y)));
         map.put(x, Math.min(map.get(x), map.get(y)));
@@ -140,16 +149,18 @@ public class SCCTransitiveClosure implements Algorithm {
               "marked x "
                   + x
                   + " at min (x,y) ("
-                  + map.get(y)
+                  + map.get(x)
                   + ","
                   + map.get(y)
                   + ") to "
                   + Math.min(map.get(x), map.get(y)));
 
         // merge the functions
-        if (DEBUG)
-          trace("unioning " + x + ":" + output.get(x) + " with " + y + ":" + output.get(y));
-        output.get(x).union(output.get(y));
+        if (x != y) {
+          if (DEBUG)
+            trace("unioning " + x + ":" + output.get(x) + " with " + y + ":" + output.get(y));
+          output.get(x).union(output.get(y));
+        }
       }
     }
 
@@ -222,6 +233,10 @@ public class SCCTransitiveClosure implements Algorithm {
   }
 
   private IntSet copy(IntSet set) {
+    if (set == null) {
+      return EmptyIntSet.EMPTY_SET;
+      //throw new NullPointerException("Cannot copy null input set");
+    }
     try {
       return (IntSet) set.clone();
     } catch (CloneNotSupportedException cnsex) {
